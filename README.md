@@ -7,6 +7,8 @@ Independently written replacement firmware for the **MagBound Smart Timer V1 (Le
 
 **Status:** `1.0.0-rc.2`, a release candidate. Every published release, pre-releases included, is offered to every timer of that model when its owner checks for updates.
 
+**Website:** [xboarder56.github.io/OpenSmartTimer](https://xboarder56.github.io/OpenSmartTimer/) has the Smart Timer Bluetooth app for the V2 and links to everything else. Firmware images are on the [releases page](https://github.com/Xboarder56/OpenSmartTimer/releases).
+
 ## Supported hardware
 
 | Model | Power input | Controller | Control connections |
