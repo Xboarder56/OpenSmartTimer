@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-state="open">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0b0710">
+    <meta name="description" content="Smart Timer share-link partner access">
+    <meta name="referrer" content="no-referrer">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Smart Timer</title>
+    <link rel="stylesheet" href="/s/assets/timer-ui.css">
+    <link rel="stylesheet" href="/s/assets/app.css">
+    <link rel="manifest" href="/s/assets/manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="/s/assets/icon.svg">
+    <link rel="apple-touch-icon" href="/s/assets/icon.svg">
+  </head>
+  <body class="relay-ui">
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+    <main class="shell" role="main">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M10 14V9a6 6 0 0 1 12 0v5M8 14h16v13H8z"/><circle cx="16" cy="20" r="2"/></svg>
+          </span>
+          <span class="brand-copy"><strong id="timerLabel" data-i18n-literal>Smart Timer</strong><small>Shared control</small></span>
+        </div>
+        <div class="topbar-actions">
+          <button id="languageButton" class="language-switch" type="button" role="switch" aria-checked="false" aria-label="Switch to Simplified Chinese" data-language="en">
+                  <span class="language-option-en">EN</span><span class="language-option-zh">中文</span>
+                </button>
+          <button id="themeButton" class="theme-switch" type="button" role="switch" aria-checked="true" aria-label="Switch to light mode" data-theme="dark">
+                  <svg class="theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"/></svg>
+                  <svg class="theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 15.2A7.8 7.8 0 0 1 8.8 4.6 8.1 8.1 0 1 0 19.4 15.2Z"/></svg>
+                </button>
+          <details id="settingsMenu" class="appearance-menu settings-menu">
+            <summary id="settingsOpen" class="icon-button" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg></summary>
+            <section class="appearance-section" aria-label="Settings">
+              <h3>Settings</h3>
+              <div class="settings-colors"><span>Color theme</span>
+                <div class="palette-options" role="group" aria-label="Color theme">
+                  <button type="button" data-palette-choice="purple" aria-pressed="true">Purple</button>
+                  <button type="button" data-palette-choice="slate" aria-pressed="false">Slate</button>
+                  <button type="button" data-palette-choice="teal" aria-pressed="false">Teal</button>
+                </div>
+              </div>
+              <p class="helper">Saved in this browser only.</p>
+              <div id="disconnectControls" class="settings-actions hidden">
+                <button id="disconnectButton" class="secondary" type="button">Disconnect</button>
+                <p class="helper">Closes this browser's control session. The timer keeps running.</p>
+              </div>
+            </section>
+          </details>
+        </div>
+      </header>
+      <section id="timerStatusStrip" class="status-strip hidden" aria-label="Timer status">
+        <div class="status-primary"><span id="stateBadge" class="badge">Connecting</span><span id="statusLine">Waiting for timer status</span></div>
+        <span id="connectionState" class="conn-pill">connecting</span>
+      </section>
+      <section id="connectionWarning" class="connection-warning hidden" role="alert" aria-labelledby="connectionWarningTitle">
+        <div>
+          <strong id="connectionWarningTitle">Connection lost</strong>
+          <p id="connectionWarningMessage">The timer keeps running on its own; use the physical emergency release if needed.</p>
+        </div>
+        <button id="connectionRetry" class="secondary" type="button">Retry</button>
+      </section>
+
+      <!-- View: loading / no token / verifying -->
+      <section id="loadingView" class="stage stage-center">
+        <div class="spinner" aria-hidden="true"></div>
+        <p id="loadingMessage">Verifying share link…</p>
+      </section>
+
+      <!-- View: live session -->
+      <section id="liveView" class="stage hidden">
+        <section id="controlsCard" class="timer-workspace" aria-label="Timer controls">
+          <aside id="leftRail" class="control-rail left-rail hidden" aria-label="Deduct time">
+            <div class="rail-group"><div class="rail-caption">Deduct time</div>
+              <button class="adjust-button minus hidden" data-op="adjust" data-scope="adjust" data-adjust="-3600000" type="button"><span>−</span>1 hr</button>
+              <button class="adjust-button minus hidden" data-op="adjust" data-scope="adjust" data-adjust="-1800000" type="button"><span>−</span>30 min</button>
+              <button class="adjust-button minus hidden" data-op="adjust" data-scope="adjust" data-adjust="-300000" type="button"><span>−</span>5 min</button>
+              <button class="adjust-button minus hidden" data-op="adjust" data-scope="adjust" data-adjust="-60000" type="button"><span>−</span>1 min</button>
+            </div>
+          </aside>
+          <div class="timer-center">
+            <div id="timerDial" class="timer-dial" aria-label="Timer">
+              <div class="dial-progress" aria-hidden="true"></div>
+              <div class="dial-ticks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="dial-face">
+                <div id="dialKicker" class="dial-kicker">Waiting for status</div>
+                <div id="fixedDuration" class="duration-fields hidden">
+                  <label><span>Hours</span><input id="hours" type="number" inputmode="numeric" min="0" max="24" step="1" value="0" aria-label="Hours" aria-describedby="durationGestureHint"></label><b aria-hidden="true">:</b>
+                  <label><span>Minutes</span><input id="minutes" type="number" inputmode="numeric" min="0" max="59" step="1" value="15" aria-label="Minutes" aria-describedby="durationGestureHint"></label><b aria-hidden="true">:</b>
+                  <label><span>Seconds</span><input id="seconds" type="number" inputmode="numeric" min="0" max="59" step="1" value="0" aria-label="Seconds" aria-describedby="durationGestureHint"></label>
+                </div>
+                <div id="randomFields" class="random-fields hidden">
+                  <label><span>Minimum</span><span class="random-input"><input id="randomMin" type="number" inputmode="numeric" min="1" max="1440" value="10" aria-label="Minimum minutes" aria-describedby="durationGestureHint"><small>min</small></span></label>
+                  <span class="range-arrow" aria-hidden="true">—</span>
+                  <label><span>Maximum</span><span class="random-input"><input id="randomMax" type="number" inputmode="numeric" min="1" max="1440" value="30" aria-label="Maximum minutes" aria-describedby="durationGestureHint"><small>min</small></span></label>
+                </div>
+                <p id="durationGestureHint" class="duration-gesture-hint hidden">Swipe or scroll a value to adjust</p>
+                <div id="dialTime" class="clock">—</div>
+                <p id="dialSubtext" class="safety-note">Waiting for verified timer status.</p>
+              </div>
+            </div>
+            <div id="setupControls" class="setup-panel hidden">
+              <div class="preset-section"><div class="setup-label">Quick presets</div>
+                <div class="preset-row">
+                  <button class="preset-button" data-preset="5" type="button"><strong>05</strong><span>min</span></button>
+                  <button class="preset-button active" data-preset="15" type="button"><strong>15</strong><span>min</span></button>
+                  <button class="preset-button" data-preset="30" type="button"><strong>30</strong><span>min</span></button>
+                  <button class="preset-button" data-preset="60" type="button"><strong>60</strong><span>min</span></button>
+                  <button id="resetDuration" class="preset-button reset-preset" type="button"><span class="reset-icon" aria-hidden="true"></span><span>Reset</span></button>
+                </div>
+              </div>
+              <div class="setup-actions">
+                <label class="mode-switch">
+                  <input id="randomMode" type="checkbox">
+                  <span class="switch-track" aria-hidden="true"><span></span></span>
+                  <span><strong>Random duration</strong><small>Choose within your range</small></span>
+                </label>
+                <button class="primary start-button hidden" type="button" data-op="start" data-scope="start">Start timer</button>
+              </div>
+            </div>
+            <div id="activeControls" class="session-actions">
+              <button class="secondary pause-action hidden" data-op="pause" data-scope="pause_resume" type="button">Pause</button>
+              <button class="secondary pause-action hidden" data-op="resume" data-scope="pause_resume" type="button">Resume</button>
+              <button class="release-action hidden" data-op="release" data-scope="release" type="button">Unlock now</button>
+              <button id="sealButton" class="secondary lock-controls hidden" data-op="lock_controls" data-scope="lock" type="button">Lock controls</button>
+              <section id="sealedNotice" class="sealed-notice hidden" aria-labelledby="sealedNoticeTitle">
+                <strong id="sealedNoticeTitle">Software controls are locked</strong>
+                <p>Unlock, pause and time changes are unavailable until the timer opens. This applies to share links, the local page, Bluetooth and the API.</p>
+                <div class="sealed-safe">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 7.6v.2"></path></svg>
+                  <span>The emergency input and removing power still command release. They do not prove the lock opened.</span>
+                </div>
+              </section>
+            </div>
+            <p id="lastResult" class="last-result hidden" role="status"></p>
+          </div>
+          <aside id="rightRail" class="control-rail right-rail hidden" aria-label="Add time">
+            <div class="rail-group"><div class="rail-caption">Add time</div>
+              <button class="adjust-button plus hidden" data-op="adjust" data-scope="adjust" data-adjust="3600000" type="button"><span>+</span>1 hr</button>
+              <button class="adjust-button plus hidden" data-op="adjust" data-scope="adjust" data-adjust="1800000" type="button"><span>+</span>30 min</button>
+              <button class="adjust-button plus hidden" data-op="adjust" data-scope="adjust" data-adjust="300000" type="button"><span>+</span>5 min</button>
+              <button class="adjust-button plus hidden" data-op="adjust" data-scope="adjust" data-adjust="60000" type="button"><span>+</span>1 min</button>
+            </div>
+          </aside>
+        </section>
+
+        <section id="pendingCard" class="card hidden" aria-live="polite">
+          <div class="card-heading">
+            <span class="eyebrow">Unconfirmed actions</span>
+            <h3>Check the outcome before another action</h3>
+          </div>
+          <p class="advisory">A lost response does not tell us whether the timer applied the action. Check for its saved result before trying again. Retrying is available briefly. Unlock now remains available when this link allows it.</p>
+          <button id="checkPending" type="button" class="secondary">Check results</button>
+          <ul id="pendingList" class="pending-list"></ul>
+        </section>
+
+        <section id="eventCard" class="card event-card hidden">
+          <div class="card-heading">
+            <span class="eyebrow">Recent</span>
+            <h3>Timer activity</h3>
+          </div>
+          <ol id="eventList" class="event-list" aria-live="polite"></ol>
+        </section>
+      </section>
+
+      <!-- View: terminal states -->
+      <section id="endView" class="stage stage-center hidden">
+        <div class="end-icon" aria-hidden="true">◈</div>
+        <h2 id="endTitle">Share link ended</h2>
+        <p id="endMessage">Ask the owner for a new link.</p>
+      </section>
+
+      <footer id="sessionFooter" class="device-footer hidden">
+        <div><span class="footer-label">Access</span><strong id="scopeSummary">Shared link</strong></div>
+        <div><span class="footer-label">Share link</span><strong id="expiryCountdown" class="foot-expiry hidden" aria-live="polite"></strong></div>
+        <nav class="footer-actions" aria-label="Shared timer actions"><button id="identifyButton" class="hidden" data-op="identify" data-scope="identify" type="button">Identify timer</button></nav>
+      </footer>
+    </main>
+
+    <div id="confirmBackdrop" class="confirm-backdrop" aria-hidden="true"></div>
+    <section id="confirmDialog" class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-hidden="true">
+      <span class="confirm-icon confirm-lock" aria-hidden="true"></span>
+      <span class="eyebrow">One-way session setting</span>
+      <h2 id="confirmTitle">Lock software controls?</h2>
+      <p>Pause, time adjustment, and Unlock now will be disabled until this timer expires.</p>
+      <p class="confirm-safety">After this, only the emergency input or removing power can end the session early. Neither is guaranteed to open the lock. Keep an independent way out.</p>
+      <div class="confirm-actions"><button id="confirmCancel" class="secondary" type="button">Cancel</button><button id="confirmAccept" class="primary" type="button">Lock until expiry</button></div>
+    </section>
+
+    <script src="/s/assets/i18n.js" defer></script>
+    <script src="/s/assets/appearance.js" defer></script>
+    <script src="/s/assets/e2e.js" defer></script>
+    <script src="/s/assets/app.js" defer></script>
+  </body>
+</html>

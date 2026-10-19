@@ -1,0 +1,367 @@
+{
+  "schema": 1,
+  "archives": [
+    {
+      "name": "esp-idf",
+      "repository": "espressif/esp-idf",
+      "commit": "b66b5448e0dfac6be135e6f0ac21010aba231180",
+      "file": "esp-idf-b66b5448e0dfac6be135e6f0ac21010aba231180.tar.gz",
+      "url": "https://codeload.github.com/espressif/esp-idf/tar.gz/b66b5448e0dfac6be135e6f0ac21010aba231180",
+      "size_bytes": 61114207,
+      "sha256": "68b7fc4eee2ad90956140e81142f30b9379ec1b3cf1b943a7820013bfc6241ba"
+    },
+    {
+      "name": "esp32-arduino-lib-builder",
+      "repository": "espressif/esp32-arduino-lib-builder",
+      "commit": "afa5cdd0d41d7e465d2e39867b24aef48b1c7b84",
+      "file": "esp32-arduino-lib-builder-afa5cdd0d41d7e465d2e39867b24aef48b1c7b84.tar.gz",
+      "url": "https://codeload.github.com/espressif/esp32-arduino-lib-builder/tar.gz/afa5cdd0d41d7e465d2e39867b24aef48b1c7b84",
+      "size_bytes": 66129,
+      "sha256": "60c60f4b60cc6fbe082636008c0023ce21871d3738afa41be8387a531e6bd7e3"
+    },
+    {
+      "name": "cJSON",
+      "path": "components/json/cJSON",
+      "repository": "DaveGamble/cJSON",
+      "commit": "8f2beb57ddad1f94bed899790b00f46df893ccac",
+      "file": "cJSON-8f2beb57ddad1f94bed899790b00f46df893ccac.tar.gz",
+      "url": "https://codeload.github.com/DaveGamble/cJSON/tar.gz/8f2beb57ddad1f94bed899790b00f46df893ccac",
+      "size_bytes": 356275,
+      "sha256": "bc69a9e0796bb6e3434aeadbb49d3e37c4b7aec34fdb306e3f55b275ca7c6acb"
+    },
+    {
+      "name": "mbedtls",
+      "path": "components/mbedtls/mbedtls",
+      "repository": "espressif/mbedtls",
+      "commit": "98ae8db06b8acc1dc1c6b1f78c2719cb776f4147",
+      "file": "mbedtls-98ae8db06b8acc1dc1c6b1f78c2719cb776f4147.tar.gz",
+      "url": "https://codeload.github.com/espressif/mbedtls/tar.gz/98ae8db06b8acc1dc1c6b1f78c2719cb776f4147",
+      "size_bytes": 6370525,
+      "sha256": "cb8ad966e999b9d79655015de0080a129283907022e9ba60d7a99a5fa15fa56e"
+    },
+    {
+      "name": "esp-lwip",
+      "path": "components/lwip/lwip",
+      "repository": "espressif/esp-lwip",
+      "commit": "ebabd6d79c120c5d4415755aab1d908d8b5fa372",
+      "file": "esp-lwip-ebabd6d79c120c5d4415755aab1d908d8b5fa372.tar.gz",
+      "url": "https://codeload.github.com/espressif/esp-lwip/tar.gz/ebabd6d79c120c5d4415755aab1d908d8b5fa372",
+      "size_bytes": 1634786,
+      "sha256": "609a4db4e65c7e67acad8325bc48ecd6913cf10c606ff8c3e8fc25589d9d2a1c"
+    },
+    {
+      "name": "protobuf-c",
+      "path": "components/protobuf-c/protobuf-c",
+      "repository": "protobuf-c/protobuf-c",
+      "commit": "abc67a11c6db271bedbb9f58be85d6f4e2ea8389",
+      "file": "protobuf-c-abc67a11c6db271bedbb9f58be85d6f4e2ea8389.tar.gz",
+      "url": "https://codeload.github.com/protobuf-c/protobuf-c/tar.gz/abc67a11c6db271bedbb9f58be85d6f4e2ea8389",
+      "size_bytes": 134746,
+      "sha256": "6f41b467d7b7242bb201f6466ba433f6eab943e2b6fc53bb753340632c9e45e2"
+    },
+    {
+      "name": "esp-nimble",
+      "path": "components/bt/host/nimble/nimble",
+      "repository": "espressif/esp-nimble",
+      "commit": "cc3ac5416b46e6e9363dae357378c03b4975cfdb",
+      "file": "esp-nimble-cc3ac5416b46e6e9363dae357378c03b4975cfdb.tar.gz",
+      "url": "https://codeload.github.com/espressif/esp-nimble/tar.gz/cc3ac5416b46e6e9363dae357378c03b4975cfdb",
+      "size_bytes": 1844791,
+      "sha256": "8d9967b9bfa4975fe8655e5456de4f5a3edb2d1202b4d229c70691329791c03e"
+    },
+    {
+      "name": "mdns",
+      "version": "1.8.2",
+      "url": "https://components-file.espressif.com/components/espressif/mdns/1.8.2/espressif__mdns-v1.8.2.zip",
+      "file": "espressif__mdns-v1.8.2.zip",
+      "size_bytes": 154481,
+      "sha256": "b97f0b33630e0f620250c108e258c603ab90cfc7e11ef770a0e9aac543225a18"
+    },
+    {
+      "name": "network_provisioning",
+      "version": "1.0.2",
+      "url": "https://components-file.espressif.com/components/espressif/network_provisioning/1.0.2/espressif__network_provisioning-v1.0.2.zip",
+      "file": "espressif__network_provisioning-v1.0.2.zip",
+      "size_bytes": 150275,
+      "sha256": "60a0c88f5c5fb10e229344fadf435f35029393b8838ede275c4e8d5fc2668752"
+    },
+    {
+      "name": "esp_diagnostics",
+      "version": "1.2.1",
+      "url": "https://components-file.espressif.com/components/espressif/esp_diagnostics/1.2.1/espressif__esp_diagnostics-v1.2.1.zip",
+      "file": "espressif__esp_diagnostics-v1.2.1.zip",
+      "size_bytes": 34333,
+      "sha256": "83020ec1b26c9154627f4ea28356ae3429528fbb805153165aff86172154653e"
+    },
+    {
+      "name": "annotated-doc",
+      "version": "0.0.5",
+      "group": "relay-runtime",
+      "file": "annotated_doc-0.0.5.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/5a/8e/38aa427ed5402449e226975b649c5dc73ccadfefeb95e6aecb8f8ea4b6b6/annotated_doc-0.0.5.tar.gz",
+      "size_bytes": 10758,
+      "sha256": "c7e58ce09192557605d8bbd92836d7e1d520ac9580096042c0bfd197efacf1bb"
+    },
+    {
+      "name": "annotated-types",
+      "version": "0.8.0",
+      "group": "relay-runtime",
+      "file": "annotated_types-0.8.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/5f/56/a8120250d128bed162cd73c76d45f6ef9991f3e068f62a8ee060afa3104a/annotated_types-0.8.0.tar.gz",
+      "size_bytes": 15893,
+      "sha256": "13b2beaad985e05e2d6407ee4c4f35590b11f8d693a258a561055cac8f64cab7"
+    },
+    {
+      "name": "anyio",
+      "version": "4.15.1",
+      "group": "relay-runtime",
+      "file": "anyio-4.15.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/a9/d2/f4d173e22df740bc37b1db102b386ba719b66e95b0f0d751f556b387e6d2/anyio-4.15.1.tar.gz",
+      "size_bytes": 276966,
+      "sha256": "9f28306018cbd6d329e64a36d58256edff76dd996fe423bc957326e578b82a94"
+    },
+    {
+      "name": "authlib",
+      "version": "1.8.0",
+      "group": "relay-runtime",
+      "file": "authlib-1.8.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/f1/51/bc1729d3cfdc214b4935f4e886e4dd443c3065fd8e1e66423fe84b490f81/authlib-1.8.0.tar.gz",
+      "size_bytes": 177759,
+      "sha256": "f3ecd5f1da737262fb53bf1a4d95c4ea1ad9dd509316587a255c99ab1838a4f0"
+    },
+    {
+      "name": "certifi",
+      "version": "2026.7.22",
+      "group": "relay-runtime",
+      "file": "certifi-2026.7.22.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/a3/c2/24167ea9858356b47a87a50d39908bfdb72ceeefe0041586e704e5376b3a/certifi-2026.7.22.tar.gz",
+      "size_bytes": 138112,
+      "sha256": "741e2c3b351ddf169a738da9f2c048608ff7f2c5cc02f1ebc6b118bb090d5d55"
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1",
+      "group": "relay-runtime",
+      "file": "cffi-2.1.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/9e/ef/008a1939e372c06329a3fce4279c02f328488f3526744906eeec3da7ad5f/cffi-2.1.1.tar.gz",
+      "size_bytes": 530807,
+      "sha256": "dd31f52ea1086513bb9df30f8fcee9b8918323ae067a3d5b78bc826a000712be"
+    },
+    {
+      "name": "click",
+      "version": "8.5.0",
+      "group": "relay-runtime",
+      "file": "click-8.5.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/c7/0e/7fa0ef50764b67090eca4114772a2abf8b6148198475e54c660b97caeee6/click-8.5.0.tar.gz",
+      "size_bytes": 382235,
+      "sha256": "ba0d2089de75ea0310e2dde03160e6ca10009947fb95a182f9b54021bb272e34"
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.1",
+      "group": "relay-runtime",
+      "file": "cryptography-50.0.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/bb/ad/5d6702db60b1e40b41ef513b6967ff5848f307d50f8449baf1634f5908f1/cryptography-50.0.1.tar.gz",
+      "size_bytes": 880381,
+      "sha256": "5dd9bda1c12b4162f6ff568eeb5e0ff956c28d14406e875cfe8a63a2d414ff20"
+    },
+    {
+      "name": "fastapi",
+      "version": "0.141.1",
+      "group": "relay-runtime",
+      "file": "fastapi-0.141.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/8a/02/91e3416a8fdd715abb903a952a6bec7cdd8d14eed55d415fc8595524c319/fastapi-0.141.1.tar.gz",
+      "size_bytes": 425799,
+      "sha256": "e8822fc40db1e1858054d7a949a888695bc9bdce70139178e33bd2871a453ca1"
+    },
+    {
+      "name": "h11",
+      "version": "0.16.0",
+      "group": "relay-runtime",
+      "file": "h11-0.16.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/01/ee/02a2c011bdab74c6fb3c75474d40b3052059d95df7e73351460c8588d963/h11-0.16.0.tar.gz",
+      "size_bytes": 101250,
+      "sha256": "4e35b956cf45792e4caa5885e69fba00bdbc6ffafbfa020300e549b208ee5ff1"
+    },
+    {
+      "name": "httpcore",
+      "version": "1.0.9",
+      "group": "relay-runtime",
+      "file": "httpcore-1.0.9.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/06/94/82699a10bca87a5556c9c59b5963f2d039dbd239f25bc2a63907a05a14cb/httpcore-1.0.9.tar.gz",
+      "size_bytes": 85484,
+      "sha256": "6e34463af53fd2ab5d807f399a9b45ea31c3dfa2276f15a2c3f00afff6e176e8"
+    },
+    {
+      "name": "httptools",
+      "version": "0.8.0",
+      "group": "relay-runtime",
+      "file": "httptools-0.8.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/43/e5/d471fcb0e14523fe1c3f4ba58ca52480e7bd70ad7109a3846bc75892f7fb/httptools-0.8.0.tar.gz",
+      "size_bytes": 271342,
+      "sha256": "6b2a32f18d97e16e90827d7a819ffa8dbd8cc245fc4e1fa9d1095b54ef4bd999"
+    },
+    {
+      "name": "httpx",
+      "version": "0.28.1",
+      "group": "relay-runtime",
+      "file": "httpx-0.28.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/b1/df/48c586a5fe32a0f01324ee087459e112ebb7224f646c0b5023f5e79e9956/httpx-0.28.1.tar.gz",
+      "size_bytes": 141406,
+      "sha256": "75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc"
+    },
+    {
+      "name": "idna",
+      "version": "3.19",
+      "group": "relay-runtime",
+      "file": "idna-3.19.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/5f/f7/abb373e5757eaec4b922b92f97ec8d6d7e057cf06778247604fbc4e7c3f3/idna-3.19.tar.gz",
+      "size_bytes": 215237,
+      "sha256": "5e0811a4383b21dc5838069f801c4fb62113b7447663d2530d2bd6e77b49bf15"
+    },
+    {
+      "name": "itsdangerous",
+      "version": "2.2.0",
+      "group": "relay-runtime",
+      "file": "itsdangerous-2.2.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/9c/cb/8ac0172223afbccb63986cc25049b154ecfb5e85932587206f42317be31d/itsdangerous-2.2.0.tar.gz",
+      "size_bytes": 54410,
+      "sha256": "e0050c0b7da1eea53ffaf149c0cfbb5c6e2e2b69c4bef22c81fa6eb73e5f6173"
+    },
+    {
+      "name": "joserfc",
+      "version": "1.7.5",
+      "group": "relay-runtime",
+      "file": "joserfc-1.7.5.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/19/94/80fea1514b7c6d7d37804d3fe9ca81455f633347fc98731bd71ffe1faa17/joserfc-1.7.5.tar.gz",
+      "size_bytes": 234990,
+      "sha256": "d5ff536e658e17664f8c1b1ab60dc4aa62aa973fcef1edd33cc44bda45d6f5ea"
+    },
+    {
+      "name": "pycparser",
+      "version": "3.0",
+      "group": "relay-runtime",
+      "file": "pycparser-3.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/1b/7d/92392ff7815c21062bea51aa7b87d45576f649f16458d78b7cf94b9ab2e6/pycparser-3.0.tar.gz",
+      "size_bytes": 103492,
+      "sha256": "600f49d217304a5902ac3c37e1281c9fe94e4d0489de643a9504c5cdfdfc6b29"
+    },
+    {
+      "name": "pydantic",
+      "version": "2.13.5",
+      "group": "relay-runtime",
+      "file": "pydantic-2.13.5.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/53/ef/fc4f868f4e2cee79f863883abffceff107875f569b848507319842d2a681/pydantic-2.13.5.tar.gz",
+      "size_bytes": 845750,
+      "sha256": "51a9c5f7b2f8e636f04c6cada605d9b6a3bf1348fdf945a3d8869b19bba0ee08"
+    },
+    {
+      "name": "pydantic-core",
+      "version": "2.46.5",
+      "group": "relay-runtime",
+      "file": "pydantic_core-2.46.5.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/af/f9/8a06bea35ef8daf588f707784c973a7046e0034c8d8cfb08828eeffb8b75/pydantic_core-2.46.5.tar.gz",
+      "size_bytes": 472262,
+      "sha256": "10416c15b8839ecc4ef4d0885da76da6fd0f67333a0eb8aff6d93c4b8f2910fc"
+    },
+    {
+      "name": "pydantic-settings",
+      "version": "2.15.0",
+      "group": "relay-runtime",
+      "file": "pydantic_settings-2.15.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/68/ca/31c57507b13119d7d3cfa1576dad2911a4861e3be07b579395f4e9d393f9/pydantic_settings-2.15.0.tar.gz",
+      "size_bytes": 261253,
+      "sha256": "694b793e84f766ba76a90ebdefc01d0a9a045dab0382bee70393da93712ad117"
+    },
+    {
+      "name": "python-dotenv",
+      "version": "1.2.3",
+      "group": "relay-runtime",
+      "file": "python_dotenv-1.2.3.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/6a/53/ed9d74092561d4b01a2ef1349d52cdbc135e526c245f366b089cfca6de49/python_dotenv-1.2.3.tar.gz",
+      "size_bytes": 58945,
+      "sha256": "a20a594dabeaa385725aa239d5244871c143ecb356add8a20fcf23773a6c3a35"
+    },
+    {
+      "name": "pyyaml",
+      "version": "6.0.3",
+      "group": "relay-runtime",
+      "file": "pyyaml-6.0.3.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/05/8e/961c0007c59b8dd7729d542c61a4d537767a59645b82a0b521206e1e25c2/pyyaml-6.0.3.tar.gz",
+      "size_bytes": 130960,
+      "sha256": "d76623373421df22fb4cf8817020cbb7ef15c725b9d5e45f17e189bfc384190f"
+    },
+    {
+      "name": "sse-starlette",
+      "version": "3.4.11",
+      "group": "relay-runtime",
+      "file": "sse_starlette-3.4.11.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/2b/54/6767bb789b2f2fed6e0f953df949cd39dc263a384c1b65a95232598621d6/sse_starlette-3.4.11.tar.gz",
+      "size_bytes": 34972,
+      "sha256": "1bae716c02f3e6f294be41ff333220692dae7c3cbab077c900f159676719dade"
+    },
+    {
+      "name": "starlette",
+      "version": "1.6.0",
+      "group": "relay-runtime",
+      "file": "starlette-1.6.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/b5/b4/205b0d5241d934e8add0c38aa924c4f9fb7330834ff11e5444db964ec3f9/starlette-1.6.0.tar.gz",
+      "size_bytes": 2716969,
+      "sha256": "d4e3ac5e546444960c710297a3c9fc3f7ebae1b7e963f3d36173b49da535be9b"
+    },
+    {
+      "name": "typing-extensions",
+      "version": "4.16.0",
+      "group": "relay-runtime",
+      "file": "typing_extensions-4.16.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/f6/cc/6253133b5bb138fc3306cebfbda2c520f545d36b5be2c7255cc528bb45d6/typing_extensions-4.16.0.tar.gz",
+      "size_bytes": 113555,
+      "sha256": "dc983d19a509c94dba722ee6abd33940f7c05a89e243c47e907eb4db6f1a43e5"
+    },
+    {
+      "name": "typing-inspection",
+      "version": "0.4.4",
+      "group": "relay-runtime",
+      "file": "typing_inspection-0.4.4.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/a3/26/b09b8010994eccc3c09092e6b34058f36a460eea2d4c3e8b910c695975a0/typing_inspection-0.4.4.tar.gz",
+      "size_bytes": 76928,
+      "sha256": "547274fa6b0a561ccf549cc9524b999a578e737d015d8709d021f9d0d13bea47"
+    },
+    {
+      "name": "uvicorn",
+      "version": "0.53.0",
+      "group": "relay-runtime",
+      "file": "uvicorn-0.53.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/5d/ad/04bbb797c84fc1f26cb171f7394716f4865ffb8d8c5e1eef42565c2dfa6b/uvicorn-0.53.0.tar.gz",
+      "size_bytes": 110881,
+      "sha256": "a9356f0cb89b3b8621529c5d5eebd69bfe154f4c3f68b4cf2de47e45fa855c2e"
+    },
+    {
+      "name": "uvloop",
+      "version": "0.22.1",
+      "group": "relay-runtime",
+      "file": "uvloop-0.22.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/06/f0/18d39dbd1971d6d62c4629cc7fa67f74821b0dc1f5a77af43719de7936a7/uvloop-0.22.1.tar.gz",
+      "size_bytes": 2443250,
+      "sha256": "6c84bae345b9147082b17371e3dd5d42775bddce91f885499017f4607fdaf39f"
+    },
+    {
+      "name": "watchfiles",
+      "version": "1.2.0",
+      "group": "relay-runtime",
+      "file": "watchfiles-1.2.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/cd/41/5e1a4bb12aac5f1493fa1bdc11154eca3b258ca4eba65d39c473fe19d8e9/watchfiles-1.2.0.tar.gz",
+      "size_bytes": 108252,
+      "sha256": "c995fba777f1ea992f090f9236e9284cf7a5d1a0130dd5a3d82c598cacd76838"
+    },
+    {
+      "name": "websockets",
+      "version": "17.1",
+      "group": "relay-runtime",
+      "file": "websockets-17.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/18/72/fba934cb3dff7a85d811820efffcd141ddd52b5a2a01637f64551373ff4d/websockets-17.1.tar.gz",
+      "size_bytes": 187520,
+      "sha256": "acfea4c20bf54384883ea33b1240fc1db4f52e190823a4e2b334bc3e8bfca96a"
+    }
+  ]
+}

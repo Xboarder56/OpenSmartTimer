@@ -1,0 +1,7 @@
+.creator-card {max-width:720px;width:100%;margin:20px auto;padding:24px;border:1px solid var(--line);border-radius:24px;background:var(--surface);box-sizing:border-box}
+.creator-card h1 {font-size:1.65rem;margin:0 0 12px}.creator-card h2 {font-size:1.3rem;margin-top:0}.creator-card p {line-height:1.6}
+.creator-card label {display:block;margin:18px 0 8px;font-weight:650}.creator-card input {background:var(--surface-soft);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit;width:100%;box-sizing:border-box}.lifetime-row {display:flex;gap:12px;align-items:center}.lifetime-row input {width:130px}.hint {font-size:.85rem;color:var(--muted)}
+#createForm button {margin-top:22px;width:100%}.link-card {padding:18px 0;border-top:1px solid var(--line)}.link-card header {display:flex;gap:12px;align-items:center;justify-content:space-between}.link-card .link-state {font-size:.9rem;font-weight:650}.link-card .actions {display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}.link-card input {margin-top:12px;font-size:.8rem}.link-card .btn {min-width:100px}#message {overflow-wrap:anywhere}.shell {padding-bottom:24px}
+@media(max-width:420px){.creator-card {padding:18px}.creator-card h1 {font-size:1.4rem}.status-strip {flex-wrap:wrap}.topbar .btn {padding:8px 12px}}
+
+#shareControls {border:0;padding:0;margin:0;min-width:0} #shareControls:disabled {opacity:.5}

@@ -1,0 +1,71 @@
+# System and editor files
+.DS_Store
+._*
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build output and dependency caches
+.pio/
+.pio-core/
+.framework/
+dist/
+__pycache__/
+*.py[cod]
+*.o
+*.a
+.venv/
+venv/
+node_modules/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Test output and caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage/
+playwright-report/
+test-results/
+*.log
+
+# Local tool state
+.claude/
+.codex/
+.playwright-mcp/
+
+# Development files
+/dev/
+/relay/dev/
+/relay/tools/dev/
+
+# Private
+/tmp/
+/relay/tools/hardware/out/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+
+# Local artifacts
+*.bin
+*.elf
+*.irom
+*.pdf
+
+# Local release downloads
+/releases/

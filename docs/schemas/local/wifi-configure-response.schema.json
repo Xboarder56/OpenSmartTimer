@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/wifi-configure-response.schema.json",
+  "title": "POST /api/v1/wifi/configure (response body)",
+  "description": "Immediate acknowledgement. Actual candidate result is observed via GET /api/v1/wifi/status or GET /api/v1/status.",
+  "type": "object",
+  "required": ["connecting", "wifi_state"],
+  "additionalProperties": false,
+  "properties": {
+    "connecting": { "type": "boolean" },
+    "wifi_state": { "$ref": "common.schema.json#/$defs/WifiState" }
+  }
+}

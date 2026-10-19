@@ -1,0 +1,12 @@
+{
+  "name": "@opensmarttimer/relay-tests",
+  "version": "1.0.0-rc.2",
+  "private": true,
+  "description": "Isolated Chromium checks for the relay and partner pages",
+  "devDependencies": {
+    "playwright": "1.64.1"
+  },
+  "scripts": {
+    "test:pages": "node pages_browser.cjs"
+  }
+}

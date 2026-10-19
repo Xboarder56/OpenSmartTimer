@@ -1,0 +1,20 @@
+Additional permission under GNU Affero General Public License version 3,
+section 7:
+
+If you modify this Program, or any covered work, by linking or combining it
+with Espressif vendor SDK components distributed for ESP8266 or ESP32 chips
+and identified in OpenSmartTimer's build inputs and third-party inventory,
+the copyright holders of the original OpenSmartTimer code grant you additional
+permission to convey the resulting work. This permission includes conveying
+the Espressif components in the binary form supplied by their licensors,
+subject to their own licenses, without requiring their unavailable proprietary
+source as part of OpenSmartTimer's Corresponding Source.
+
+All GNU AGPL obligations remain in force for the original OpenSmartTimer code
+and modifications to it, including its Corresponding Source, build and
+installation information, and the network source offer where applicable.
+This permission does not waive any obligations imposed by the licenses of
+third-party components, including the Arduino cores' source and relinking
+requirements, and does not grant rights in third-party code. It applies only
+to the combination described above and does not authorize combining
+OpenSmartTimer with other proprietary libraries.

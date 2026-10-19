@@ -1,0 +1,246 @@
+/* Bluetooth companion UI. The embedded timer stylesheet supplies the base
+ * components and both color themes; this file only adds PWA-specific layout. */
+
+html { min-width: 320px; }
+body { min-height: 100vh; }
+.app-source-links { text-align: center; font-size: 12px; padding: 12px 18px; color: var(--muted); }
+.app-source-links a { display: inline-block; padding: 12px 8px; color: inherit; }
+.shell { width: min(980px, calc(100% - 36px)); }
+
+.ble-connect-banner { margin-top: 13px; }
+.ble-icon svg {
+  width: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+.pairing-steps {
+  margin-top: 9px !important;
+  border-left: 2px solid var(--green);
+  padding-left: 10px;
+  color: var(--text) !important;
+}
+.connect-actions { justify-content: flex-end; }
+.connect-actions button { min-width: 104px; }
+
+/* Keep the dial in normal document flow with breathing room after the
+ * connection banner. This removes the earlier visual collision. */
+.ble-timer-workspace {
+  min-height: 0;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+.ble-timer-workspace .timer-center { margin: 0; }
+.ble-timer-workspace .timer-dial { width: min(100%, 425px); }
+
+.command-feedback {
+  display: grid;
+  width: min(100%, 520px);
+  gap: 4px;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 11px 13px;
+  background: var(--surface-raised);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .12);
+}
+.command-feedback strong { font-size: 12px; }
+.command-feedback span { color: var(--muted); font-size: 11px; line-height: 1.5; }
+.command-feedback.success { border-color: rgba(87, 229, 172, .3); background: rgba(87, 229, 172, .075); }
+.command-feedback.success strong { color: var(--green); }
+.command-feedback.error { border-color: rgba(255, 107, 129, .34); background: rgba(255, 107, 129, .08); }
+.command-feedback.error strong { color: var(--red); }
+.command-feedback.working { border-color: rgba(247, 199, 107, .3); background: rgba(247, 199, 107, .07); }
+.command-feedback.working strong { color: var(--amber); }
+
+.settings-connection-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.settings-connection-actions button { min-width: 0; padding-right: 8px; padding-left: 8px; font-size: 11px; }
+.settings-toggle {
+  min-height: 52px;
+  margin-top: 13px !important;
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+}
+.controller-section .forget-controller {
+  width: 100%;
+  min-height: 40px;
+  margin-top: 11px;
+  color: var(--red);
+}
+.activity-list {
+  display: grid;
+  max-height: 310px;
+  margin: 13px 0 0;
+  overflow-y: auto;
+  border-top: 1px solid var(--line);
+  padding: 0;
+  list-style: none;
+}
+.activity-list li {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding: 10px 0;
+}
+.activity-list li > span { display: grid; min-width: 0; gap: 3px; }
+.activity-list strong { font-size: 11px; }
+.activity-list small { overflow: hidden; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.activity-list time { flex: 0 0 auto; color: var(--muted); font-size: 10px; white-space: nowrap; }
+.activity-list .activity-empty { display: block; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.support-copy { min-height: 44px; margin-top: 11px; border: 1px solid var(--line); }
+.monospace-input {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12px !important;
+  letter-spacing: .03em;
+}
+.key-actions { grid-template-columns: 1fr auto; }
+.key-actions .quiet-action { min-width: 70px; }
+
+body:not(.dev-mode) .dev-only { display: none !important; }
+body.dev-mode .dev-only { display: block; }
+.settings-section summary {
+  min-height: 44px;
+  list-style: none;
+  cursor: pointer;
+}
+.settings-section summary::-webkit-details-marker { display: none; }
+.settings-section summary::marker { content: ""; }
+.settings-section summary h3 { margin-top: 3px; }
+.settings-section pre {
+  max-height: 280px;
+  margin: 10px 0 0;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--text);
+  background: var(--surface);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.log-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin: 8px 0 5px;
+}
+.log-actions button { min-height: 36px; padding: 6px 9px; }
+.log-list {
+  display: grid;
+  max-height: 340px;
+  margin: 0;
+  overflow-y: auto;
+  border-top: 1px solid var(--line);
+  padding: 0;
+  list-style: none;
+}
+.log-list li {
+  min-width: 0;
+  border-bottom: 1px solid var(--line);
+  padding: 8px 0;
+  color: var(--text);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.log-list .time { color: var(--muted); }
+.log-list .tag {
+  display: inline-block;
+  margin-right: 6px;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.log-list .tag.tx { color: var(--green); background: rgba(87, 229, 172, .12); }
+.log-list .tag.rx { color: var(--purple-bright); background: var(--purple-soft); }
+.log-list .tag.err { color: var(--red); background: rgba(255, 107, 129, .1); }
+.log-list .tag.info { color: var(--muted); background: rgba(127, 118, 132, .1); }
+.log-list .log-message { margin-right: 5px; }
+.log-list .hex { display: block; margin-top: 3px; color: var(--muted); }
+
+/* Match every custom PWA surface to the embedded UI's light palette. */
+html[data-theme="light"] .command-feedback {
+  background: rgba(255, 255, 255, .86);
+  box-shadow: 0 12px 30px rgba(var(--light-shadow-rgb, 66, 41, 75), .07);
+}
+html[data-theme="light"] .command-feedback.success { background: rgba(8, 127, 91, .07); }
+html[data-theme="light"] .command-feedback.error { background: rgba(201, 42, 69, .065); }
+html[data-theme="light"] .command-feedback.working { background: rgba(138, 91, 10, .07); }
+html[data-theme="light"] .settings-section pre {
+  border-color: var(--line);
+  color: var(--body-text-light, #493d4e);
+  background: var(--input-light, #f3edf6);
+}
+html[data-theme="light"] .log-list li { color: var(--body-text-light, #493d4e); }
+html[data-theme="light"] .pairing-steps { color: var(--body-text-light, #493d4e) !important; }
+
+@media (max-width: 680px) {
+  .shell { width: min(100% - 22px, 520px); }
+  .ble-connect-banner { margin-top: 12px; }
+  .ble-timer-workspace { padding-top: 26px; }
+  .connect-actions { grid-column: 1 / -1; width: 100%; }
+  .connect-actions button { flex: 1 1 0; }
+  .device-footer { grid-template-columns: 1fr 1fr; }
+  .device-footer .footer-actions { grid-column: 1 / -1; }
+  .device-footer .footer-actions button { width: 100%; }
+}
+
+@media (max-width: 430px) {
+  .brand-copy small { display: none; }
+  .ble-timer-workspace { padding-top: 23px; padding-bottom: 25px; }
+  .ble-timer-workspace .timer-dial { width: min(100%, 345px); }
+  .settings-connection-actions { grid-template-columns: 1fr 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+
+/* Timer settings over Bluetooth */
+.timer-settings-section h4 { margin: 22px 0 4px; font-size: 13px; }
+.settings-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.settings-actions button { flex: 1 1 140px; }
+.mgmt-apps { display: grid; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
+.mgmt-apps li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.mgmt-apps li strong { grid-column: 1; grid-row: 1; overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.mgmt-apps li span { grid-column: 1; grid-row: 2; color: var(--muted); font-size: 11px; }
+.mgmt-apps li button { grid-row: 1 / span 2; min-height: 44px; padding: 6px 10px; }
+.mgmt-apps li button:first-of-type { grid-column: 2; }
+.mgmt-apps li button:last-of-type { grid-column: 3; }
+#mgmtFirmwareProgress { width: 100%; margin-top: 12px; accent-color: var(--purple-bright); }
+.timer-settings-section > label:not(.check-row) { display: block; margin-top: 13px; color: var(--muted); font-size: 12px; font-weight: 650; }
+.timer-settings-section .check-row span { font-size: 12px; }
+.timer-settings-section button { font-size: 12px; }
+.timer-settings-section > button { display: block; width: 100%; margin-top: 10px; }
+.timer-settings-section input[type="file"] { padding: 9px; font-size: 12px; }
+#mgmtConfirm { max-height: calc(100dvh - 28px); overflow-y: auto; overflow-wrap: anywhere; transition: opacity .2s ease, transform .2s ease; }
+/* Inherited visibility must change immediately, including with reduced motion,
+   so opening/reopening the dialog can focus its field synchronously. */
+#mgmtConfirm * { transition-property: color, background-color, border-color, box-shadow; }
+#mgmtConfirmField label { display: block; margin: 16px 0 7px; color: var(--muted); font-size: 12px; }
+#mgmtConfirmName { width: 100%; min-height: 44px; border: 1px solid var(--line-strong); border-radius: 9px; padding: 10px 12px; color: var(--text); background: var(--bg); font: inherit; transition-property: border-color, box-shadow; }
+#mgmtConfirmName:focus-visible { outline: 2px solid var(--purple-bright); outline-offset: 2px; }
+#mgmtConfirmError { margin-top: 8px; }
+
+/* Saved timers: switch between timers this browser has paired with. */
+.saved-timers { margin-top: 12px; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; background: rgba(255, 255, 255, .025); }
+.saved-timers-settings { display: grid; gap: 8px; margin-top: 14px; }
+.saved-timer-list { display: grid; gap: 8px; margin: 8px 0 0; padding: 0; list-style: none; }
+.saved-timer { display: flex; align-items: center; gap: 10px; min-height: 48px; border: 1px solid var(--line); border-radius: 11px; padding: 8px 10px; }
+.saved-timer > div { display: grid; flex: 1 1 auto; gap: 2px; min-width: 0; }
+.saved-timer strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.saved-timer small { color: var(--muted); font-size: 12px; }
+.saved-timer .secondary { min-height: 36px; padding: 0 14px; }

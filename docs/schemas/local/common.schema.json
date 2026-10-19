@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/common.schema.json",
+  "title": "OpenSmartTimer local API — shared shapes",
+  "description": "Definitions referenced by every endpoint schema in this directory. Do not consume directly; consume via $ref from an endpoint schema.",
+  "$defs": {
+    "TimerState": {
+      "type": "string",
+      "enum": ["open", "running", "paused"]
+    },
+    "ReleaseReason": {
+      "type": "string",
+      "enum": ["boot", "expired", "user", "emergency", "adjusted_to_zero", "share_link_expired"],
+      "description": "Origin of the most recent transition to open state."
+    },
+    "WifiState": {
+      "type": "string",
+      "enum": ["standalone", "connecting", "connected", "failed", "disconnected", "disabled"],
+      "description": "disabled is V2 temporary Bluetooth-only mode: station and AP radios are off until resumed over authenticated BLE or restarted."
+    },
+    "WifiScanState": {
+      "type": "string",
+      "enum": ["idle", "scanning", "ready", "failed"]
+    },
+    "NetworkMode": {
+      "type": "string",
+      "enum": ["wifi", "ap", "bluetooth"],
+      "description": "wifi/ap reflects saved networking; bluetooth temporarily overrides it in RAM on V2. HTTP is unavailable while suspended; BLE management returns the shared JSON shapes."
+    },
+    "ApRole": {
+      "type": "string",
+      "enum": ["primary", "recovery", "off"]
+    },
+    "ApSecurity": {
+      "type": "string",
+      "enum": ["open", "wpa2"]
+    },
+    "HardwareModel": {
+      "type": "string",
+      "examples": ["MagBound Smart Timer V1", "MagBound Smart Timer V2"]
+    },
+    "ChipFamily": {
+      "type": "string",
+      "enum": ["ESP8266", "ESP32-C3"]
+    },
+    "BuildId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$",
+      "description": "Deterministic 96-bit source and target-configuration fingerprint. Use the release manifest SHA-256 when verifying the exact firmware artifact."
+    },
+    "BootId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{1,16}$",
+      "description": "Hex-encoded volatile identifier generated at boot. Not a secret. A changed value means the controller restarted."
+    },
+    "SessionId": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{1,16}-[0-9]+$",
+      "description": "Boot-scoped identity of the current or most recent session, or null before the first session of a boot. Format: <boot_id>-<counter>."
+    },
+    "MacAddress": {
+      "type": "string",
+      "pattern": "^[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}$"
+    },
+    "OperationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[\\x20-\\x7e]+$",
+      "description": "Printable ASCII, at most 64 chars. Firmware remembers the eight most recent successful IDs for the current boot."
+    },
+    "Mutation": {
+      "type": "object",
+      "description": "Present on every /api/v1/timer/* success response. Reports whether the request applied, was a no-op, or was an idempotent replay.",
+      "required": ["action", "changed", "duplicate"],
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["start", "release", "stop", "pause", "resume", "adjust", "lock_controls", "seal"]
+        },
+        "changed": { "type": "boolean" },
+        "duplicate": {
+          "type": "boolean",
+          "description": "true when a prior operation_id matched exactly and the request was returned from the deduplication cache."
+        },
+        "operation_id": {
+          "anyOf": [{ "$ref": "#/$defs/OperationId" }, { "type": "null" }],
+          "description": "The supplied operation ID, or null when the request omitted it. Request IDs themselves must be nonempty strings."
+        }
+      }
+    },
+    "EventType": {
+      "type": "string",
+      "enum": [
+        "boot", "started", "remaining_set", "paused", "resumed", "adjusted",
+        "controls_locked", "expired", "opened_by_user", "emergency_release",
+        "emergency_input_activated", "emergency_input_cleared",
+        "adjusted_to_zero", "wifi_connecting", "wifi_connected", "wifi_failed",
+        "wifi_standalone", "wifi_disconnected", "wifi_dhcp_timeout",
+        "ota_started", "ota_succeeded", "ota_failed",
+        "restart_requested", "device_renamed", "identify_started",
+        "access_point_configured", "bluetooth_pairing_started",
+        "bluetooth_pairing_completed", "bluetooth_pairing_revoked", "share_link_expired"
+      ]
+    },
+    "Event": {
+      "type": "object",
+      "required": ["id", "type", "at_ms", "value_ms", "state", "sealed", "emergency_input_active", "session_sequence"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Monotonic current-boot event id. Resets at boot."
+        },
+        "type": { "$ref": "#/$defs/EventType" },
+        "at_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Boot-relative timestamp in ms."
+        },
+        "value_ms": {
+          "type": "integer",
+          "description": "Relevant duration/remaining/delta/size; zero if not applicable. For wifi_disconnected, contains the raw SDK reason."
+        },
+        "state": {
+          "$ref": "#/$defs/TimerState",
+          "description": "Timer state captured when this event was recorded."
+        },
+        "sealed": {
+          "type": "boolean",
+          "description": "Control-lock state captured when this event was recorded."
+        },
+        "emergency_input_active": {
+          "type": "boolean",
+          "description": "Emergency input level captured when this event was recorded."
+        },
+        "bluetooth_app_id": { "type": "integer", "minimum": 0, "description": "V2 only: stable credential ID for BLE-originated events; zero for other origins." },
+        "via_share_link": { "type": "boolean", "description": "V2 only: whether a share-link command originated this event." },
+        "session_sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Boot-scoped timer-session counter captured when this event was recorded."
+        },
+        "wifi_disconnect_reason": { "type": "integer" },
+        "wifi_disconnect_reason_name": { "type": "string" },
+        "unexpected": { "type": "boolean" }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "required": ["error", "code"],
+      "additionalProperties": true,
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Human-readable message."
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Machine-readable error code. This is an extensible string, not a closed enum: clients must handle unknown codes using the HTTP status and readable error. Examples are representative, not exhaustive.",
+          "examples": [
+            "invalid_json", "invalid_body", "invalid_request",
+            "timer_active", "emergency_input_active", "controls_locked",
+            "operation_id_conflict", "stale_boot", "stale_session",
+            "invalid_duration", "invalid_random_range",
+            "maximum_duration_reached", "sse_client_limit",
+            "ota_in_progress", "ota_not_armed", "invalid_image",
+            "invalid_pin", "missing_fields", "storage_failed",
+            "wifi_scan_in_progress", "wifi_connect_in_progress",
+            "invalid_wifi_credentials", "wifi_disabled", "network_mode_busy",
+            "boot_validation_pending", "request_too_large", "ambiguous_request",
+            "duplicate_field", "invalid_field", "invalid_field_type",
+            "response_unavailable", "request_failed",
+            "bluetooth_unavailable", "bluetooth_storage_failed",
+            "not_found", "not_allowed", "internal_error"
+          ]
+        },
+        "state": { "$ref": "#/$defs/TimerState" },
+        "retry_after_ms": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "AccessPointSummary": {
+      "type": "object",
+      "required": ["ssid", "security", "password_set", "uses_device_name", "clients"],
+      "additionalProperties": false,
+      "properties": {
+        "ssid": { "type": "string", "maxLength": 32 },
+        "security": { "$ref": "#/$defs/ApSecurity" },
+        "password_set": { "type": "boolean" },
+        "uses_device_name": { "type": "boolean" },
+        "clients": { "type": "integer", "minimum": 0, "maximum": 4 }
+      }
+    },
+    "WifiNetwork": {
+      "type": "object",
+      "required": ["ssid", "rssi", "secure"],
+      "additionalProperties": true,
+      "properties": {
+        "ssid": { "type": "string", "maxLength": 32 },
+        "rssi": { "type": "integer", "description": "RSSI in dBm; typically negative." },
+        "secure": { "type": "boolean" }
+      }
+    }
+  }
+}

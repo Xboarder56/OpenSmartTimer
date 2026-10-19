@@ -1,0 +1,28 @@
+name: Bug report
+description: Report a reproducible firmware, app or relay problem.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Read SAFETY.md before testing hardware. Use an unloaded bench unit.
+        For vulnerabilities, use the private reporting route described in SECURITY.md.
+        Do not include live share links, controller keys, signing keys or databases.
+  - type: input
+    id: version
+    attributes:
+      label: Version and hardware
+      description: Firmware version/build ID, V1 or V2, and relevant app/browser/relay version.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Steps, expected behavior and actual behavior; use disposable test credentials.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Relevant evidence
+      description: Minimal logs or screenshots with credentials and personal details removed.

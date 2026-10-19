@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/timer-mutation-response.schema.json",
+  "title": "Response of every POST /api/v1/timer/* endpoint",
+  "description": "Every successful modern timer mutation returns the complete status object PLUS a mutation envelope. Clients should consume this response directly instead of issuing an immediate GET /api/v1/status.",
+  "allOf": [
+    { "$ref": "status.schema.json" },
+    {
+      "type": "object",
+      "required": ["mutation"],
+      "properties": {
+        "mutation": { "$ref": "common.schema.json#/$defs/Mutation" }
+      }
+    }
+  ]
+}

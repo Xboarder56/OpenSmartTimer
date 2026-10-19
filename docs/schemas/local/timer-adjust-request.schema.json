@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/timer-adjust-request.schema.json",
+  "title": "POST /api/v1/timer/adjust (request body)",
+  "description": "Signed adjustment. Reaching zero opens the timer. Leaving more than 24h remaining is rejected with 409 maximum_duration_reached.",
+  "type": "object",
+  "required": ["delta_ms"],
+  "additionalProperties": false,
+  "properties": {
+    "delta_ms": {
+      "type": "integer",
+      "description": "Signed delta in ms. Negative deducts, positive adds."
+    },
+    "operation_id": { "$ref": "common.schema.json#/$defs/OperationId" },
+    "if_boot_id":    { "$ref": "common.schema.json#/$defs/BootId" },
+    "if_session_id": { "$ref": "common.schema.json#/$defs/SessionId" }
+  }
+}

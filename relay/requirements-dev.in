@@ -1,0 +1,5 @@
+# Runtime constraints remain authoritative. Regenerate with:
+# uv pip compile --generate-hashes --output-file requirements-dev.lock requirements-dev.in
+-r requirements.lock
+pytest==9.1.1
+pytest-asyncio==1.4.0

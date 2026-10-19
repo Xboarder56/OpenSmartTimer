@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  V2 board front — numbered-callout overlay.
+  Coordinates are in the original 3024x4032 photo space. If any callout
+  looks off, nudge its transform="translate(x, y)" values in this file;
+  no image editing needed.
+  Callout numbers match the "V2 board layout" table in docs/HARDWARE.md.
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 3024 4032"
+     width="100%">
+  <image xlink:href="board-v2-front.jpg"
+         x="0" y="0" width="3024" height="4032"
+         preserveAspectRatio="xMidYMid slice"/>
+  <g font-family="Helvetica, Arial, sans-serif"
+     font-size="76" font-weight="800" text-anchor="middle">
+    <style>
+      .cs { fill: #ffd83d; stroke: #0a0a0a; stroke-width: 6; }
+      .ct { fill: #0a0a0a; }
+    </style>
+    <g transform="translate(400, 1970)">
+      <circle class="cs" r="45"/><text class="ct" y="26">1</text>
+    </g>
+    <g transform="translate(880, 1610)">
+      <circle class="cs" r="45"/><text class="ct" y="26">2</text>
+    </g>
+    <g transform="translate(880, 1780)">
+      <circle class="cs" r="45"/><text class="ct" y="26">3</text>
+    </g>
+    <g transform="translate(700, 2200)">
+      <circle class="cs" r="45"/><text class="ct" y="26">4</text>
+    </g>
+    <g transform="translate(1150, 1850)">
+      <circle class="cs" r="45"/><text class="ct" y="26">5</text>
+    </g>
+    <g transform="translate(1350, 1520)">
+      <circle class="cs" r="45"/><text class="ct" y="26">6</text>
+    </g>
+    <g transform="translate(1650, 1760)">
+      <circle class="cs" r="45"/><text class="ct" y="26">7</text>
+    </g>
+    <g transform="translate(1520, 2420)">
+      <circle class="cs" r="45"/><text class="ct" y="26">8</text>
+    </g>
+    <g transform="translate(2320, 2050)">
+      <circle class="cs" r="45"/><text class="ct" y="26">9</text>
+    </g>
+    <g transform="translate(2620, 1900)">
+      <circle class="cs" r="45"/><text class="ct" y="26">10</text>
+    </g>
+  </g>
+</svg>

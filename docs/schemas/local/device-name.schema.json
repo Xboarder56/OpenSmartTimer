@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/device-name.schema.json",
+  "title": "GET /api/v1/device/name",
+  "type": "object",
+  "required": ["name", "hostname", "ap_ssid", "ap_uses_device_name"],
+  "additionalProperties": false,
+  "properties": {
+    "name":                { "type": "string", "maxLength": 32 },
+    "hostname":            { "type": "string", "description": "mDNS hostname; served at <hostname>.local." },
+    "ap_ssid":             { "type": "string", "maxLength": 32 },
+    "ap_uses_device_name": { "type": "boolean" }
+  }
+}

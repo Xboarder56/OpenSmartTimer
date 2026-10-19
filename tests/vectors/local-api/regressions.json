@@ -1,0 +1,33 @@
+[
+  {
+    "name": "V2 BLE WifiStatus while Wi-Fi/AP is suspended",
+    "schema": "wifi-status",
+    "payload": {
+      "state": "disabled", "network_mode": "bluetooth", "wifi_suspend_supported": true,
+      "saved_ssid": "Example-IoT", "connected_ssid": "", "target_ssid": "",
+      "last_attempted_ssid": "Example-IoT", "rssi_dbm": 0, "station_ip": "",
+      "station_mac": "02:00:00:00:00:01", "last_error": "", "retry_in_ms": 0,
+      "station_retry_paused": false, "ap_running": false, "ap_role": "off",
+      "ap_ssid": "smarttimer-000001", "ap_clients": 0, "ap_security": "open",
+      "ap_password_set": false, "ap_uses_device_name": true
+    }
+  },
+  {
+    "name": "Mutation without an operation ID while Bluetooth-only",
+    "schema": "timer-mutation-response",
+    "payload": {
+      "state": "open", "remaining_ms": 0, "session_duration_ms": 0,
+      "api_version": "v1", "boot_id": "1234abcd", "session_id": null,
+      "build_id": "0123456789abcdef01234567", "chip_family": "ESP32-C3",
+      "wifi_state": "disabled", "network_mode": "bluetooth",
+      "station_connected": false, "ap_running": false, "ap_role": "off",
+      "share_link_limit_ms": null, "share_links_active": 0,
+      "mutation": {"action": "release", "changed": false, "duplicate": false, "operation_id": null}
+    }
+  },
+  {
+    "name": "OTA reservation response (preview deliberately does not arm OTA)",
+    "schema": "ota-prepare-response",
+    "payload": {"ready": true, "quiet_window_ms": 10000, "unverified_firmware_allowed": false}
+  }
+]

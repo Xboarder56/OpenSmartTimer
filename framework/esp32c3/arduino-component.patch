@@ -1,0 +1,13 @@
+diff --git a/idf_component.yml b/idf_component.yml
+index 63114725..67141093 100644
+--- a/idf_component.yml
++++ b/idf_component.yml
+@@ -48,7 +48,7 @@ dependencies:
+   idf: ">=5.3,<5.6"
+   # mdns 1.2.1 is necessary to build H2 with no WiFi
+   espressif/mdns:
+-    version: "^1.2.3"
++    version: "==1.8.2"
+     require: public
+   espressif/esp_modem:
+     version: "^1.1.0"

@@ -1,0 +1,34 @@
+{
+    auto_https off
+    admin off
+    servers {
+        timeouts {
+            read_header 10s
+            idle 2m
+        }
+    }
+}
+:8443 {
+    # Operator supplies a trusted certificate and controls key rotation.
+    tls /certs/fullchain.pem /certs/key.pem
+    request_body {
+        max_size 16KB
+    }
+    header {
+        defer
+        Referrer-Policy "no-referrer"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Cache-Control "no-store"
+    }
+    @public path / /assets/* /api/v1/* /setup /setup/* /owner /owner/*
+    handle @public {
+        reverse_proxy relay:8080 {
+            flush_interval -1
+        }
+    }
+    # /admin, /docs, /openapi.json and all other paths stay private.
+    handle {
+        respond "Not found" 404
+    }
+}

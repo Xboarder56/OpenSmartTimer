@@ -1,0 +1,69 @@
+/* Relay-only additions to timer-ui.css, an isolated copy of web/styles.css.
+ * Keep the local timer's dial, type, colors, rails and responsive breakpoints. */
+.relay-ui .shell { padding-bottom: 28px; }
+.stage-center { min-height: 440px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; text-align: center; }
+.stage-center p { max-width: 390px; color: var(--muted); line-height: 1.6; }
+.stage-center h2 { margin: 0; }
+.spinner { width: 34px; height: 34px; border: 3px solid var(--purple-soft); border-top-color: var(--purple-bright); border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.end-icon { font-size: 36px; color: var(--purple-bright); }
+/* The same bubble as the timer page's connection indicator. */
+.conn-pill { display: inline-flex; flex: 0 0 auto; align-items: center; min-height: 34px; margin-left: auto; border: 1px solid var(--line); border-radius: 99px; padding: 0 13px; color: var(--muted); background: rgba(255, 255, 255, .025); font-size: 12px; font-weight: 700; letter-spacing: .02em; text-transform: capitalize; white-space: nowrap; }
+html[data-theme="light"] .conn-pill { background: rgba(255, 255, 255, .76); }
+.conn-pill::before { display: inline-block; width: 7px; height: 7px; margin-right: 8px; border-radius: 50%; background: var(--amber); content: ""; }
+.conn-pill.online::before { background: var(--green); }
+.conn-pill.offline::before { background: var(--red); }
+.relay-ui .status-primary > span:last-child { white-space: normal; }
+.timer-workspace.no-adjust { grid-template-columns: 1fr; gap: 0; }
+.timer-workspace.no-adjust .timer-center { grid-column: 1 / -1; }
+.relay-ui .setup-actions { grid-template-columns: 1fr; }
+.relay-ui .duration-fields input { touch-action: auto; cursor: text; user-select: text; }
+.relay-ui .session-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.last-result { width: min(100%, 480px); margin: 12px 0 0; padding: 10px 14px; border-radius: 11px; font-size: 12px; line-height: 1.5; text-align: center; }
+.last-result.ok { color: var(--green); background: rgba(87, 229, 172, .09); }
+.last-result.err { color: var(--red); background: rgba(255, 107, 129, .09); }
+.last-result.pending { color: var(--muted); background: var(--surface); }
+.relay-ui .random-input input { touch-action: auto; cursor: text; user-select: text; }
+.relay-ui .brand { min-width: 0; }
+.relay-ui .brand-copy { min-width: 0; }
+.relay-ui .topbar { flex-wrap: nowrap; gap: 12px; }
+.relay-ui .brand { flex-basis: 0; }
+.settings-menu .settings-colors { margin-top: 18px; }
+.settings-menu .settings-colors > span { color: var(--muted); font-size: 12px; }
+.settings-menu .palette-options { margin-top: 8px; }
+.settings-menu .settings-actions { display: grid; gap: 8px; margin-top: 16px; border-top: 1px solid var(--line); padding-top: 16px; }
+.settings-menu .settings-actions button { width: 100%; }
+.card { margin: 0 0 18px; padding: 16px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); }
+.card-heading { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.card-heading h3 { margin: 0; font-size: 13px; }
+.advisory { max-width: 760px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.pending-list { list-style: none; margin: 14px 0 0; padding: 0; }
+.pending-list li { padding-top: 12px; overflow-wrap: anywhere; }
+.pending-list p { color: var(--muted); font-size: 12px; }
+.event-card { max-height: 300px; overflow: auto; }
+.event-list { display: flex; flex-direction: column; gap: 8px; padding: 0; list-style: none; }
+.event-list li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: baseline; gap: 12px; font-size: 12px; overflow-wrap: anywhere; }
+.event-tag { color: var(--purple-bright); }
+.event-time { color: var(--muted); font-variant-numeric: tabular-nums; }
+.relay-ui .device-footer { grid-template-columns: minmax(0, 1fr) auto auto; }
+.relay-ui .device-footer strong { overflow-wrap: anywhere; white-space: normal; line-height: 1.5; }
+.foot-expiry { font-variant-numeric: tabular-nums; }
+.foot-expiry.warn { color: var(--amber); }
+.foot-expiry.urgent { color: var(--red); }
+@media (max-width: 680px) {
+  .relay-ui .device-footer { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 430px) {
+  .relay-ui .topbar { gap: 8px; }
+  .relay-ui .session-actions { grid-template-columns: 1fr 1fr; }
+  .relay-ui #sealButton { grid-column: 1 / -1; }
+  .card-heading { flex-wrap: wrap; gap: 6px; }
+}
+/* Same as the timer page: the lock mark gives way only on the narrowest phones. */
+@media (max-width: 360px) {
+  .relay-ui .topbar .brand-mark { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+  *, *::before, *::after { transition: none !important; }
+}

@@ -1,0 +1,2 @@
+# Runtime dependencies are fully resolved with hashes in this lock.
+-r requirements.lock

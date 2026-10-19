@@ -1,0 +1,88 @@
+# Optional relay server for V2 hardware. One process/replica; local admin port only.
+services:
+  relay:
+    build:
+      context: ..
+      dockerfile: relay/Dockerfile
+    image: ostrelay:1.0.0-rc.2
+    restart: unless-stopped
+    init: true
+    # Admin page and API. Localhost only unless OSTRELAY_ADMIN_BIND names a
+    # LAN address of this host (OPERATOR.md section 3). Never 0.0.0.0 on a
+    # host with a public address.
+    ports: ["${OSTRELAY_ADMIN_BIND:-127.0.0.1}:${OSTRELAY_LOCAL_PORT:-8080}:8080"]
+    environment:
+      OSTRELAY_PUBLIC_URL: "${OSTRELAY_PUBLIC_URL:?HTTPS public URL required}"
+      OSTRELAY_ADMIN_TOKEN: "${OSTRELAY_ADMIN_TOKEN:?Generate an admin token}"
+      OSTRELAY_COOKIE_SECRET: "${OSTRELAY_COOKIE_SECRET:?Generate a cookie secret}"
+      # Empty: follow the publicly trusted certificate served at the public URL.
+      OSTRELAY_SPKI_PIN: "${OSTRELAY_SPKI_PIN:-}"
+      OSTRELAY_TLS_PROBE_ADDRESS: "${OSTRELAY_TLS_PROBE_ADDRESS:-}"
+      OSTRELAY_DB_PATH: "${OSTRELAY_DB_PATH:-/data/ostrelay.sqlite}"
+      OSTRELAY_PARTNER_ORIGIN: "${OSTRELAY_PARTNER_ORIGIN:?Independent trusted HTTPS partner origin required}"
+      OSTRELAY_LISTEN_HOST: 0.0.0.0
+      OSTRELAY_LISTEN_PORT: 8080
+      OSTRELAY_RATE_PER_SESSION_5MIN: "${OSTRELAY_RATE_PER_SESSION_5MIN:-300}"
+      OSTRELAY_RATE_PER_TIMER_5MIN: "${OSTRELAY_RATE_PER_TIMER_5MIN:-3000}"
+      OSTRELAY_RATE_SESSION_CREATES_PER_IP_1MIN: "${OSTRELAY_RATE_SESSION_CREATES_PER_IP_1MIN:-10}"
+      # owner_codes (default), open, or owner_codes,open. See OPERATOR.md section 3.
+      OSTRELAY_ENROLLMENT: "${OSTRELAY_ENROLLMENT:-owner_codes}"
+      OSTRELAY_LANDING_PAGE_ENABLED: "${OSTRELAY_LANDING_PAGE_ENABLED:-true}"
+      OSTRELAY_ADMIN_ENABLED: "${OSTRELAY_ADMIN_ENABLED:-true}"
+      OSTRELAY_MAX_ENROLLED_TIMERS: "${OSTRELAY_MAX_ENROLLED_TIMERS:-100}"
+      OSTRELAY_MAX_TIMERS_PER_OWNER: "${OSTRELAY_MAX_TIMERS_PER_OWNER:-10}"
+      OSTRELAY_RATE_OPEN_ENROLLMENTS_PER_IP_1H: "${OSTRELAY_RATE_OPEN_ENROLLMENTS_PER_IP_1H:-5}"
+      # Optional owner sign-in (OIDC). Empty issuer = no /owner portal; the
+      # operator hands out setup codes from the admin page instead.
+      OSTRELAY_OIDC_ISSUER: "${OSTRELAY_OIDC_ISSUER:-}"
+      OSTRELAY_OIDC_CLIENT_ID: "${OSTRELAY_OIDC_CLIENT_ID:-}"
+      OSTRELAY_OIDC_CLIENT_SECRET: "${OSTRELAY_OIDC_CLIENT_SECRET:-}"
+      OSTRELAY_OIDC_SCOPES: "${OSTRELAY_OIDC_SCOPES:-openid profile email}"
+      OSTRELAY_OIDC_SIGNING_ALG: "${OSTRELAY_OIDC_SIGNING_ALG:-RS256}"
+      OSTRELAY_OIDC_GROUPS_CLAIM: "${OSTRELAY_OIDC_GROUPS_CLAIM:-groups}"
+      OSTRELAY_OIDC_ALLOWED_GROUPS: "${OSTRELAY_OIDC_ALLOWED_GROUPS:-}"
+      OSTRELAY_OIDC_PROVIDER_NAME: "${OSTRELAY_OIDC_PROVIDER_NAME:-single sign-on}"
+      # Only the Caddy container's fixed address may supply X-Forwarded-For.
+      # Keep equal to OSTRELAY_CADDY_IP; set empty for a proxy outside Compose.
+      OSTRELAY_TRUSTED_PROXY_IPS: "${OSTRELAY_TRUSTED_PROXY_IPS-172.30.57.10}"
+    networks: [relaynet]
+    volumes: ["ostrelay-data:/data"]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 256m
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+  caddy:
+    profiles: [https]
+    image: caddy:2-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
+    restart: unless-stopped
+    ports: ["443:443"]
+    environment:
+      OSTRELAY_HOSTNAME: "${OSTRELAY_HOSTNAME:-localhost}"
+    volumes:
+      - ./ops/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./certs:/certs:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      relaynet:
+        ipv4_address: "${OSTRELAY_CADDY_IP:-172.30.57.10}"
+    depends_on:
+      relay: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+networks:
+  relaynet:
+    ipam:
+      config:
+        - subnet: "${OSTRELAY_NETWORK_SUBNET:-172.30.57.0/24}"
+volumes:
+  ostrelay-data:
+  caddy-data:
+  caddy-config:

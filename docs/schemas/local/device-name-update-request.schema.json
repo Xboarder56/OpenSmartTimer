@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/device-name-update-request.schema.json",
+  "title": "PUT /api/v1/device/name (request body)",
+  "description": "Timer must be open. Device restarts after responding.",
+  "type": "object",
+  "required": ["name"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[\\x20-\\x7e]+$",
+      "description": "1-32 printable ASCII (non-ASCII display names are not accepted by the identity record or hostname generator)."
+    }
+  }
+}

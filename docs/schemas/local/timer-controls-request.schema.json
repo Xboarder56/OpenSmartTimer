@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/timer-controls-request.schema.json",
+  "title": "POST /api/v1/timer/controls request",
+  "type": "object",
+  "minProperties": 1,
+  "additionalProperties": false,
+  "properties": {
+    "allow_pause": {
+      "type": "boolean"
+    },
+    "allow_control_lock": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,291 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/capabilities.schema.json",
+  "title": "GET /api/v1/capabilities",
+  "description": "Feature and limit discovery. Prefer this over inferring capabilities from firmware version strings.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "api_version",
+    "max_duration_ms",
+    "hardware_model",
+    "chip_family",
+    "build_id",
+    "features",
+    "limits",
+    "mutations",
+    "events"
+  ],
+  "properties": {
+    "api_version": {
+      "const": "v1"
+    },
+    "max_duration_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hardware_model": {
+      "$ref": "common.schema.json#/$defs/HardwareModel"
+    },
+    "chip_family": {
+      "$ref": "common.schema.json#/$defs/ChipFamily"
+    },
+    "build_id": {
+      "$ref": "common.schema.json#/$defs/BuildId"
+    },
+    "request_content_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        [
+          "application/x-www-form-urlencoded",
+          "application/json"
+        ]
+      ]
+    },
+    "features": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "description": "Boolean per feature flag. Documented flags include pause, adjust, adjust_operation_id, mutation_operation_id, session_id, session_precondition, boot_precondition, wifi_disconnect_diagnostics, station_mac, release_alias, event_cursor, mdns_discovery, random_duration, lock_controls, wifi_scan, wifi_async_scan, wifi_staged_credentials, device_name, identify_led, diagnostics, event_history, emergency_input_status, ap_configuration, ap_wpa2, sse, sse_opt_in, sse_ui_auto_connect, ota, legacy_api, bluetooth_low_energy, bluetooth_read_only, bluetooth_control, bluetooth_authenticated_control, bluetooth_notifications, bluetooth_peer_discovery, bluetooth_peer_control, bluetooth_bonding, bluetooth_command_integrity, bluetooth_physical_pairing, bluetooth_event_notifications, bluetooth_event_replay, bluetooth_pairing_commit, bluetooth_identify, bluetooth_system_information. Unknown flags may be added over time."
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "ap_clients": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sse_clients": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "sse": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "default_enabled": {
+          "type": "boolean"
+        },
+        "persistent": {
+          "type": "boolean"
+        },
+        "rest_fallback": {
+          "type": "boolean"
+        }
+      }
+    },
+    "mutations": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "operation_id_max_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deduplication_entries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scope": {
+          "const": "current_boot"
+        },
+        "boot_precondition_field": {
+          "type": "string"
+        },
+        "session_precondition_field": {
+          "type": "string"
+        }
+      }
+    },
+    "events": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "history_entries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cursor_parameter": {
+          "type": "string"
+        },
+        "boot_parameter": {
+          "type": "string"
+        }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "mdns_service": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        }
+      }
+    },
+    "ota": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "physical_arm_required": {
+          "type": "boolean"
+        },
+        "firmware_only": {
+          "type": "boolean"
+        },
+        "unverified_override": {
+          "type": "boolean"
+        },
+        "unverified_override_volatile": {
+          "type": "boolean"
+        },
+        "unverified_override_uploads": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "bluetooth": {
+      "type": "object",
+      "description": "Present on V2 only. Static Bluetooth capability descriptor.",
+      "additionalProperties": true,
+      "required": [
+        "protocol",
+        "mode",
+        "inbound_connections",
+        "controller_connections",
+        "capabilities_frame_bytes",
+        "command_frame_bytes",
+        "result_frame_bytes",
+        "status_frame_bytes",
+        "event_frame_bytes",
+        "event_history_entries",
+        "system_information_frame_bytes",
+        "system_information_uuid",
+        "required_control_mtu"
+      ],
+      "properties": {
+        "protocol": {
+          "const": "ost-ble/1"
+        },
+        "mode": {
+          "const": "bonded_authenticated_control"
+        },
+        "inbound_connections": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "controller_connections": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "approved_app_limit": {
+          "const": 3
+        },
+        "status_notifications_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "default_enabled": {
+          "type": "boolean"
+        },
+        "persistent_enable": {
+          "type": "boolean"
+        },
+        "control_volatile": {
+          "type": "boolean"
+        },
+        "control_authentication": {
+          "type": "string"
+        },
+        "command_integrity": {
+          "type": "string"
+        },
+        "capabilities_frame_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "command_frame_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "result_frame_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status_frame_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "event_frame_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "required_control_mtu": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "event_history_entries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "system_information_frame_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "system_information_uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "pairing_commit": {
+          "type": "string"
+        }
+      }
+    },
+    "updates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "configured",
+        "base_url",
+        "public_key",
+        "target",
+        "check_mode"
+      ],
+      "properties": {
+        "configured": {
+          "type": "boolean"
+        },
+        "base_url": {
+          "type": "string"
+        },
+        "public_key": {
+          "type": "string"
+        },
+        "target": {
+          "enum": [
+            "magbound_v1_esp8266",
+            "magbound_v2_esp32c3"
+          ]
+        },
+        "check_mode": {
+          "const": "manual_browser"
+        }
+      }
+    }
+  }
+}

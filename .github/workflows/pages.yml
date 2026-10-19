@@ -1,0 +1,84 @@
+name: Smart Timer web app
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+concurrency:
+  group: smart-timer-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: ${{ !github.event.release.draft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '24'
+      - name: Download the published release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          gh release download "$RELEASE_TAG" --dir dist/release \
+            --pattern 'OpenSmartTimer-*.bin' --pattern 'OpenSmartTimer-*.elf' --pattern BUILD.json \
+            --pattern SHA256SUMS --pattern CRC32SUMS --pattern release.json --pattern updates.json
+      - name: Verify the published files and their exact source commit
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          SOURCE_REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --require-hashes -r requirements-dev.txt
+          python3 scripts/release/release_metadata.py verify \
+            --tag "$RELEASE_TAG" --bundle dist/release \
+            --repository "$SOURCE_REPOSITORY" --revision "$(git rev-parse HEAD)"
+          python3 scripts/release/update_feed.py verify --bundle dist/release
+      - run: ./scripts/check.sh all
+      - name: Stage the signed update feed from published tagged releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/release/stage_published_updates.py \
+            --output dist/update-pages --downloads dist/update-downloads --app-tag-file dist/app-tag.txt
+          echo "APP_TAG=$(cat dist/app-tag.txt)" >> "$GITHUB_ENV"
+      - name: Check out the matching published companion source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ env.APP_TAG }}
+          path: dist/app-source
+      - name: Stage public assets only
+        env:
+          SOURCE_REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 dist/app-source/scripts/build/build_pages.py --output dist/pages \
+            --repository "$SOURCE_REPOSITORY" --revision "$(git -C dist/app-source rev-parse HEAD)"
+          cp -R dist/update-pages/updates dist/pages/updates
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist/pages
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

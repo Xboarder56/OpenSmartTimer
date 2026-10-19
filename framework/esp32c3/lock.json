@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "profile": "ost-esp32c3-v2",
+  "builder_repository": "https://github.com/espressif/esp32-arduino-lib-builder.git",
+  "builder_commit": "afa5cdd0d41d7e465d2e39867b24aef48b1c7b84",
+  "arduino_repository": "https://github.com/espressif/arduino-esp32.git",
+  "arduino_commit": "554de56f40e68d591b945bd1a8c931798e8a9167",
+  "esp_idf_repository": "https://github.com/espressif/esp-idf.git",
+  "esp_idf_commit": "b66b5448e0dfac6be135e6f0ac21010aba231180",
+  "tinyusb_repository": "https://github.com/hathach/tinyusb.git",
+  "tinyusb_commit": "8a78804ff91271fb32008288777fad9fe73f5735",
+  "builder_image": "espressif/esp32-arduino-lib-builder@sha256:23d161f96af7de40e62978291f5025db4070b47ac4426c2a4d70a82ed00ff504",
+  "source_date_epoch": 1753085401,
+  "package_version": "5.5.0+opensmarttimer.8",
+  "sdkconfig_sha256": "5896b0aefd9b62f05d198945316a405f0be844fd24c7f7cc613c56a956f3fcf6",
+  "dependencies_lock_sha256": "3a727372f63f8b11da71744f6d093a1651255fc3dd0e316c9c39edc46136c9ab",
+  "archive_sha256": "8145435fa3f0c38a83a934ddc7e34a0a0b82ca3529b6c0922430518860b2c43c"
+}

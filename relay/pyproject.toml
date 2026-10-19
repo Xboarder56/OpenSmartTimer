@@ -1,0 +1,43 @@
+[project]
+name = "ostrelay"
+version = "1.0.0-rc.2"
+description = "OpenSmartTimer ost-relay/1 reference relay"
+requires-python = ">=3.11"
+license = {text = "AGPL-3.0-only"}
+readme = "README.md"
+dependencies = [
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.30",
+    "websockets>=12",
+    "sse-starlette>=2.1",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "itsdangerous>=2.2",
+    "cryptography>=44",
+    "httpx>=0.27",
+    # Owner sign-in (optional OIDC): standard client, never a hand-rolled one.
+    "authlib>=1.7",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "httpx>=0.27",
+    "ruff>=0.5",
+]
+
+[project.scripts]
+ostrelay = "ostrelay.main:run"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+asyncio_mode = "auto"

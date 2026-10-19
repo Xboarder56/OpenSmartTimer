@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/timer-controls.schema.json",
+  "title": "GET and POST /api/v1/timer/controls",
+  "type": "object",
+  "required": [
+    "allow_pause",
+    "allow_control_lock"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "allow_pause": {
+      "type": "boolean",
+      "description": "Whether a running session may be paused."
+    },
+    "allow_control_lock": {
+      "type": "boolean",
+      "description": "Whether a session's software controls may be locked."
+    },
+    "recovered": {
+      "type": "boolean",
+      "description": "True when the saved switches could not be read back (or storage failed), so both were turned off until the owner saves them again."
+    }
+  }
+}

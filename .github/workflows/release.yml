@@ -1,0 +1,126 @@
+name: Draft firmware release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firmware-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-source:
+    name: Validate tag and changelog before building
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Require a matching version and release notes
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python -m pip install --require-hashes -r requirements-dev.txt
+          python3 scripts/release/release_metadata.py check --tag "$RELEASE_TAG"
+          python3 scripts/release/update_feed.py check-config
+
+      - name: Require the qualification record this tag needs
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Every published release reaches every timer. A prerelease may have
+          # pending checks, but the physical emergency check must have passed
+          # and nothing may have failed; a stable release needs every check.
+          if [[ "$RELEASE_TAG" == *-* ]]; then
+            python3 scripts/release/verify_qualification.py --allow-pending --release-candidate
+          else
+            python3 scripts/release/verify_qualification.py
+          fi
+
+  verified-build:
+    needs: release-source
+    uses: ./.github/workflows/ci.yml
+
+  draft:
+    name: Attach exact CI images to an unpublished draft
+    needs: verified-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: opensmarttimer-application-images
+          path: dist/release
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: opensmarttimer-source-materials
+          path: dist/source-materials
+      - name: Verify source materials checksum
+        working-directory: dist/source-materials
+        run: sha256sum --check SOURCE-SHA256SUMS
+      - name: Require the draft images to be the bench-qualified bytes
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$RELEASE_TAG" == *-* ]]; then
+            python3 scripts/release/verify_qualification.py --allow-pending --release-candidate --images dist/release
+          else
+            python3 scripts/release/verify_qualification.py --images dist/release
+          fi
+      - name: Verify artifacts and derive release metadata and notes
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          SOURCE_REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 scripts/release/release_metadata.py prepare \
+            --tag "$RELEASE_TAG" --bundle dist/release \
+            --repository "$SOURCE_REPOSITORY" --revision "$(git rev-parse HEAD)" \
+            --notes dist/RELEASE_NOTES.md
+      - name: Sign exact model images with the release key
+        env:
+          UPDATE_SIGNING_KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
+        run: |
+          python -m pip install --require-hashes -r requirements-dev.txt
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          import subprocess
+          key = os.environ.get('UPDATE_SIGNING_KEY', '')
+          if not key:
+              raise SystemExit('Set the UPDATE_SIGNING_KEY Actions secret before drafting a release.')
+          path = Path(os.environ['RUNNER_TEMP']) / 'timer-release-signing-key.pem'
+          fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+          try:
+              with os.fdopen(fd, 'w') as output:
+                  output.write(key)
+              subprocess.run(['python3', 'scripts/release/update_feed.py', 'sign', '--bundle', 'dist/release', '--private-key', str(path)], check=True)
+          finally:
+              path.unlink(missing_ok=True)
+          PY
+      - name: Create draft for human qualification and publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          flags=(--verify-tag --draft --title "OpenSmartTimer $RELEASE_TAG" --notes-file dist/RELEASE_NOTES.md)
+          if [[ "$RELEASE_TAG" == *-* ]]; then flags+=(--prerelease); fi
+          # gh refuses an existing release; never clobber a previously tested draft.
+          gh release create "$RELEASE_TAG" dist/release/* dist/source-materials/* "${flags[@]}"

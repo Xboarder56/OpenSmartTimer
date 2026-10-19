@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/wifi-status.schema.json",
+  "title": "GET /api/v1/wifi/status",
+  "description": "Detailed station/AP and provisioning state. Never returns a Wi-Fi password.",
+  "type": "object",
+  "required": ["state", "network_mode"],
+  "additionalProperties": true,
+  "properties": {
+    "state":                  { "$ref": "common.schema.json#/$defs/WifiState" },
+    "network_mode":           { "$ref": "common.schema.json#/$defs/NetworkMode" },
+    "wifi_suspend_supported": { "type": "boolean", "description": "V2 only: authenticated BLE management can temporarily disable Wi-Fi/AP. Absent on older firmware and V1; clients must require true before offering this action." },
+    "wifi_disconnect_restore_supported": { "type": "boolean", "description": "V2 only: temporary Bluetooth-only mode ends when Bluetooth disconnects or resets. A reconnect cannot cancel recovery. Absent on earlier firmware, where resume or restart is required." },
+    "saved_ssid":             { "type": "string" },
+    "connected_ssid":         { "type": "string" },
+    "target_ssid":            { "type": "string" },
+    "last_attempted_ssid":    { "type": "string" },
+    "rssi_dbm":               { "type": "integer" },
+    "station_ip":             { "type": "string" },
+    "station_mac":            { "$ref": "common.schema.json#/$defs/MacAddress" },
+    "last_error":             { "type": "string" },
+    "retry_in_ms":            { "type": "integer", "minimum": 0 },
+    "station_retry_paused":   { "type": "boolean" },
+    "ap_running":             { "type": "boolean" },
+    "ap_role":                { "$ref": "common.schema.json#/$defs/ApRole" },
+    "ap_ssid":                { "type": "string" },
+    "ap_clients":             { "type": "integer", "minimum": 0, "maximum": 4 },
+    "ap_security":            { "$ref": "common.schema.json#/$defs/ApSecurity" },
+    "ap_password_set":        { "type": "boolean" },
+    "ap_uses_device_name":    { "type": "boolean" }
+  }
+}

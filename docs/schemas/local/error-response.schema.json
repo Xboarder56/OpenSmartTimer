@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/error-response.schema.json",
+  "title": "Modern API JSON error response",
+  "$ref": "common.schema.json#/$defs/ErrorResponse"
+}

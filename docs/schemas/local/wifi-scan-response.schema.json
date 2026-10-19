@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/wifi-scan-response.schema.json",
+  "title": "GET or POST /api/v1/wifi/scan (response)",
+  "description": "POST starts an async scan; GET reads its current state and any completed result. Timer must be open. Empty networks[] in ready state means no networks were found.",
+  "type": "object",
+  "required": ["state", "networks"],
+  "additionalProperties": false,
+  "properties": {
+    "state": { "$ref": "common.schema.json#/$defs/WifiScanState" },
+    "retry_in_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Suggested delay before polling again."
+    },
+    "networks": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/WifiNetwork" }
+    }
+  }
+}

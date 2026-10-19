@@ -1,0 +1,39 @@
+{
+    auto_https disable_redirects
+    # Slow clients must not hold connections: bound header reads and idle
+    # keep-alive. No read_body/write timeout: /api/v1/watch (SSE) and the
+    # timer WebSocket stay open; the relay bounds bodies and writes itself.
+    servers {
+        timeouts {
+            read_header 10s
+            idle 2m
+        }
+    }
+    # Serve this site to TLS clients that send no SNI (for example an IP-only relay URL).
+    default_sni {$OSTRELAY_HOSTNAME}
+}
+{$OSTRELAY_HOSTNAME} {
+    # Operator supplies a trusted certificate and controls key rotation.
+    tls /certs/fullchain.pem /certs/key.pem
+    request_body {
+        max_size 16KB
+    }
+    header {
+        # Set after the upstream response so app protections are not duplicated.
+        defer
+        Referrer-Policy "no-referrer"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Cache-Control "no-store"
+    }
+    @public path / /assets/* /api/v1/* /setup /setup/* /owner /owner/*
+    handle @public {
+        reverse_proxy relay:8080 {
+            flush_interval -1
+        }
+    }
+    # /admin, /docs, /openapi.json and all other paths stay private.
+    handle {
+        respond "Not found" 404
+    }
+}

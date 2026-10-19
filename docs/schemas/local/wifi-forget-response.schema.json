@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/wifi-forget-response.schema.json",
+  "title": "POST /api/v1/wifi/forget (response body)",
+  "description": "Clears saved station credentials and returns to the configured setup AP. Does not erase AP configuration, device name, firmware, vendor filesystem, or OTA rollback allowlist.",
+  "type": "object",
+  "required": ["standalone"],
+  "additionalProperties": false,
+  "properties": {
+    "standalone": { "type": "boolean" }
+  }
+}

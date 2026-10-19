@@ -1,0 +1,57 @@
+// Actual WebCrypto client against the actual C++ firmware protocol endpoint.
+const assert = require('node:assert/strict');
+const {spawn} = require('node:child_process');
+const {createInterface} = require('node:readline');
+const {webcrypto} = require('node:crypto');
+Object.defineProperty(globalThis,'crypto',{value:webcrypto});
+const secure = require('../spa/e2e.js');
+const P256_N=0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551n;
+const processCpp = spawn(process.argv[2],[],{stdio:['pipe','pipe','inherit']});
+const pending = [];
+createInterface({input:processCpp.stdout}).on('line',line => pending.shift()(JSON.parse(line)));
+const call = (action,fields={}) => new Promise(resolve => {
+  pending.push(resolve);processCpp.stdin.write(JSON.stringify({action,...fields})+'\n');
+});
+(async () => {
+  const info = await call('inspect');
+  await call('connect');
+  await call('frame',{frame:{type:'challenge',server_nonce:'AAECAwQFBgcICQoLDA0ODw'}});
+  assert.deepEqual((await call('ack')).frames,[]);
+  const opened = await secure.open(info.wire);
+  assert(!JSON.stringify(opened.frame).includes(info.wire));
+  const frame = {type:'e2e_open',...opened.frame};
+  const accepted = (await call('frame',{frame})).frames[0];
+  assert.equal((await call('inspect')).signing_calls,1);
+  const repeated=(await call('frame',{frame})).frames[0];
+  assert.equal(repeated.sig,accepted.sig);
+  assert.equal(repeated.server_key,accepted.server_key);
+  assert.equal((await call('inspect')).signing_calls,1);
+  const unsigned={...accepted};delete unsigned.sig;
+  await assert.rejects(opened.accept(unsigned));
+  await assert.rejects(opened.accept({...accepted,sig:'A'.repeat(86)}));
+  const signature=Buffer.from(accepted.sig,'base64url');
+  const high=Buffer.concat([signature.subarray(0,32),Buffer.from(
+    (P256_N-BigInt('0x'+signature.subarray(32).toString('hex'))).toString(16).padStart(64,'0'),'hex')]);
+  await assert.rejects(opened.accept({...accepted,sig:high.toString('base64url')}));
+  await assert.rejects(opened.accept({...accepted,tag:'A'.repeat(43)}));
+  const channel = await opened.accept(accepted);
+  assert.equal(channel.tx.extractable,false);assert.equal(channel.rx.extractable,false);
+  const sync = await channel.encrypt({type:'sync',cap_token:info.wire},'browser-challenge');
+  const status = (await call('frame',{frame:sync})).frames[0];
+  await assert.rejects(channel.decrypt({...status,request_id:'forged'}));
+  const inner = await channel.decrypt(status);
+  assert.equal(inner.type,'status');
+  assert.deepEqual(Object.keys(inner).sort(),['body_json','type','upstream_seq']);
+  assert.equal(JSON.parse(inner.body_json).boot_id,'aabbccdd');
+  assert.equal(await channel.decrypt(status),null);
+  const command = await channel.encrypt({type:'command',cap_token:info.wire,op:'adjust',op_id:'browser-command',params:{delta_ms:1000},if_boot_id:'aabbccdd',if_session_id:'session-1',expiry_uptime_ms:6000},'browser-command');
+  const response = await call('frame',{frame:command});
+  assert.equal(response.applies,1);
+  const result = await channel.decrypt(response.frames[0]);
+  assert.equal(JSON.parse(result.body_json).code,'applied');
+  assert.equal((await call('frame',{frame:command})).applies,1);
+  assert.equal((await call('inspect')).signing_calls,1);
+  channel.close();
+  await assert.rejects(channel.encrypt({type:'sync'},'closed'));
+  console.log('WebCrypto/C++ handshake, encrypted status/result, tampering, replay and nonextractable keys passed');
+})().catch(error => {console.error(error);process.exitCode=1;}).finally(() => processCpp.stdin.end());

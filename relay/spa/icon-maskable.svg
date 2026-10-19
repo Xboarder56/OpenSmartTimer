@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Maskable icon: safe zone is the inner 80% (centered). The full
+     bleed is a solid brand color so OS mask shapes never expose the
+     transparent page behind. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Smart Timer">
+  <rect width="512" height="512" fill="#0b0710"/>
+  <g transform="translate(102 102) scale(0.605)">
+    <g fill="none" stroke="#c084fc" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M176 216V152a80 80 0 0 1 160 0v64"/>
+      <path d="M128 216h256v192H128z"/>
+    </g>
+    <circle cx="256" cy="316" r="28" fill="#c084fc"/>
+  </g>
+</svg>

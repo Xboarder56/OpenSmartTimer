@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/wifi-ap-update-request.schema.json",
+  "title": "PUT /api/v1/wifi/ap (request body)",
+  "description": "Change the generated/custom AP SSID and open/WPA2 security. Timer must be open. Response is sent before the device restarts.",
+  "type": "object",
+  "required": ["security"],
+  "additionalProperties": false,
+  "properties": {
+    "ssid": {
+      "type": "string",
+      "description": "1-32 printable ASCII. Ignored when use_device_name=true."
+    },
+    "security": { "$ref": "common.schema.json#/$defs/ApSecurity" },
+    "password": {
+      "type": "string",
+      "description": "New WPA2 password: 8-63 printable ASCII. Ignored for open security, or when keep_password=true and a saved password exists. Omit or send empty to reuse that password. Write-only."
+    },
+    "keep_password": {
+      "type": "boolean",
+      "description": "When true and security='wpa2', preserves the existing WPA2 password while other fields are updated."
+    },
+    "use_device_name": {
+      "type": "boolean",
+      "description": "When true, restore the generated <hostname>-<chip-id> SSID and ignore any supplied 'ssid'."
+    },
+    "standalone": {
+      "type": "boolean",
+      "description": "When true, atomically clear saved station credentials and restart in AP Mode after responding."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "use_device_name": { "const": true } }, "required": ["use_device_name"] },
+      "then": {},
+      "else": {
+        "required": ["ssid"],
+        "properties": { "ssid": { "minLength": 1, "maxLength": 32, "pattern": "^[\\x20-\\x7e]+$" } }
+      }
+    },
+    {
+      "if": { "properties": { "security": { "const": "wpa2" } }, "required": ["security"] },
+      "then": {
+        "anyOf": [
+          { "required": ["password"], "properties": { "password": { "minLength": 8, "maxLength": 63, "pattern": "^[\\x20-\\x7e]+$" } } },
+          { "required": ["keep_password"], "properties": { "keep_password": { "const": true } } }
+        ]
+      }
+    }
+  ]
+}

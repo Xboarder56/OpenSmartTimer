@@ -1,0 +1,22 @@
+Copyright (C) 2026 Xboarder56 and OpenSmartTimer contributors.
+
+Original OpenSmartTimer code is distributed under the GNU Affero General
+Public License version 3 only, with the additional Espressif linking permission
+in LICENSE-ESPRESSIF-EXCEPTION. The unmodified AGPL text is in LICENSE.
+
+This permission applies to original project code; it does not relicense
+third-party code or waive its obligations. Third-party license and attribution
+texts are in third-party/notices/, with pinned sources and file hashes in
+third-party/inventory.json. Read THIRD_PARTY_NOTICES.md for the component and
+source-material inventory. Vendor firmware/private development inputs are
+excluded from the source release.
+
+The software, firmware images and documentation are provided "as is", without
+warranty of any kind, and no author, contributor or distributor is liable for
+any damage, injury or death arising from their use. The assumption of risk,
+warranty disclaimer and limitation of liability in SAFETY.md apply in addition
+to sections 15 and 16 of the license, as additional terms under its section
+7(a). This firmware can control a device used to restrain a person; read
+SAFETY.md before installing, using or redistributing it. The license requires
+notices of the absence of warranty to stay intact; please keep this notice and
+SAFETY.md with any copy.

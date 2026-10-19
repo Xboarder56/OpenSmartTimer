@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/wifi-configure-request.schema.json",
+  "title": "POST /api/v1/wifi/configure (request body)",
+  "description": "Test-then-commit candidate station credentials. On success the setup AP closes ~1.5s after the first confirmed status response. Empty password is valid for open networks.",
+  "type": "object",
+  "required": ["ssid"],
+  "additionalProperties": false,
+  "properties": {
+    "ssid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32
+    },
+    "password": {
+      "type": "string",
+      "maxLength": 64,
+      "description": "May be empty string for open networks."
+    }
+  }
+}

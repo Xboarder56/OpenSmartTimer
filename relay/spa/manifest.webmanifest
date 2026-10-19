@@ -1,0 +1,25 @@
+{
+  "name": "Smart Timer",
+  "short_name": "Smart Timer",
+  "description": "Bounded partner access to an Smart Timer session.",
+  "start_url": "/s/",
+  "scope": "/s/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0710",
+  "theme_color": "#0b0710",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

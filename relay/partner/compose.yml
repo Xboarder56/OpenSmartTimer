@@ -1,0 +1,23 @@
+# Separate bench service. Production must use a separate host/account whose
+# deployment credentials and TLS key cannot be reached from the relay host.
+services:
+  partner:
+    image: caddy:2-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
+    restart: unless-stopped
+    ports: ["8444:8444"]
+    environment:
+      OSTPARTNER_HOSTNAME: "${OSTPARTNER_HOSTNAME:?Trusted client hostname required}"
+      OSTPARTNER_RELAY_ORIGIN: "${OSTPARTNER_RELAY_ORIGIN:?Allowed HTTPS relay origin required}"
+    volumes:
+      - ../spa:/srv/partner:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${OSTPARTNER_CERT_DIR:?Client TLS certificate directory required}:/certs:ro
+    read_only: true
+    tmpfs: [/data, /config, /tmp]
+    cap_drop: [ALL]
+    # The pinned Caddy binary carries this file capability; Linux requires it
+    # in the bounding set even when our listener uses an unprivileged port.
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    mem_limit: 64m

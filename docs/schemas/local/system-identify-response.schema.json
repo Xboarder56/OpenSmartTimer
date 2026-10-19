@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/system-identify-response.schema.json",
+  "title": "POST /api/v1/system/identify (response body)",
+  "description": "Rapidly blinks the blue LED for the reported duration. Requires an open timer.",
+  "type": "object",
+  "required": ["identifying", "duration_ms"],
+  "additionalProperties": false,
+  "properties": {
+    "identifying": { "type": "boolean" },
+    "duration_ms": { "type": "integer", "minimum": 0 }
+  }
+}

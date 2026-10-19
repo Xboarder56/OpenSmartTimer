@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/wifi-ap-update-response.schema.json",
+  "title": "PUT /api/v1/wifi/ap (response body)",
+  "type": "object",
+  "required": ["updated", "restarting", "ap_ssid", "ap_security"],
+  "additionalProperties": false,
+  "properties": {
+    "updated":    { "type": "boolean" },
+    "restarting": { "type": "boolean", "description": "Device restarts after this response." },
+    "ap_ssid":    { "type": "string", "maxLength": 32 },
+    "ap_security":{ "$ref": "common.schema.json#/$defs/ApSecurity" },
+    "standalone": { "type": "boolean", "description": "True when the request also cleared saved station credentials." }
+  }
+}

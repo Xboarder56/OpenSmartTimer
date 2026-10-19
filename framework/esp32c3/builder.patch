@@ -1,0 +1,48 @@
+diff --git a/build.sh b/build.sh
+index 50e376c..3b8e444 100755
+--- a/build.sh
++++ b/build.sh
+@@ -47,7 +47,7 @@ function print_help() {
+     exit 1
+ }
+ 
+-while getopts ":A:I:i:c:t:b:D:sde" opt; do
++while getopts ":A:I:i:c:t:b:D:nsde" opt; do
+     case ${opt} in
+         s )
+             SKIP_ENV=1
+@@ -215,6 +215,12 @@ for target_json in `jq -c '.targets[]' configs/builds.json`; do
+         main_configs="$main_configs;configs/defconfig.$defconf"
+     done
+ 
++    # Apply named product profiles to every generated library, bootloader,
++    # and memory variant in the target package.
++    for conf in $CONFIGS; do
++        main_configs="$main_configs;configs/defconfig.$conf"
++    done
++
+     # Build IDF Libs
+     idf_libs_configs="$main_configs"
+     for defconf in `echo "$target_json" | jq -c '.idf_libs[]' | tr -d '"'`; do
+diff --git a/main/idf_component.yml b/main/idf_component.yml
+index 4ba96d8..b33b39a 100644
+--- a/main/idf_component.yml
++++ b/main/idf_component.yml
+@@ -7,17 +7,7 @@ dependencies:
+     require: public
+     rules:
+       - if: "target in [esp32, esp32s2, esp32s3]"
+-  espressif/esp-tflite-micro:
+-    version: ">=1.2.0"
+-    require: public
+-    rules:
+-      - if: "target not in [esp32c2]"
+   espressif/esp-sr:
+     version: ">=1.4.2"
+     rules:
+       - if: "target in [esp32s3]"
+-  espressif/esp_matter:
+-    version: "1.4.1"
+-    require: public
+-    rules:
+-      - if: "target not in [esp32c2, esp32p4]"

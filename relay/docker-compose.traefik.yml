@@ -1,0 +1,55 @@
+# Example: publish the relay through a Traefik instance you already run,
+# instead of the bundled Caddy profile. Use it as an override:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.traefik.yml up -d --build --wait
+#
+# Do not add `--profile https`; Traefik terminates TLS here. Read OPERATOR.md
+# section 2 ("Behind Traefik") first. Leave OSTRELAY_SPKI_PIN empty: the relay
+# follows the certificate Traefik serves, including renewals.
+#
+# Set in .env, next to the values docker-compose.yml already needs:
+#   OSTRELAY_TRAEFIK_NETWORK     name of the Docker network Traefik watches
+#   OSTRELAY_TRAEFIK_IP          Traefik's own address on that network
+#   OSTRELAY_TRAEFIK_ENTRYPOINT  HTTPS entrypoint name (default: websecure)
+#   OSTRELAY_TLS_PROBE_ADDRESS   only if the relay cannot reach its own public
+#                                address, e.g. traefik:443
+services:
+  relay:
+    environment:
+      # Only Traefik may supply X-Forwarded-For. Give Traefik a fixed address
+      # on the shared network; a wrong value here either drops the client
+      # address or lets any container on that network forge it.
+      OSTRELAY_TRUSTED_PROXY_IPS: "${OSTRELAY_TRAEFIK_IP:?Set Traefik's address on the shared network}"
+    networks: [relaynet, traefik]
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "${OSTRELAY_TRAEFIK_NETWORK:?Set the Docker network Traefik watches}"
+      # Only the public paths. /admin, /docs and /openapi.json match no router
+      # and stay reachable solely on the local admin port.
+      traefik.http.routers.ostrelay.rule: >-
+        Host(`${OSTRELAY_HOSTNAME:?Set the relay hostname}`) && (
+        Path(`/`) || PathPrefix(`/assets/`) || PathPrefix(`/api/v1/`) ||
+        Path(`/setup`) || PathPrefix(`/setup/`) ||
+        Path(`/owner`) || PathPrefix(`/owner/`))
+      traefik.http.routers.ostrelay.entrypoints: "${OSTRELAY_TRAEFIK_ENTRYPOINT:-websecure}"
+      traefik.http.routers.ostrelay.tls: "true"
+      # Uncomment to let Traefik obtain and renew the certificate.
+      # traefik.http.routers.ostrelay.tls.certresolver: letsencrypt
+      traefik.http.routers.ostrelay.middlewares: ostrelay-headers
+      traefik.http.routers.ostrelay.service: ostrelay
+      traefik.http.services.ostrelay.loadbalancer.server.port: "8080"
+      # Timer WebSockets and browser event streams are long-lived: forward
+      # each write at once instead of batching it.
+      traefik.http.services.ostrelay.loadbalancer.responseforwarding.flushinterval: "-1ms"
+      traefik.http.middlewares.ostrelay-headers.headers.referrerPolicy: no-referrer
+      traefik.http.middlewares.ostrelay-headers.headers.contentTypeNosniff: "true"
+      traefik.http.middlewares.ostrelay-headers.headers.frameDeny: "true"
+      traefik.http.middlewares.ostrelay-headers.headers.customResponseHeaders.Cache-Control: no-store
+      # To keep enrollment and owner sign-in off the Internet, split the rule
+      # into two routers: `/api/v1/` on the public entrypoint, and the `/`,
+      # `/assets/`, `/setup` and `/owner` paths on an internal-only entrypoint.
+
+networks:
+  traefik:
+    name: "${OSTRELAY_TRAEFIK_NETWORK:?Set the Docker network Traefik watches}"
+    external: true

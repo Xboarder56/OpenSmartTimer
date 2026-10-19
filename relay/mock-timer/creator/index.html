@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer"><title>Smart Timer</title>
+<link rel="stylesheet" href="/assets/timer-ui.css"><link rel="stylesheet" href="/assets/app.css"><link rel="stylesheet" href="/assets/owner.css"></head>
+<body class="relay-ui"><div class="ambient ambient-one" aria-hidden="true"></div><div class="ambient ambient-two" aria-hidden="true"></div>
+<main class="shell"><header class="topbar"><div class="brand"><span class="brand-copy"><strong>Smart Timer</strong><small>Share with your partner</small></span></div><button id="theme" class="btn secondary" type="button">Light mode</button></header>
+<section class="status-strip"><span id="connection">Connecting to timer…</span><span class="conn-pill">Development preview</span></section>
+<section class="creator-card"><h1>Create a partner link</h1><p>Choose how long your partner can access this timer. The time starts when you generate the link.</p>
+<p id="sharingUnavailable" class="hint" role="status">Connect the timer to the network and relay to share.</p>
+<form id="createForm"><fieldset id="shareControls" disabled aria-describedby="sharingUnavailable"><label for="lifetime">Link time limit</label><div class="lifetime-row"><input id="lifetime" type="number" min="1" max="1440" step="1" value="60" required><span>minutes</span></div><p class="hint">Up to 24 hours. Your partner can use all timer controls while the link is valid. Existing timer rules still apply.</p>
+<label for="label">Link name <span class="hint">(optional)</span></label><input id="label" maxlength="23" placeholder="Partner"><button id="generate" class="btn primary" type="submit" disabled>Generate link</button></fieldset></form>
+<p id="message" role="status" aria-live="polite"></p></section>
+<section class="creator-card"><h2>Your links</h2><p class="hint">Copy a link once it is ready. You can revoke it at any time. Restarting the timer ends these links.</p><div id="links"></div></section>
+</main><script src="/assets/owner.js" defer></script></body></html>

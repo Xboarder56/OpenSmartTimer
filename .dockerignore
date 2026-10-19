@@ -1,0 +1,25 @@
+# Explicit public build inputs only. Personal configuration, source captures,
+# certificates, caches and bench material must never enter the build context.
+**
+!LICENSE
+!LICENSE-ESPRESSIF-EXCEPTION
+!NOTICE
+!THIRD_PARTY_NOTICES.md
+!third-party/
+!third-party/inventory.json
+!third-party/source-inputs.json
+!third-party/notices/
+!third-party/notices/**
+!relay/
+!relay/Dockerfile
+!relay/pyproject.toml
+!relay/requirements.lock
+!relay/README.md
+!relay/src/
+!relay/src/**
+!relay/spa/
+!relay/spa/**
+!relay/ops/
+!relay/ops/database.py
+**/__pycache__/**
+**/*.pyc

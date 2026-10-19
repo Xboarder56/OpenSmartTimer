@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/status.schema.json",
+  "title": "GET /api/v1/status",
+  "description": "Compact timer/device/network snapshot. Also the payload of every SSE frame at /api/v1/events/stream (as the frame's data field), and the base object every /api/v1/timer/* mutation response extends.",
+  "type": "object",
+  "required": [
+    "state",
+    "remaining_ms",
+    "boot_id",
+    "api_version",
+    "build_id"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "state": {
+      "$ref": "common.schema.json#/$defs/TimerState"
+    },
+    "remaining_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "session_duration_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sealed": {
+      "type": "boolean"
+    },
+    "pause_allowed": {
+      "type": "boolean",
+      "description": "False when the owner has switched pause off."
+    },
+    "control_lock_allowed": {
+      "type": "boolean",
+      "description": "False when the owner has switched control locking off."
+    },
+    "share_link_limit_ms": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Remaining session share-link hold limit, or null when no limit applies."
+    },
+    "share_links_active": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Present when the relay is compiled in; number of live share links."
+    },
+    "emergency_input_active": {
+      "type": "boolean"
+    },
+    "max_duration_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "api_version": {
+      "const": "v1"
+    },
+    "version": {
+      "type": "string",
+      "description": "Firmware version string."
+    },
+    "device_id": {
+      "type": "string"
+    },
+    "hardware_model": {
+      "$ref": "common.schema.json#/$defs/HardwareModel"
+    },
+    "chip_family": {
+      "$ref": "common.schema.json#/$defs/ChipFamily"
+    },
+    "build_id": {
+      "$ref": "common.schema.json#/$defs/BuildId"
+    },
+    "boot_id": {
+      "$ref": "common.schema.json#/$defs/BootId"
+    },
+    "session_id": {
+      "$ref": "common.schema.json#/$defs/SessionId"
+    },
+    "state_revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "latest_event_id": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "device_name": {
+      "type": "string",
+      "maxLength": 32
+    },
+    "hostname": {
+      "type": "string"
+    },
+    "uptime_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "server_time_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "last_release_reason": {
+      "$ref": "common.schema.json#/$defs/ReleaseReason"
+    },
+    "ap_ssid": {
+      "type": "string",
+      "maxLength": 32
+    },
+    "network_mode": {
+      "$ref": "common.schema.json#/$defs/NetworkMode"
+    },
+    "ap_running": {
+      "type": "boolean"
+    },
+    "ap_role": {
+      "$ref": "common.schema.json#/$defs/ApRole"
+    },
+    "ap_clients": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "ap_security": {
+      "$ref": "common.schema.json#/$defs/ApSecurity"
+    },
+    "ap_password_set": {
+      "type": "boolean"
+    },
+    "ap_uses_device_name": {
+      "type": "boolean"
+    },
+    "ota_armed": {
+      "type": "boolean"
+    },
+    "ota_armed_remaining_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ota_unverified_allowed": {
+      "type": "boolean"
+    },
+    "identifying": {
+      "type": "boolean"
+    },
+    "station_connected": {
+      "type": "boolean"
+    },
+    "station_ip": {
+      "type": "string"
+    },
+    "station_mac": {
+      "$ref": "common.schema.json#/$defs/MacAddress"
+    },
+    "connected_ssid": {
+      "type": "string"
+    },
+    "saved_ssid": {
+      "type": "string"
+    },
+    "target_ssid": {
+      "type": "string"
+    },
+    "last_attempted_ssid": {
+      "type": "string"
+    },
+    "wifi_state": {
+      "$ref": "common.schema.json#/$defs/WifiState"
+    },
+    "rssi_dbm": {
+      "type": "integer"
+    },
+    "last_wifi_error": {
+      "type": "string"
+    },
+    "retry_in_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "station_retry_paused": {
+      "type": "boolean"
+    }
+  }
+}

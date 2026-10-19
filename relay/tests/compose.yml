@@ -1,0 +1,47 @@
+# stack_check.py always supplies a unique project and temporary environment.
+services:
+  relay:
+    build:
+      context: ../..
+      dockerfile: relay/Dockerfile
+    image: ostrelay-test:1.0.0-rc.2
+    init: true
+    ports: ["127.0.0.1::8080"]
+    environment:
+      OSTRELAY_PUBLIC_URL: "https://localhost:${OSTRELAY_TEST_PORT}"
+      OSTRELAY_PARTNER_ORIGIN: "https://localhost:${OSTPARTNER_TEST_PORT}"
+      OSTRELAY_ADMIN_TOKEN: "${OSTRELAY_TEST_ADMIN}"
+      OSTRELAY_COOKIE_SECRET: "${OSTRELAY_TEST_COOKIE}"
+      OSTRELAY_SPKI_PIN: "${OSTRELAY_TEST_PIN}"
+      OSTRELAY_DB_PATH: "${OSTRELAY_TEST_DB_PATH:-/data/ostrelay.sqlite}"
+    volumes: ["test-data:/data"]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+  caddy:
+    image: caddy:2-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
+    ports: ["127.0.0.1:${OSTRELAY_TEST_PORT}:8443"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${OSTRELAY_TEST_CERT_DIR}:/certs:ro
+    depends_on:
+      relay: {condition: service_healthy}
+  partner:
+    image: caddy:2-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
+    ports: ["127.0.0.1:${OSTPARTNER_TEST_PORT}:8444"]
+    environment:
+      OSTPARTNER_HOSTNAME: localhost
+      OSTPARTNER_RELAY_ORIGIN: "https://localhost:${OSTRELAY_TEST_PORT}"
+    volumes:
+      - ../partner/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../spa:/srv/partner:ro
+      - ${OSTPARTNER_TEST_CERT_DIR}:/certs:ro
+    read_only: true
+    tmpfs: [/data, /config, /tmp]
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: [no-new-privileges:true]
+volumes:
+  test-data:

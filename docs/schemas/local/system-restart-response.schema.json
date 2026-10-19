@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/system-restart-response.schema.json",
+  "title": "POST /api/v1/system/restart (response body)",
+  "description": "Restart is performed after the HTTP response returns. Requires an open timer.",
+  "type": "object",
+  "required": ["restarting"],
+  "additionalProperties": false,
+  "properties": {
+    "restarting": { "type": "boolean" }
+  }
+}

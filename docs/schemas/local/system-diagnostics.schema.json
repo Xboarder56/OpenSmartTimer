@@ -1,0 +1,326 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/system-diagnostics.schema.json",
+  "title": "GET /api/v1/system/diagnostics",
+  "description": "Bounded support/health information. lock_output_energized is the firmware's commanded logical state, not electrical feedback. emergency_input_active is the live input level, not proof the external accessory switch is mechanically healthy. All wifi_*_count fields and Wi-Fi timestamps are volatile and reset at boot.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "uptime_ms",
+    "hardware_model",
+    "chip_family",
+    "build_id"
+  ],
+  "properties": {
+    "http_response_completed_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "V1 only. Current-boot replies fully queued to TCP; not proof of peer receipt."
+    },
+    "http_response_failed_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "V1 only. Current-boot replies aborted before completion."
+    },
+    "http_response_last_failure": {
+      "type": "string",
+      "description": "V1 only. Last failure reason, or none since boot."
+    },
+    "uptime_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reset_reason": {
+      "type": "string",
+      "description": "Current-boot ROM/SDK reset reason."
+    },
+    "hardware_model": {
+      "$ref": "common.schema.json#/$defs/HardwareModel"
+    },
+    "chip_family": {
+      "$ref": "common.schema.json#/$defs/ChipFamily"
+    },
+    "build_id": {
+      "$ref": "common.schema.json#/$defs/BuildId"
+    },
+    "free_heap_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "minimum_observed_free_heap_bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "V1: lowest free heap observed by the application. V2: ESP-IDF sum of each internal heap region's independent since-boot low watermark, which may be lower than any simultaneous global minimum. A small V2 value alone does not prove whole-device heap exhaustion."
+    },
+    "max_free_block_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "heap_fragmentation_percent": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "sketch_size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "free_sketch_space_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "flash_size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "flash_layout": {
+      "type": "string",
+      "examples": [
+        "4M/2M OTA",
+        "4M/1.25M OTA"
+      ]
+    },
+    "sse_clients": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sse_client_limit": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sse_accepted_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sse_closed_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sse_last_close_reason": {
+      "type": "string",
+      "examples": [
+        "peer_closed",
+        "ota_quiet",
+        "header_timeout",
+        "write_timeout"
+      ]
+    },
+    "sdk_version": {
+      "type": "string"
+    },
+    "wifi_state": {
+      "$ref": "common.schema.json#/$defs/WifiState"
+    },
+    "wifi_channel": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "status_json_failure_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "wifi_power_save_mode": {
+      "type": "string",
+      "enum": [
+        "none",
+        "light",
+        "min_modem",
+        "max_modem",
+        "unknown"
+      ]
+    },
+    "wifi_sa_query_timeout_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "wifi_last_disconnect_rssi_dbm": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "station_mac": {
+      "$ref": "common.schema.json#/$defs/MacAddress"
+    },
+    "rssi_dbm": {
+      "type": "integer"
+    },
+    "ap_clients": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "station_retry_paused": {
+      "type": "boolean"
+    },
+    "station_retry_in_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "wifi_connect_attempt_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "wifi_disconnect_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Includes deliberate firmware disconnects during config or AP-mode transitions."
+    },
+    "wifi_unexpected_disconnect_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Excludes expected transitions."
+    },
+    "wifi_dhcp_timeout_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "wifi_last_disconnect_reason": {
+      "type": "integer"
+    },
+    "wifi_last_disconnect_reason_name": {
+      "type": "string"
+    },
+    "wifi_last_disconnect_expected": {
+      "type": "boolean"
+    },
+    "wifi_last_disconnect_at_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "wifi_last_connected_at_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "wifi_connected_duration_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "lock_output_energized": {
+      "type": "boolean"
+    },
+    "emergency_input_active": {
+      "type": "boolean"
+    },
+    "event_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "bluetooth_initialized": {
+      "type": "boolean",
+      "description": "V2 only."
+    },
+    "bluetooth_enabled": {
+      "type": "boolean",
+      "description": "V2 only."
+    },
+    "bluetooth_configured_enabled": {
+      "type": "boolean",
+      "description": "V2 only."
+    },
+    "bluetooth_paired": {
+      "type": "boolean",
+      "description": "V2 only."
+    },
+    "bluetooth_synchronized": {
+      "type": "boolean",
+      "description": "V2 only."
+    },
+    "bluetooth_advertising": {
+      "type": "boolean",
+      "description": "V2 only."
+    },
+    "bluetooth_connections": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "V2 only."
+    },
+    "bluetooth_connection_limit": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "V2 only."
+    },
+    "bluetooth_last_error": {
+      "type": "integer",
+      "description": "V2 only."
+    },
+    "bluetooth_last_error_name": {
+      "type": "string",
+      "description": "V2 only. Stable human-readable classification of bluetooth_last_error."
+    },
+    "bluetooth_connection_rssi_dbm": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "V2 only. null when no connected phone."
+    },
+    "bluetooth_connection_mtu": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "V2 only."
+    },
+    "bluetooth_connection_encrypted": {
+      "type": "boolean",
+      "description": "V2 only."
+    },
+    "bluetooth_connection_bonded": {
+      "type": "boolean",
+      "description": "V2 only."
+    },
+    "bluetooth_control_enabled": {
+      "type": "boolean",
+      "description": "V2 only."
+    },
+    "bluetooth_control_authenticated": {
+      "type": "boolean",
+      "description": "V2 only."
+    },
+    "bluetooth_control_authentication_failure_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "V2 only."
+    },
+    "bluetooth_authentication_backoff_remaining_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "V2 only."
+    },
+    "bluetooth_control_command_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "V2 only."
+    },
+    "bluetooth_control_last_result": {
+      "type": "string",
+      "description": "V2 only."
+    },
+    "bluetooth_connection_mtu_sufficient": {
+      "type": "boolean",
+      "description": "V2 only."
+    },
+    "bluetooth_bond_cleanup_pending": {
+      "type": "boolean",
+      "description": "V2 only."
+    },
+    "bluetooth_bond_cleanup_last_error": {
+      "type": "integer",
+      "description": "V2 only."
+    },
+    "session_controls_recovered": {
+      "type": "boolean"
+    },
+    "loop_stall": {
+      "type": "object",
+      "required": ["longest_ms", "phase", "uri", "uptime_ms", "over_1s_count"],
+      "additionalProperties": false,
+      "properties": {
+        "longest_ms": {"type": "integer", "minimum": 0},
+        "phase": {"type": "string"},
+        "uri": {"type": "string", "maxLength": 19},
+        "uptime_ms": {"type": "integer", "minimum": 0},
+        "over_1s_count": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

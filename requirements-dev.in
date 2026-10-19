@@ -1,0 +1,7 @@
+# Source checks only. Regenerate requirements-dev.txt with:
+# uv pip compile --universal --python-version 3.12 --generate-hashes --output-file requirements-dev.txt requirements-dev.in
+# (--universal keeps CI's Python 3.12 installable when the lock is refreshed on a newer local Python.)
+jsonschema==4.23.0
+referencing==0.36.2
+cryptography==50.0.1
+PyYAML==6.0.3

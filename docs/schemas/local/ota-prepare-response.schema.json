@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/ota-prepare-response.schema.json",
+  "title": "POST /api/v1/ota/prepare (response body)",
+  "type": "object",
+  "required": ["ready", "quiet_window_ms"],
+  "additionalProperties": true,
+  "properties": {
+    "ready":                        { "type": "boolean" },
+    "quiet_window_ms":              { "type": "integer", "minimum": 0 },
+    "unverified_firmware_allowed":  {
+      "type": "boolean",
+      "description": "true after a second physical short-press during the arm window; permits one otherwise-unrecognized image. Volatile, single-upload."
+    }
+  }
+}

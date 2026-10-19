@@ -1,0 +1,12 @@
+**
+!pyproject.toml
+!requirements.lock
+!README.md
+!src/
+!src/**
+!spa/
+!spa/**
+!ops/
+!ops/database.py
+src/**/__pycache__/
+src/**/*.pyc

@@ -1,0 +1,223 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  host-and-web-checks:
+    name: Host, UI, and API checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: "24"
+
+      - name: Install API contract test dependencies
+        run: python -m pip install --require-hashes -r requirements-dev.txt
+
+      - name: Run shared source test suite
+        run: ./scripts/check.sh all
+
+      - name: Lint GitHub workflow syntax with verified actionlint
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz \
+            --output "$RUNNER_TEMP/actionlint.tar.gz"
+          echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $RUNNER_TEMP/actionlint.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint" -shellcheck= -pyflakes= .github/workflows/*.yml
+
+      - name: Stage revision-stamped web app for inspection
+        env:
+          SOURCE_REPOSITORY: ${{ github.repository }}
+        run: python3 scripts/build/build_pages.py --repository "$SOURCE_REPOSITORY" --revision "$(git rev-parse HEAD)"
+
+      - name: Upload web app preview (no deployment)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: smart-timer-web-app-preview
+          path: dist/pages/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  v2-framework:
+    name: Reproducible V2 framework
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Cache verified ESP32-C3 framework
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: .framework/esp32c3-libs
+          key: ${{ runner.os }}-ost-esp32c3-${{ hashFiles('framework/esp32c3/**', 'scripts/build_framework_esp32c3.sh', 'scripts/framework/**') }}
+
+      - name: Build or verify pinned framework
+        run: ./scripts/build_framework_esp32c3.sh
+
+      - name: Upload verified framework archive
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: opensmarttimer-esp32c3-framework
+          path: dist/framework/OpenSmartTimer-ESP32C3-Framework-ost2.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+  relay-checks:
+    # Relay server (Python), partner page (Node) and the relay
+    # firmware modules compiled for the host against real OpenSSL.
+    name: Relay server and firmware host tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: "24"
+
+      - name: Install relay dependencies (hash-locked)
+        working-directory: relay
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --require-hashes -r requirements-dev.lock
+          .venv/bin/python -m pip install --no-deps -e .
+
+      - name: Ensure real OpenSSL host-test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev pkg-config
+
+      - name: Run relay source gate
+        run: ./relay/tests/check.sh
+
+      - name: Install locked browser test dependencies
+        working-directory: relay/tests
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium webkit
+
+      - name: Run operator, timer and partner pages in Chromium and WebKit
+        run: ./relay/tests/browser.sh
+
+      - name: Run disposable HTTPS relay and partner browser
+        run: ./relay/tests/relay_e2e.sh --browser
+
+      - name: Upload synthetic relay test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: relay-test-results
+          path: tmp/relay-tests/
+          if-no-files-found: warn
+          retention-days: 14
+
+  firmware-and-release-checks:
+    name: V1 and V2 firmware images
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [host-and-web-checks, v2-framework, relay-checks]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Download verified V2 framework
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: opensmarttimer-esp32c3-framework
+          path: dist/framework
+
+      - name: Install and verify V2 framework
+        run: |
+          python3 scripts/framework/install_framework_esp32c3.py \
+            dist/framework/OpenSmartTimer-ESP32C3-Framework-ost2.tar.gz
+          python3 scripts/framework/verify_framework_esp32c3.py
+
+      - name: Cache target-specific PlatformIO packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: |
+            .pio-core/v1
+            .pio-core/v2
+          key: ${{ runner.os }}-platformio-${{ hashFiles('platformio.ini', 'framework/esp32c3/lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-platformio-
+
+      - name: Install pinned PlatformIO Core
+        run: python -m pip install --disable-pip-version-check platformio==6.1.19
+
+      - name: Build both hardware targets
+        run: ./scripts/build_firmware.sh all
+
+      - name: Verify relay is isolated to the intended image
+        run: ./scripts/checks/check_relay_boundary_images.sh
+
+      - name: Verify both release images
+        run: python3 scripts/release/verify_release.py
+
+      - name: Stage verified application images
+        env:
+          SOURCE_REPOSITORY: ${{ github.repository }}
+        run: python3 scripts/release/package_firmware.py --repository "$SOURCE_REPOSITORY" --revision "$(git rev-parse HEAD)"
+
+      - name: Upload verified application images
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: opensmarttimer-application-images
+          path: dist/firmware/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Package corresponding source and dependency materials
+        run: python3 scripts/release/package_source_materials.py
+
+      - name: Upload source materials separately from flashable images
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: opensmarttimer-source-materials
+          path: dist/source-materials/
+          if-no-files-found: error
+          retention-days: 14

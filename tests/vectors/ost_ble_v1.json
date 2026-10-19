@@ -1,0 +1,18 @@
+{
+  "protocol": "ost-ble/1",
+  "byte_order": "little-endian",
+  "app_key_hex": "00112233445566778899aabbccddeeff",
+  "boot_id": 2018915346,
+  "challenge_hex": "000102030405060708090a0b",
+  "authentication_client_nonce_hex": "a1b2c3d4",
+  "authentication_frame_hex": "0101a1b2c3d49fab590d2cb56890f325d4276440",
+  "session_key_hex": "21a81b14582e20f6562f855cc326435c6cc3840f64a40dba3e25d51c86ed38f1",
+  "start_command_frame_hex": "011034121234567800000000c02709000000000001000000048d778f2627e36d",
+  "start_result_frame_hex": "01103412000101001234567801000000c0270900",
+  "pending_pairing_key_hex": "f0e0d0c0b0a090807060504030201000",
+  "pairing_commit_client_nonce_hex": "11223344",
+  "pairing_commit_frame_hex": "010211223344b4af4d301671cf18deed11fc81b9",
+  "capabilities_frame_hex": "01ffff01005c2605983a0000c0d4010020141410142c080e",
+  "status_frame_hex": "01010400c0270900c02709000500000001000000",
+  "truncated_emergency_event_frame_hex": "010a000607000000d20400000000000001000000"
+}

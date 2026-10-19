@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en" data-state="open">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0b0710">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.github.io https://api.github.com; form-action 'self'; base-uri 'none'; object-src 'none'">
+    <title>Smart Timer</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body class="embedded-ui">
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Smart Timer home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M10 14V9a6 6 0 0 1 12 0v5M8 14h16v13H8z"/><circle cx="16" cy="20" r="2"/></svg>
+          </span>
+          <span class="brand-copy"><strong id="deviceBrandName" data-i18n-literal>Smart Timer</strong><small id="brandSubtitle">Smart Timer</small></span>
+        </a>
+        <div class="topbar-actions">
+          <button id="languageButton" class="language-switch" type="button" role="switch" aria-checked="false" aria-label="Switch to Simplified Chinese" data-language="en">
+            <span class="language-option-en">EN</span><span class="language-option-zh">中文</span>
+          </button>
+          <button id="themeButton" class="theme-switch" type="button" role="switch" aria-checked="true" aria-label="Switch to light mode" data-theme="dark">
+            <svg class="theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"/></svg>
+            <svg class="theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 15.2A7.8 7.8 0 0 1 8.8 4.6 8.1 8.1 0 1 0 19.4 15.2Z"/></svg>
+          </button>
+          <button class="icon-button" id="settingsOpen" type="button" aria-label="Open device settings" aria-haspopup="dialog">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="status-strip" aria-label="Timer status">
+        <div class="status-primary">
+          <span id="stateBadge" class="badge">Connecting</span>
+          <button id="sharedBadge" class="badge shared hidden" type="button" aria-label="Remote sharing is active. Open its settings.">SHARED</button>
+          <button id="relayStatusBadge" class="badge relay hidden" type="button" aria-live="polite">RELAY ONLINE</button>
+          <span id="stateTitle">Waiting for timer status</span>
+        </div>
+        <button id="connectionShortcut" class="connection" type="button" aria-label="Open network settings" aria-live="polite"><span id="connectionDot"></span><span id="connectionText">Connecting</span></button>
+      </section>
+
+      <section id="connectionWarning" class="connection-warning hidden" role="alert" aria-labelledby="connectionWarningTitle">
+        <div>
+          <strong id="connectionWarningTitle">Connection lost</strong>
+          <p id="connectionWarningMessage">Reconnect to the timer to confirm its state. Use the physical emergency release if needed.</p>
+        </div>
+        <button id="connectionRetry" class="secondary" type="button">Retry</button>
+      </section>
+
+      <section id="updateNotice" class="onboarding-banner update-notice hidden" aria-labelledby="updateNoticeTitle">
+        <div class="onboarding-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v10"/><path d="M8 10.5 12 14l4-3.5"/><path d="M5 15.5V18a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2.5"/></svg></div>
+        <div><span class="eyebrow">Firmware update</span><strong id="updateNoticeTitle" data-update-notice-title>Update available</strong><p>A newer firmware release is published. Read its notes before installing; installation needs an unlocked timer and a short Reset press.</p></div>
+        <div class="onboarding-actions"><button class="primary" type="button" data-update-notice-view>View update</button><button class="text-button" type="button" data-update-notice-dismiss>Later</button></div>
+      </section>
+      <section id="onboardingBanner" class="onboarding-banner hidden" aria-labelledby="onboardingTitle">
+        <div class="onboarding-icon" aria-hidden="true">⌁</div>
+        <div><span class="eyebrow">AP Mode</span><strong id="onboardingTitle">Finish network setup</strong><p>You are connected directly to the timer. Leave AP Mode enabled, or switch it off to use Wi-Fi Mode on an existing network.</p></div>
+        <div class="onboarding-actions"><button id="onboardingSettings" class="primary" type="button">Open network settings</button><button id="onboardingDismiss" class="text-button" type="button">Not now</button></div>
+      </section>
+
+      <section id="recoveryBanner" class="onboarding-banner recovery-banner hidden" aria-labelledby="recoveryTitle">
+        <div class="onboarding-icon" aria-hidden="true">!</div>
+        <div><span class="eyebrow">Recovery AP</span><strong id="recoveryTitle">Saved Wi-Fi is unavailable</strong><p id="recoveryBannerMessage">The timer has opened a recovery network so you can still control it.</p></div>
+        <div class="onboarding-actions"><button id="recoverySettings" class="primary" type="button">Review connection</button></div>
+      </section>
+
+      <section id="otaUnverifiedBanner" class="onboarding-banner ota-unverified-banner hidden" role="alert" aria-labelledby="otaUnverifiedTitle">
+        <div class="onboarding-icon" aria-hidden="true">!</div>
+        <div><span class="eyebrow">Firmware recovery</span><strong id="otaUnverifiedTitle">Unverified firmware mode is active</strong><p>Product and known-vendor checks are disabled for one upload. A wrong image can make web recovery impossible.</p></div>
+      </section>
+
+      <section id="durationLimitBanner" class="onboarding-banner duration-limit-banner hidden" role="alert" aria-labelledby="durationLimitTitle">
+        <div class="onboarding-icon" aria-hidden="true">!</div>
+        <div><span class="eyebrow">Duration limit</span><strong id="durationLimitTitle">Maximum lock duration reached</strong><p>The lock duration cannot exceed 24 hours.</p></div>
+      </section>
+
+      <section id="appView" class="timer-workspace">
+        <aside class="control-rail left-rail hidden" aria-label="Deduct time" data-session-only data-unsealed-only>
+          <div class="rail-group">
+            <div class="rail-caption">Deduct time</div>
+            <button class="adjust-button minus" data-adjust="-3600000" type="button"><span>−</span>1 hr</button>
+            <button class="adjust-button minus" data-adjust="-1800000" type="button"><span>−</span>30 min</button>
+            <button class="adjust-button minus" data-adjust="-300000" type="button"><span>−</span>5 min</button>
+            <button class="adjust-button minus" data-adjust="-60000" type="button"><span>−</span>1 min</button>
+          </div>
+        </aside>
+
+        <form id="startForm" class="timer-center">
+          <div id="timerDial" class="timer-dial" aria-label="Timer">
+            <div class="dial-progress" aria-hidden="true"></div>
+            <div class="dial-ticks" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="dial-face">
+              <div class="dial-kicker" data-open-only>Set duration</div>
+              <div class="dial-kicker shared-kicker">Shared control</div>
+              <div id="fixedDuration" class="duration-fields" data-open-only>
+                <label><span>Hours</span><input id="hours" type="number" inputmode="numeric" min="0" max="24" value="0" aria-label="Hours" aria-describedby="durationGestureHint"></label>
+                <b aria-hidden="true">:</b>
+                <label><span>Minutes</span><input id="minutes" type="number" inputmode="numeric" min="0" max="59" value="15" aria-label="Minutes" aria-describedby="durationGestureHint"></label>
+                <b aria-hidden="true">:</b>
+                <label><span>Seconds</span><input id="seconds" type="number" inputmode="numeric" min="0" max="59" value="0" aria-label="Seconds" aria-describedby="durationGestureHint"></label>
+              </div>
+              <div id="randomFields" class="random-fields hidden" data-open-only>
+                <label><span>Minimum</span><span class="random-input"><input id="randomMin" type="number" inputmode="numeric" min="1" max="1440" value="10" aria-describedby="durationGestureHint"><small>min</small></span></label>
+                <span class="range-arrow" aria-hidden="true">—</span>
+                <label><span>Maximum</span><span class="random-input"><input id="randomMax" type="number" inputmode="numeric" min="1" max="1440" value="30" aria-describedby="durationGestureHint"><small>min</small></span></label>
+              </div>
+              <p id="durationGestureHint" class="duration-gesture-hint" data-open-only>Swipe or scroll a value to adjust</p>
+              <div id="clock" class="clock hidden" data-session-only>00:00:00</div>
+              <p id="completionTime" class="completion-time hidden" data-session-only>Opens at —</p>
+              <p id="safetyNote" class="safety-note" role="status" aria-live="polite">Waiting for timer status</p>
+            </div>
+          </div>
+
+          <div id="setupControls" class="setup-panel" data-open-only>
+            <div class="preset-section">
+              <div class="setup-label">Quick presets</div>
+              <div class="preset-row">
+                <button class="preset-button" data-preset="5" type="button"><strong>05</strong><span>min</span></button>
+                <button class="preset-button active" data-preset="15" type="button"><strong>15</strong><span>min</span></button>
+                <button class="preset-button" data-preset="30" type="button"><strong>30</strong><span>min</span></button>
+                <button class="preset-button" data-preset="60" type="button"><strong>60</strong><span>min</span></button>
+                <button id="resetDuration" class="preset-button reset-preset" type="button"><span class="reset-icon" aria-hidden="true"></span><span>Reset</span></button>
+              </div>
+            </div>
+            <div class="setup-actions">
+              <label class="mode-switch">
+                <input id="randomMode" type="checkbox">
+                <span class="switch-track" aria-hidden="true"><span></span></span>
+                <span><strong>Random duration</strong><small>Device chooses within your range</small></span>
+              </label>
+              <button id="startButton" class="primary start-button" type="submit">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 11V7a4 4 0 0 1 8 0v4M6 11h12v10H6z"/></svg>
+                Start timer
+              </button>
+            </div>
+          </div>
+
+          <div id="activeControls" class="session-actions hidden" data-session-only>
+            <button id="pauseButton" class="secondary pause-action" type="button" data-unsealed-only>Pause</button>
+            <button id="stopButton" class="release-action" type="button" data-unsealed-only>Unlock now</button>
+            <button id="sealButton" class="secondary lock-controls" type="button" data-unsealed-only>Lock controls</button>
+            <section id="sealedNotice" class="sealed-notice hidden" aria-labelledby="sealedNoticeTitle">
+              <strong id="sealedNoticeTitle">Software controls are locked</strong>
+              <p>Unlock, pause and time changes are off until the timer opens. This app, Bluetooth and the local API all refuse them.</p>
+              <div class="sealed-safe">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 7.6v.2"></path></svg>
+                <span>The emergency input and removing power still command release. They do not prove the lock opened.</span>
+              </div>
+            </section>
+          </div>
+          <section id="sharedModeCard" class="shared-mode-card hidden" aria-labelledby="sharedModeTitle">
+            <div class="shared-mode-copy">
+              <strong id="sharedModeTitle">Shared control is on</strong>
+              <small>Unlock now stays available unless controls are locked.</small>
+            </div>
+            <button id="sharedModeToggle" class="secondary" type="button" aria-expanded="false">Show controls</button>
+          </section>
+          <p id="actionError" class="form-error" role="alert"></p>
+        </form>
+
+        <aside class="control-rail right-rail hidden" aria-label="Add time" data-session-only data-unsealed-only>
+          <div class="rail-group">
+            <div class="rail-caption">Add time</div>
+            <button class="adjust-button plus" data-adjust="3600000" type="button"><span>+</span>1 hr</button>
+            <button class="adjust-button plus" data-adjust="1800000" type="button"><span>+</span>30 min</button>
+            <button class="adjust-button plus" data-adjust="300000" type="button"><span>+</span>5 min</button>
+            <button class="adjust-button plus" data-adjust="60000" type="button"><span>+</span>1 min</button>
+          </div>
+        </aside>
+      </section>
+
+      <footer class="device-footer">
+        <div><span class="footer-label">Connection</span><strong id="footerConnection">Starting…</strong></div>
+        <div><span class="footer-label">Address</span><strong id="deviceAddress">—</strong></div>
+        <nav class="footer-actions" aria-label="Device help and settings">
+          <button id="hardwareGuideOpen" type="button"><span>Button &amp; LED guide</span><span aria-hidden="true">?</span></button>
+          <button id="footerSettings" type="button"><span>Device settings</span><span aria-hidden="true">↗</span></button>
+        </nav>
+      </footer>
+    </main>
+
+    <p id="liveUpdatesMessage" class="visually-hidden" role="status" aria-live="polite">Connecting automatically…</p>
+
+    <div id="settingsBackdrop" class="settings-backdrop" aria-hidden="true"></div>
+    <aside id="settingsPanel" class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" aria-hidden="true">
+      <header class="settings-header">
+        <div><span class="eyebrow">Local device</span><h2 id="settingsTitle">Settings</h2></div>
+        <button id="settingsClose" class="icon-button" type="button" aria-label="Close settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </header>
+      <div class="settings-scroll">
+        <section class="settings-section appearance-section" aria-label="Appearance">
+          <h3>Appearance</h3>
+          <div class="palette-options" role="group" aria-label="Color theme">
+            <button type="button" data-palette-choice="purple" aria-pressed="true">Purple</button>
+            <button type="button" data-palette-choice="slate" aria-pressed="false">Slate</button>
+            <button type="button" data-palette-choice="teal" aria-pressed="false">Teal</button>
+          </div>
+          <p class="helper">Saved in this browser only.</p>
+        </section>
+        <section class="details-card">
+          <div class="section-heading"><div><span class="eyebrow">Status</span><h3>Device information</h3></div></div>
+          <dl>
+            <div><dt>Address</dt><dd id="panelDeviceAddress">—</dd></div>
+            <div><dt>Local AP</dt><dd id="apName">—</dd></div>
+            <div><dt>AP security</dt><dd><span id="apSecurityBadge" class="network-security open">OPEN AP</span></dd></div>
+            <div><dt>AP clients</dt><dd id="apClients">—</dd></div>
+            <div><dt>Connection mode</dt><dd id="wifiState">—</dd></div>
+            <div><dt id="activeNetworkLabel">Active network</dt><dd id="connectedSsid" data-i18n-literal>—</dd></div>
+            <div><dt>Signal</dt><dd id="wifiSignal">—</dd></div>
+            <div><dt>Emergency input</dt><dd id="emergencyInput">—</dd></div>
+            <div><dt>Firmware</dt><dd id="firmwareVersion">—</dd></div>
+            <div><dt>Device ID</dt><dd id="deviceId">—</dd></div>
+            <div><dt>Wi-Fi MAC</dt><dd id="deviceMac">—</dd></div>
+          </dl>
+        </section>
+
+        <section id="networkSection" class="settings-section network-section">
+          <div class="form-heading"><div><span class="eyebrow">Connection mode</span><h3>Network setup</h3></div></div>
+          <fieldset class="mode-selector-fieldset">
+            <legend class="visually-hidden">Connection mode</legend>
+            <div class="mode-selector">
+              <label class="mode-option" for="wifiMode">
+                <input id="wifiMode" name="networkMode" type="radio" value="wifi" checked>
+                <span>Wi-Fi Mode</span>
+              </label>
+              <label class="mode-option" for="apMode">
+                <input id="apMode" name="networkMode" type="radio" value="ap">
+                <span>AP Mode</span>
+              </label>
+            </div>
+          </fieldset>
+          <p id="networkModeHelp" class="helper">The timer creates its own Wi-Fi network. Connect your phone directly to it.</p>
+          <div id="recoveryModeCallout" class="mode-callout hidden" role="status">
+            <strong>Recovery AP is active</strong>
+            <span id="recoveryModeMessage">The saved Wi-Fi network cannot be reached.</span>
+            <button id="recoveryUseApMode" class="text-button" type="button">Use AP Mode instead</button>
+          </div>
+          <div class="recovery-callout"><strong>Connection changes are recoverable.</strong><span>New Wi-Fi details are saved only after a successful join. If access is ever lost, hold Reset for ten seconds to restore settings and restart with a generated open setup AP.</span></div>
+
+          <div id="apModeFields">
+          <form id="accessPointForm">
+            <p class="helper">Configure the Wi-Fi network broadcast by the timer.</p>
+            <label class="check-row" for="apUseDeviceName">
+              <input id="apUseDeviceName" type="checkbox" checked>
+              <span><strong>Generate from the device name</strong><small>Creates a recognizable Local AP name with the device ID.</small></span>
+            </label>
+            <label class="field-label" for="apSsid">Local AP name</label>
+            <input id="apSsid" maxlength="32" autocomplete="off" required>
+            <label class="field-label" for="apSecurity">Security</label>
+            <select id="apSecurity">
+              <option value="open">Open — no Wi-Fi password</option>
+              <option value="wpa2">WPA2 password protected</option>
+            </select>
+            <div id="apPasswordFields" class="hidden">
+              <label class="field-label" for="apPassword">New Local AP password</label>
+              <input id="apPassword" class="password-confirm" type="password" minlength="8" maxlength="63" autocomplete="new-password">
+              <label class="field-label" for="apPasswordConfirm">Confirm password</label>
+              <div class="password-field">
+                <input id="apPasswordConfirm" type="password" minlength="8" maxlength="63" autocomplete="new-password">
+                <button id="apPasswordToggle" type="button" aria-controls="apPassword apPasswordConfirm" aria-pressed="false">Show both</button>
+              </div>
+              <p id="apPasswordHint" class="helper">Use 8–63 printable characters.</p>
+            </div>
+            <button id="apSaveButton" class="secondary wide" type="submit">Apply AP Mode &amp; restart</button>
+            <p id="apSettingsMessage" class="helper" role="status"></p>
+          </form>
+
+          </div>
+
+          <div id="wifiModeFields" class="hidden">
+          <form id="wifiForm">
+            <div class="form-heading network-scan-heading"><p class="helper">Choose the Wi-Fi network the timer should join.</p><button id="scanButton" class="secondary compact-action" type="button">Scan networks</button></div>
+            <label class="field-label" for="wifiSsid">Wi-Fi network</label>
+            <input id="wifiSsid" name="ssid" list="networkList" maxlength="32" autocomplete="off" required>
+            <datalist id="networkList"></datalist>
+            <div id="networkResults" class="network-results hidden" aria-label="Available Wi-Fi networks"></div>
+            <label class="field-label" for="wifiPassword">Wi-Fi password</label>
+            <div class="password-field">
+              <input id="wifiPassword" name="password" type="password" maxlength="64" autocomplete="new-password">
+              <button id="wifiPasswordToggle" type="button" aria-controls="wifiPassword" aria-pressed="false">Show</button>
+            </div>
+            <p class="helper">The timer tests the connection first. Saved Wi-Fi changes only after it joins successfully.</p>
+            <button id="wifiButton" class="secondary wide" type="submit">Connect to Wi-Fi</button>
+            <p id="wifiMessage" class="helper" role="status"></p>
+          </form>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <form id="deviceNameForm">
+            <span class="eyebrow">Identity</span><h3>Device name</h3>
+            <p class="helper">Changes the interface name and <code>.local</code> hostname. It also changes the setup network when generated AP naming is enabled. The device restarts after saving.</p>
+            <label class="field-label" for="deviceName">Display name</label>
+            <input id="deviceName" name="name" maxlength="32" pattern="[ -~]{1,32}" autocomplete="off" required>
+            <p class="helper">Use 1–32 printable English/ASCII characters.</p>
+            <p id="deviceHostname" class="helper">Hostname: smarttimer.local</p>
+            <button id="deviceNameButton" class="secondary wide" type="submit">Save name &amp; restart</button>
+            <p id="deviceNameMessage" class="helper" role="status"></p>
+          </form>
+        </section>
+
+        <section class="settings-section session-controls-section">
+          <div class="form-heading"><div><span class="eyebrow">Safety</span><h3>Session controls</h3></div></div>
+          <p class="helper">Choose which controls a session may use. This applies to this page, Bluetooth, the local API and share links, and can be changed only while the timer is open.</p>
+          <div class="session-control-switches">
+            <label class="mode-switch" for="allowPauseToggle">
+              <input id="allowPauseToggle" type="checkbox" role="switch" checked>
+              <span class="switch-track" aria-hidden="true"><span></span></span>
+              <span><strong>Allow pause</strong><small>A paused session keeps the lock engaged until someone resumes or ends it</small></span>
+            </label>
+            <label class="mode-switch" for="allowLockToggle">
+              <input id="allowLockToggle" type="checkbox" role="switch" checked>
+              <span class="switch-track" aria-hidden="true"><span></span></span>
+              <span><strong>Allow locking controls</strong><small>Locked controls cannot be undone in software until the timer opens</small></span>
+            </label>
+          </div>
+          <p id="sessionControlsMessage" class="helper" role="status" aria-live="polite"></p>
+        </section>
+
+        <section id="bluetoothSection" class="settings-section bluetooth-section hidden">
+          <div class="form-heading"><div><span class="eyebrow">Wireless control</span><h3>Bluetooth</h3></div></div>
+          <p class="helper">Approve up to three apps for control without Wi-Fi. Only one app can connect at a time; disconnect it before switching devices.</p>
+          <dl class="diagnostics-list bluetooth-list">
+            <div><dt>Bluetooth state</dt><dd id="bluetoothState">Off</dd></div>
+            <div><dt>Pairing status</dt><dd id="bluetoothPairingStatus">None</dd></div>
+            <div><dt>Paired devices</dt><dd id="bluetoothAppCount">0 / 3</dd></div>
+            <div id="bluetoothPairingRemainingRow" class="hidden"><dt>Pairing window</dt><dd id="bluetoothPairingRemaining">—</dd></div>
+            <div><dt>Bluetooth connections</dt><dd id="bluetoothConnections">0 / 1</dd></div>
+            <div><dt>Connection security</dt><dd id="bluetoothSecurity">Not connected</dd></div>
+          </dl>
+          <div id="bluetoothAppList" class="bluetooth-app-list"></div>
+          <p id="bluetoothAppsFull" class="helper hidden">Three devices are paired. Remove or replace a pairing to add another.</p>
+          <div id="bluetoothNewAppName">
+          <label class="field-label" for="bluetoothAppLabel">Device name (optional)</label>
+          <input id="bluetoothAppLabel" type="text" maxlength="24" autocomplete="off" placeholder="My phone">
+          <p class="helper">Names your phone or computer, not the timer. You can also set this in the Bluetooth app when pairing without Wi-Fi.</p>
+          <p class="helper">Names allow up to 24 UTF-8 bytes. Each Chinese character usually uses three bytes.</p>
+          </div>
+          <div class="maintenance-actions bluetooth-actions">
+            <label class="mode-switch bluetooth-toggle" for="bluetoothToggle">
+              <input id="bluetoothToggle" type="checkbox" role="switch">
+              <span class="switch-track" aria-hidden="true"><span></span></span>
+              <span><strong>Enable Bluetooth</strong><small>Stays on after restart</small></span>
+            </label>
+            <button id="bluetoothPairButton" class="secondary" type="button">Pair device</button>
+          </div>
+          <div class="firmware-scope"><strong>Pair with or without Wi-Fi</strong><span>Select Pair device here, or hold Reset for 3–5 seconds while unlocked, then release. Connect from your app and briefly press Reset to approve it. Pairing closes after success.</span></div>
+          <button id="bluetoothRevokeButton" class="quiet-action bluetooth-revoke hidden" type="button">Remove all pairings</button>
+          <details class="bluetooth-advanced">
+            <summary>Technical details</summary>
+            <dl class="diagnostics-list bluetooth-list">
+              <div><dt>Advertised name</dt><dd id="bluetoothName">—</dd></div>
+              <div><dt>Signal</dt><dd id="bluetoothRssi">—</dd></div>
+              <div><dt>ATT MTU</dt><dd id="bluetoothMtu">—</dd></div>
+              <div><dt>Control MTU</dt><dd id="bluetoothMtuStatus">—</dd></div>
+              <div><dt>Notifications sent</dt><dd id="bluetoothNotifications">0</dd></div>
+              <div><dt>Authenticated client</dt><dd id="bluetoothAuthenticated">No</dd></div>
+              <div><dt>Control commands</dt><dd id="bluetoothControlCommands">0</dd></div>
+              <div><dt>Last control result</dt><dd id="bluetoothControlResult">None</dd></div>
+              <div><dt>Last disconnect</dt><dd id="bluetoothDisconnect">None</dd></div>
+              <div><dt>Last Bluetooth error</dt><dd id="bluetoothLastError">None</dd></div>
+              <div><dt>Authentication recovery</dt><dd id="bluetoothAuthRecovery">Ready</dd></div>
+              <div><dt>Bond cleanup</dt><dd id="bluetoothBondCleanup">Complete</dd></div>
+            </dl>
+            <p class="helper">Five invalid authentication attempts across reconnects pause Bluetooth connections for 30 seconds. A valid saved app clears the failure count after the delay.</p>
+          </details>
+          <p id="bluetoothMessage" class="helper" role="status"></p>
+        </section>
+
+        <section id="relaySection" class="settings-section relay-section hidden">
+          <div class="form-heading"><div><span class="eyebrow">Experimental</span><h3>Remote sharing</h3></div><span id="relayBadge" class="local-badge inactive">OFF</span></div>
+          <p class="helper">Share time-limited control links through a relay server you trust. A partner can start, pause, add time, unlock and lock the controls. Once controls are locked, this page cannot unlock either. Sharing is not a way to release.</p>
+          <dl class="diagnostics-list relay-list">
+            <div><dt>Relay</dt><dd id="relayState">Off</dd></div>
+            <div><dt>Server</dt><dd id="relayHost">—</dd></div>
+            <div><dt>Share link</dt><dd id="relayLinkCount">None</dd></div>
+          </dl>
+          <p id="relayPausedNotice" class="relay-notice hidden" role="status">Paused while a Bluetooth app is connected or pairing. Links stay valid and sharing resumes automatically.</p>
+
+          <form id="relayEnrollForm" class="relay-enroll hidden">
+            <p class="helper">Remote sharing needs a relay server that you or someone you trust runs. Paste the setup code it gave you.</p>
+            <label class="field-label" for="relaySetupCode">Setup code</label>
+            <input id="relaySetupCode" autocomplete="off" spellcheck="false" placeholder="ost-relay-setup:…">
+            <p id="relaySetupPreview" class="helper">Paste the whole code. The timer must be unlocked and on Wi-Fi.</p>
+            <details id="relayManualDetails" class="bluetooth-advanced relay-manual">
+              <summary>Enter details manually</summary>
+              <label class="field-label" for="relayUrl">Relay address</label>
+              <input id="relayUrl" inputmode="url" autocomplete="off" spellcheck="false" placeholder="relay.example.com">
+              <label class="field-label" for="relayPartnerOrigin">Control page address</label>
+              <input id="relayPartnerOrigin" inputmode="url" autocomplete="off" spellcheck="false" placeholder="control.example.com">
+              <label class="field-label" for="relayCode">Enrollment code</label>
+              <input id="relayCode" autocomplete="off" spellcheck="false">
+              <label class="field-label" for="relayPin">Server key pin</label>
+              <input id="relayPin" autocomplete="off" spellcheck="false" maxlength="43">
+              <p class="helper">The key pin identifies your relay during setup; public certificates are not used. Later certificate renewals need no new pin.</p>
+            </details>
+            <button id="relayEnrollButton" class="secondary wide" type="submit">Connect relay</button>
+          </form>
+
+          <div id="relaySetupApproval" class="relay-enroll hidden" role="status">
+            <strong>Approve remote sharing setup</strong>
+            <p class="helper">Check these addresses, then briefly press Reset on the unlocked timer to approve this setup.</p>
+            <dl class="diagnostics-list relay-list">
+              <div><dt>Relay address</dt><dd id="relayApprovalRelay" data-i18n-literal>—</dd></div>
+              <div><dt>Control page address</dt><dd id="relayApprovalPartner" data-i18n-literal>—</dd></div>
+            </dl>
+            <p id="relayApprovalCountdown" class="helper"></p>
+            <button id="relaySetupCancel" class="secondary wide" type="button">Cancel setup</button>
+          </div>
+
+          <div id="relayManage" class="hidden">
+            <div class="maintenance-actions relay-actions">
+              <label class="mode-switch relay-toggle" for="relayToggle">
+                <input id="relayToggle" type="checkbox" role="switch">
+                <span class="switch-track" aria-hidden="true"><span></span></span>
+                <span><strong>Enable remote sharing</strong><small>Stays on after restart</small></span>
+              </label>
+            </div>
+            <div id="relayLinkList" class="relay-link-list"></div>
+            <div id="relayRenewCard" class="relay-link-row relay-renew hidden">
+              <div class="relay-link-heading"><strong id="relayRenewLabel">Partner</strong><span class="relay-chip">Ended</span></div>
+              <small id="relayRenewText" class="helper">This link ended.</small>
+              <div class="bluetooth-app-actions">
+                <button id="relayReactivateButton" class="secondary" type="button">Reactivate</button>
+                <button id="relayRenewButton" class="secondary" type="button">New link</button>
+              </div>
+            </div>
+            <p id="relayLinksEmpty" class="helper">No active share link.</p>
+            <div id="relayShareBox" class="relay-share hidden">
+              <label id="relayShareLabel" class="field-label" for="relayShareUrl">Share link</label>
+              <div class="password-field">
+                <input id="relayShareUrl" readonly data-i18n-literal>
+                <button id="relayShareCopy" type="button">Copy</button>
+              </div>
+              <p class="helper">Anyone with this link can control the timer until it expires or you revoke it. Send it privately.</p>
+            </div>
+            <form id="relayCreateForm" class="relay-create">
+              <label class="field-label" for="relayLinkLabel">New link name (optional)</label>
+              <input id="relayLinkLabel" maxlength="23" autocomplete="off" placeholder="Partner">
+              <span id="relayDurationLabel" class="field-label">Link valid for</span>
+              <div id="relayDuration" class="relay-duration" role="radiogroup" aria-labelledby="relayDurationLabel">
+                <button class="preset-button" type="button" role="radio" aria-checked="false" data-relay-ttl="900"><strong>15</strong><span>min</span></button>
+                <button class="preset-button active" type="button" role="radio" aria-checked="true" data-relay-ttl="3600"><strong>1</strong><span>hr</span></button>
+                <button class="preset-button" type="button" role="radio" aria-checked="false" data-relay-ttl="14400"><strong>4</strong><span>hr</span></button>
+                <button class="preset-button" type="button" role="radio" aria-checked="false" data-relay-ttl="43200"><strong>12</strong><span>hr</span></button>
+                <button class="preset-button" type="button" role="radio" aria-checked="false" data-relay-ttl="86400"><strong>24</strong><span>hr</span></button>
+                <button class="preset-button" type="button" role="radio" aria-checked="false" data-relay-ttl="custom"><strong aria-hidden="true">⋯</strong><span>Custom</span></button>
+              </div>
+              <div id="relayCustomDuration" class="relay-custom hidden">
+                <label for="relayCustomHours">Hours<input id="relayCustomHours" type="number" inputmode="numeric" min="0" max="24" step="1" value="2"></label>
+                <label for="relayCustomMinutes">Minutes<input id="relayCustomMinutes" type="number" inputmode="numeric" min="0" max="59" step="5" value="0"></label>
+              </div>
+              <p id="relayDurationHint" class="helper relay-duration-hint" role="status"></p>
+              <p id="relayCreateHint" class="helper">One share link at a time. It also ends when the timer restarts.</p>
+              <button id="relayCreateButton" class="secondary wide" type="submit" aria-describedby="relayCreateHint">Create share link</button>
+            </form>
+            <details class="bluetooth-advanced">
+              <summary>Technical details</summary>
+              <dl class="diagnostics-list relay-list">
+                <div><dt>Timer ID on relay</dt><dd id="relayTimerId">—</dd></div>
+                <div><dt>Reconnects</dt><dd id="relayReconnects">0</dd></div>
+                <div><dt>Last relay error</dt><dd id="relayLastError">None</dd></div>
+                <div><dt>Relay memory</dt><dd id="relayMemory">—</dd></div>
+              </dl>
+            </details>
+            <button id="relayForgetButton" class="quiet-action bluetooth-revoke" type="button">Forget relay</button>
+          </div>
+          <p id="relayMessage" class="helper" role="status"></p>
+        </section>
+
+        <section class="settings-section event-section">
+          <div class="form-heading"><div><span class="eyebrow">Current boot</span><h3>Recent activity</h3></div><button id="eventsRefresh" class="text-button" type="button">Refresh</button></div>
+          <ol id="eventTimeline" class="event-timeline"><li class="event-empty">No activity loaded yet.</li></ol>
+          <p id="eventsMessage" class="helper" role="status"></p>
+        </section>
+
+        <section class="settings-section diagnostics-section">
+          <div class="form-heading"><div><span class="eyebrow">Support</span><h3>Diagnostics</h3></div><button id="diagnosticsRefresh" class="text-button" type="button">Refresh</button></div>
+          <div class="maintenance-actions">
+            <button id="identifyButton" class="secondary" type="button">Identify LED</button>
+            <button id="restartButton" class="secondary" type="button">Restart device</button>
+          </div>
+          <p id="maintenanceMessage" class="helper" role="status"></p>
+          <dl class="diagnostics-list">
+            <div><dt>Hardware model</dt><dd id="diagnosticHardwareModel">—</dd></div>
+            <div><dt>Controller</dt><dd id="diagnosticChipFamily">—</dd></div>
+            <div><dt>Build ID</dt><dd id="diagnosticBuildId">—</dd></div>
+            <div><dt>Uptime</dt><dd id="diagnosticUptime">—</dd></div>
+            <div><dt>Free memory</dt><dd id="diagnosticHeap">—</dd></div>
+            <div><dt>Minimum free memory</dt><dd id="diagnosticMinimumHeap">—</dd></div>
+            <div><dt>Largest free block</dt><dd id="diagnosticLargestBlock">—</dd></div>
+            <div><dt>Heap fragmentation</dt><dd id="diagnosticFragmentation">—</dd></div>
+            <div><dt>Installed firmware</dt><dd id="diagnosticFirmwareSize">—</dd></div>
+            <div><dt>OTA image capacity</dt><dd id="diagnosticOtaSpace">—</dd></div>
+            <div><dt>Physical flash</dt><dd id="diagnosticFlashSize">—</dd></div>
+            <div><dt>Flash layout</dt><dd id="diagnosticFlashLayout">—</dd></div>
+            <div><dt>Live streams</dt><dd id="diagnosticSseClients">—</dd></div>
+            <div><dt>Stream sessions</dt><dd id="diagnosticSseHistory">—</dd></div>
+            <div><dt>Last stream close</dt><dd id="diagnosticSseClose">—</dd></div>
+            <div><dt>Reset reason</dt><dd id="diagnosticReset">—</dd></div>
+            <div><dt>Recent events</dt><dd id="diagnosticEvents">—</dd></div>
+          </dl>
+          <button id="diagnosticsCopy" class="quiet-action wide" type="button">Copy diagnostics JSON</button>
+          <p id="diagnosticsMessage" class="helper" role="status"></p>
+        </section>
+
+        <section class="settings-section update-section">
+          <div class="form-heading"><div><span class="eyebrow">Updates</span><h3>Firmware</h3></div></div>
+          <dl class="update-facts">
+            <div><dt>Installed version</dt><dd id="updateVersion">—</dd></div>
+          </dl>
+          <div id="otaArmMessage" class="update-arm" data-state="locked"><strong role="status" data-update-arm-title>Updates are locked</strong><span data-update-arm-detail>Briefly press Reset on the unlocked timer to allow an update for five minutes.</span></div>
+          <div id="otaUnverifiedScope" class="firmware-danger hidden" role="alert"><strong>Unverified firmware allowed</strong><span>The product marker and known-vendor allowlist will be bypassed for one upload. Header, size, and CRC checks still apply, but they cannot prove the firmware is safe for this hardware.</span></div>
+          <div id="githubUpdates" class="update-block">
+            <h4>Online update</h4>
+            <p class="helper">Checking does not install anything. Your browser needs Internet access.</p>
+            <button class="secondary wide" type="button" data-update-check>Check for updates</button>
+            <p class="update-status" role="status" aria-live="polite" data-update-message></p>
+            <label class="mode-switch update-notice-switch" for="updateNoticeToggle">
+              <input id="updateNoticeToggle" type="checkbox" role="switch" checked>
+              <span class="switch-track" aria-hidden="true"><span></span></span>
+              <span><strong>Check when this page opens</strong><small>At most once a day while the timer is unlocked. Shows a notice; never installs.</small></span>
+            </label>
+          </div>
+          <form id="otaForm" class="update-block">
+            <h4>Install from a file</h4>
+            <p class="helper">Use a firmware .bin you already downloaded.</p>
+            <label class="file-field"><input id="firmwareFile" type="file" accept=".bin,application/octet-stream" required><span>Choose firmware .bin</span></label>
+            <button id="otaButton" class="secondary wide" type="submit" disabled>Install update</button>
+            <p id="otaMessage" class="update-status" role="status"></p>
+          </form>
+          <details class="bluetooth-advanced update-notes">
+            <summary>About firmware updates</summary>
+            <div class="firmware-scope"><strong>Firmware only</strong><span>The vendor filesystem is left untouched. Exact supported original firmware images can also be restored here.</span></div>
+            <div class="firmware-scope"><strong>Settings are retained</strong><span>Updating this firmware does not erase Wi-Fi, device name, or AP settings. The ten-second factory reset is what clears them.</span></div>
+            <div class="firmware-scope"><strong>Use one device for AP updates</strong><span>For the most reliable upload, disconnect other phones and tablets from the timer Wi-Fi until it restarts. Other open control pages automatically back off during the update.</span></div>
+            <div class="firmware-scope firmware-recovery"><strong>Advanced rollback recovery</strong><span>While the normal update window is active, press and release the Reset button again to allow one otherwise-unrecognized application image for this hardware model. A triple blue flash indicates this mode. Use it only when you have verified the image source and hardware layout.</span></div>
+          </details>
+        </section>
+
+        <p class="access-note"><strong>AP security is not API authentication.</strong> A WPA2 password protects direct access to the setup AP, but anyone who can reach the timer through your local network can use its controls. Use a trusted or isolated IoT network.</p>
+      </div>
+    </aside>
+
+    <div id="hardwareGuideBackdrop" class="guide-backdrop" aria-hidden="true"></div>
+    <section id="hardwareGuide" class="guide-dialog" role="dialog" aria-modal="true" aria-labelledby="hardwareGuideTitle" aria-hidden="true">
+      <header class="guide-header">
+        <div><span class="eyebrow">Physical reference</span><h2 id="hardwareGuideTitle">Button &amp; LED guide</h2></div>
+        <button id="hardwareGuideClose" class="icon-button" type="button" aria-label="Close Button and LED guide">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </header>
+      <div class="guide-scroll">
+        <section class="guide-section">
+          <h3>Reset button</h3>
+          <dl class="guide-list">
+            <div><dt>Short press</dt><dd id="guideShortPressDescription">While unlocked, enables firmware updates for five minutes.</dd></div>
+            <div id="guideBluetoothPairing" class="hidden"><dt>Hold 3–5 seconds</dt><dd>On V2, opens Bluetooth pairing for two minutes. Connect from the app, then short-press Reset to approve it.</dd></div>
+            <div><dt>Second short press</dt><dd>While updates are enabled, permits one unverified firmware upload. Use only for a verified recovery image.</dd></div>
+            <div><dt>Hold 10 seconds</dt><dd id="guideFactoryResetDescription">Restores the device name and all Wi-Fi and AP settings, then restarts. Installed firmware is unchanged.</dd></div>
+          </dl>
+        </section>
+        <section class="guide-section">
+          <h3>Blue status LED</h3>
+          <dl class="guide-list">
+            <div><dt>Solid</dt><dd>Connected to local Wi-Fi, or standalone AP Mode is ready.</dd></div>
+            <div><dt>Fast blink</dt><dd>Trying to connect to local Wi-Fi.</dd></div>
+            <div><dt>Slow blink</dt><dd>A recovery AP is available.</dd></div>
+            <div id="guideBluetoothLed" class="hidden"><dt>Slow single flash</dt><dd>V2 Bluetooth pairing is open. The pattern changes when an app is waiting for approval.</dd></div>
+            <div><dt>Two flashes</dt><dd>Firmware updates are enabled.</dd></div>
+            <div><dt>Three flashes</dt><dd>One unverified recovery upload is allowed.</dd></div>
+            <div><dt>Solid during update</dt><dd>Firmware is uploading and being validated.</dd></div>
+            <div><dt>Rapid update blink</dt><dd>Firmware was accepted and the timer is restarting.</dd></div>
+          </dl>
+        </section>
+        <section class="guide-section">
+          <h3>Amber lock LED</h3>
+          <p>On means the lock outputs are energized while a timer is running or paused. Off means the firmware is commanding release; it does not show that the lock opened.</p>
+        </section>
+        <section class="guide-section">
+          <h3>Emergency input</h3>
+          <p>An active physical emergency input continuously commands release and prevents a new timer from starting.</p>
+        </section>
+        <p class="guide-note">Button gestures are accepted only while the timer is unlocked. Never rely on software as the only release method.</p>
+      </div>
+    </section>
+
+    <div id="confirmBackdrop" class="confirm-backdrop" aria-hidden="true"></div>
+    <section id="confirmDialog" class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-hidden="true">
+      <span id="confirmIcon" class="confirm-icon confirm-lock" aria-hidden="true"></span>
+      <span id="confirmEyebrow" class="eyebrow">Please confirm</span>
+      <h2 id="confirmTitle">Continue?</h2>
+      <div id="confirmMessage" class="confirm-message">Confirm this action.</div>
+      <p id="confirmSafety" class="confirm-safety"></p>
+      <div class="confirm-actions">
+        <button id="confirmCancel" class="secondary" type="button">Cancel</button>
+        <button id="confirmAccept" class="primary" type="button">Continue</button>
+      </div>
+    </section>
+
+    <div id="reconnectBackdrop" class="reconnect-backdrop" aria-hidden="true"></div>
+    <section id="reconnectDialog" class="reconnect-dialog" role="dialog" aria-modal="true" aria-labelledby="reconnectTitle" aria-hidden="true">
+      <span class="reconnect-icon" aria-hidden="true">↻</span>
+      <span class="eyebrow">Settings saved</span>
+      <h2 id="reconnectTitle">Reconnect to the timer</h2>
+      <p id="reconnectMessage">The timer is restarting with its new network settings.</p>
+      <dl class="reconnect-details">
+        <div><dt>Wi-Fi network</dt><dd id="reconnectSsid">—</dd></div>
+        <div><dt>Security</dt><dd id="reconnectSecurity">—</dd></div>
+        <div><dt>Then open</dt><dd id="reconnectAddress">192.168.4.1</dd></div>
+      </dl>
+      <p id="reconnectRecovery" class="reconnect-recovery">If you cannot reconnect, hold the Reset button for ten seconds. The timer will restore all settings and restart with its default generated open setup AP; firmware is unchanged.</p>
+      <div class="reconnect-actions"><button id="reconnectOpen" class="primary" type="button">Open timer after reconnecting</button><button id="reconnectClose" class="secondary" type="button">Close message</button></div>
+    </section>
+
+    <div id="statusToast" class="status-toast" role="status" aria-live="assertive" aria-atomic="true">
+      <span class="toast-icon" aria-hidden="true">✓</span>
+      <span><strong id="statusToastTitle">Emergency release activated</strong><small id="statusToastMessage">The lock output has been released.</small></span>
+    </div>
+
+    <script src="/i18n.js" defer></script>
+    <script src="/appearance.js" defer></script>
+    <script src="/updates.js" defer></script>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,1231 @@
+{
+  "schema": 1,
+  "esp_idf_submodules": [
+    {
+      "path": "components/json/cJSON",
+      "repository": "DaveGamble/cJSON",
+      "commit": "8f2beb57ddad1f94bed899790b00f46df893ccac"
+    },
+    {
+      "path": "components/mbedtls/mbedtls",
+      "repository": "espressif/mbedtls",
+      "commit": "98ae8db06b8acc1dc1c6b1f78c2719cb776f4147"
+    },
+    {
+      "path": "components/lwip/lwip",
+      "repository": "espressif/esp-lwip",
+      "commit": "ebabd6d79c120c5d4415755aab1d908d8b5fa372"
+    },
+    {
+      "path": "components/protobuf-c/protobuf-c",
+      "repository": "protobuf-c/protobuf-c",
+      "commit": "abc67a11c6db271bedbb9f58be85d6f4e2ea8389"
+    },
+    {
+      "path": "components/bt/host/nimble/nimble",
+      "repository": "espressif/esp-nimble",
+      "commit": "cc3ac5416b46e6e9363dae357378c03b4975cfdb"
+    },
+    {
+      "path": "components/esp_wifi/lib",
+      "repository": "espressif/esp32-wifi-lib",
+      "commit": "8a1b7bbc00e895d040c5c9a6fb9d1db2bbfc7958"
+    },
+    {
+      "path": "components/bt/controller/lib_esp32c3_family",
+      "repository": "espressif/esp32c3-bt-lib",
+      "commit": "3ff529142f6e2707d57b10eb87ac8d86e9098b88"
+    },
+    {
+      "path": "components/esp_phy/lib",
+      "repository": "espressif/esp-phy-lib",
+      "commit": "f6746ceea821b3800e8700d7e535f5df7304b8e5"
+    }
+  ],
+  "relay_runtime": [
+    {
+      "name": "annotated-doc",
+      "version": "0.0.5",
+      "license": "MIT",
+      "notice_files": [
+        "annotated_doc-0.0.5.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "annotated-types",
+      "version": "0.8.0",
+      "license": "MIT",
+      "notice_files": [
+        "annotated_types-0.8.0.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "anyio",
+      "version": "4.15.1",
+      "license": "MIT",
+      "notice_files": [
+        "anyio-4.15.1.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "authlib",
+      "version": "1.8.0",
+      "license": "BSD-3-Clause",
+      "notice_files": [
+        "authlib-1.8.0.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "certifi",
+      "version": "2026.7.22",
+      "license": "MPL-2.0",
+      "notice_files": [
+        "certifi-2026.7.22.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1",
+      "license": "MIT-0",
+      "notice_files": [
+        "cffi-2.1.1.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "click",
+      "version": "8.5.0",
+      "license": "BSD-3-Clause",
+      "notice_files": [
+        "click-8.5.0.dist-info/licenses/LICENSE.txt"
+      ]
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.1",
+      "license": "Apache-2.0 OR BSD-3-Clause",
+      "notice_files": [
+        "cryptography-50.0.1.dist-info/licenses/LICENSE",
+        "cryptography-50.0.1.dist-info/licenses/LICENSE.APACHE",
+        "cryptography-50.0.1.dist-info/licenses/LICENSE.BSD"
+      ]
+    },
+    {
+      "name": "fastapi",
+      "version": "0.141.1",
+      "license": "MIT",
+      "notice_files": [
+        "fastapi-0.141.1.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "h11",
+      "version": "0.16.0",
+      "license": "MIT",
+      "notice_files": [
+        "h11-0.16.0.dist-info/licenses/LICENSE.txt"
+      ]
+    },
+    {
+      "name": "httpcore",
+      "version": "1.0.9",
+      "license": "BSD-3-Clause",
+      "notice_files": [
+        "httpcore-1.0.9.dist-info/licenses/LICENSE.md"
+      ]
+    },
+    {
+      "name": "httptools",
+      "version": "0.8.0",
+      "license": "MIT",
+      "notice_files": [
+        "httptools-0.8.0.dist-info/licenses/LICENSE",
+        "httptools-0.8.0.dist-info/licenses/vendor/http-parser/LICENSE-MIT",
+        "httptools-0.8.0.dist-info/licenses/vendor/llhttp/LICENSE"
+      ]
+    },
+    {
+      "name": "httpx",
+      "version": "0.28.1",
+      "license": "BSD-3-Clause",
+      "notice_files": [
+        "httpx-0.28.1.dist-info/licenses/LICENSE.md"
+      ]
+    },
+    {
+      "name": "idna",
+      "version": "3.19",
+      "license": "BSD-3-Clause",
+      "notice_files": [
+        "idna-3.19.dist-info/licenses/LICENSE.md"
+      ]
+    },
+    {
+      "name": "itsdangerous",
+      "version": "2.2.0",
+      "license": null,
+      "notice_files": [
+        "itsdangerous-2.2.0.dist-info/LICENSE.txt"
+      ]
+    },
+    {
+      "name": "joserfc",
+      "version": "1.7.5",
+      "license": "BSD-3-Clause",
+      "notice_files": [
+        "joserfc-1.7.5.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "pycparser",
+      "version": "3.0",
+      "license": "BSD-3-Clause",
+      "notice_files": [
+        "pycparser-3.0.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "pydantic",
+      "version": "2.13.5",
+      "license": "MIT",
+      "notice_files": [
+        "pydantic-2.13.5.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "pydantic-core",
+      "version": "2.46.5",
+      "license": "MIT",
+      "notice_files": [
+        "pydantic_core-2.46.5.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "pydantic-settings",
+      "version": "2.15.0",
+      "license": "MIT",
+      "notice_files": [
+        "pydantic_settings-2.15.0.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "python-dotenv",
+      "version": "1.2.3",
+      "license": "BSD-3-Clause",
+      "notice_files": [
+        "python_dotenv-1.2.3.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "pyyaml",
+      "version": "6.0.3",
+      "license": "MIT",
+      "notice_files": [
+        "pyyaml-6.0.3.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "sse-starlette",
+      "version": "3.4.11",
+      "license": "BSD-3-Clause",
+      "notice_files": [
+        "sse_starlette-3.4.11.dist-info/licenses/AUTHORS",
+        "sse_starlette-3.4.11.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "starlette",
+      "version": "1.6.0",
+      "license": "BSD-3-Clause",
+      "notice_files": [
+        "starlette-1.6.0.dist-info/licenses/LICENSE.md"
+      ]
+    },
+    {
+      "name": "typing-extensions",
+      "version": "4.16.0",
+      "license": "PSF-2.0",
+      "notice_files": [
+        "typing_extensions-4.16.0.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "typing-inspection",
+      "version": "0.4.4",
+      "license": "MIT",
+      "notice_files": [
+        "typing_inspection-0.4.4.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "uvicorn",
+      "version": "0.53.0",
+      "license": "BSD-3-Clause",
+      "notice_files": [
+        "uvicorn-0.53.0.dist-info/licenses/LICENSE.md"
+      ]
+    },
+    {
+      "name": "uvloop",
+      "version": "0.22.1",
+      "license": "MIT License",
+      "notice_files": [
+        "uvloop-0.22.1.dist-info/licenses/LICENSE-APACHE",
+        "uvloop-0.22.1.dist-info/licenses/LICENSE-MIT"
+      ]
+    },
+    {
+      "name": "watchfiles",
+      "version": "1.2.0",
+      "license": "MIT",
+      "notice_files": [
+        "watchfiles-1.2.0.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "websockets",
+      "version": "17.1",
+      "license": "BSD-3-Clause",
+      "notice_files": [
+        "websockets-17.1.dist-info/licenses/LICENSE"
+      ]
+    }
+  ],
+  "notice_files": [
+    {
+      "component": "arduino-esp32",
+      "file": "third-party/notices/arduino-esp32/LICENSE.md",
+      "source": "https://raw.githubusercontent.com/espressif/arduino-esp32/554de56f40e68d591b945bd1a8c931798e8a9167/LICENSE.md",
+      "sha256": "62e54861b30e953735dc187f036917c588665dbe3c5dd88449e34317608bbf5e"
+    },
+    {
+      "component": "arduino-esp32",
+      "file": "third-party/notices/arduino-esp32/cores/esp32/libb64/LICENSE",
+      "source": "arduino-esp32:cores/esp32/libb64/LICENSE",
+      "sha256": "cb317b147c23304c28b75da0acd1e425473853b1417faa652e1031231e05eeb1"
+    },
+    {
+      "component": "arduino-esp32",
+      "file": "third-party/notices/arduino-esp32/libraries/BLE/LICENSE",
+      "source": "arduino-esp32:libraries/BLE/LICENSE",
+      "sha256": "7d8319b3fa758be565e482754bc39b191853d68b030ff6e5fbc0c0b4cd18db6c"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/LICENSE",
+      "source": "arduino-esp8266:LICENSE",
+      "sha256": "a1a33180d02960ab1c5de36cf20b1a2f0fe9888d83826ad263da5db52f1b183b"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/bootloaders/eboot/LICENSE",
+      "source": "arduino-esp8266:bootloaders/eboot/LICENSE",
+      "sha256": "a67833674dbd61a3353ff4b6f31711bab5cac1f5e610ff5f3fa5d6e3b264dae8"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/cores/esp8266/libb64/LICENSE",
+      "source": "arduino-esp8266:cores/esp8266/libb64/LICENSE",
+      "sha256": "834b7afa1b3c40289a3be775d3625016be1c0d7ea7a4a26c1eb207f53dc961d8"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/cores/esp8266/spiffs/LICENSE",
+      "source": "arduino-esp8266:cores/esp8266/spiffs/LICENSE",
+      "sha256": "d19257540156a51ed50c2378e7159066415d8bbbe147779f8deb0d3e73f1b0a7"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/cores/esp8266/umm_malloc/LICENSE",
+      "source": "arduino-esp8266:cores/esp8266/umm_malloc/LICENSE",
+      "sha256": "4794832279fc2df5e952a6e16b542bb2c816bfc88d15018974cc5d2a8d024f22"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/cores/esp8266/umm_malloc/dbglog/LICENSE",
+      "source": "arduino-esp8266:cores/esp8266/umm_malloc/dbglog/LICENSE",
+      "sha256": "197e2e9f483d352e2ab5c288b137727321dcf93db497c23084227046f9cbd5f0"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/libraries/ESP8266SdFat/LICENSE.md",
+      "source": "arduino-esp8266:libraries/ESP8266SdFat/LICENSE.md",
+      "sha256": "f07af78e816ae273bcdba2ba7878892d9192202a0214f10850635ff37daeba4a"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/libraries/GDBStub/License",
+      "source": "arduino-esp8266:libraries/GDBStub/License",
+      "sha256": "ed5c40758872b84f86eb75aeae4fa52e0d998ad9397dcc1c5445bd1b272f0b62"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/libraries/LittleFS/lib/littlefs/LICENSE.md",
+      "source": "arduino-esp8266:libraries/LittleFS/lib/littlefs/LICENSE.md",
+      "sha256": "0cb4ff1daf5fdc1359c6a6ee3116092f08fc100c9d58b1b77ab17bfd801f856d"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/libraries/SoftwareSerial/LICENSE",
+      "source": "arduino-esp8266:libraries/SoftwareSerial/LICENSE",
+      "sha256": "a1a33180d02960ab1c5de36cf20b1a2f0fe9888d83826ad263da5db52f1b183b"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/libraries/TFT_Touch_Shield_V2/License.txt",
+      "source": "arduino-esp8266:libraries/TFT_Touch_Shield_V2/License.txt",
+      "sha256": "926a5405fba2d1bc34e757d0eebd4f92bd59ca13d15b60476b6ecd55cc8c915a"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/tools/esptool/LICENSE",
+      "source": "arduino-esp8266:tools/esptool/LICENSE",
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/tools/pyserial/LICENSE.txt",
+      "source": "arduino-esp8266:tools/pyserial/LICENSE.txt",
+      "sha256": "f91cb9813de6a5b142b8f7f2dede630b5134160aedaeaf55f4d6a7e2593ca3f3"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/tools/sdk/License",
+      "source": "arduino-esp8266:tools/sdk/License",
+      "sha256": "220429632e5bb39b8f2fdf27189e8f99bbeca36609871c5e734fa91cb776d504"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/tools/sdk/ssl/bearssl/LICENSE.txt",
+      "source": "arduino-esp8266:tools/sdk/ssl/bearssl/LICENSE.txt",
+      "sha256": "771bf18c8633ea69ec9b07d2e604c4b99b7bef41b0f5ce6385d24df4448f61ca"
+    },
+    {
+      "component": "arduino-esp8266",
+      "file": "third-party/notices/arduino-esp8266/tools/sdk/uzlib/LICENSE",
+      "source": "arduino-esp8266:tools/sdk/uzlib/LICENSE",
+      "sha256": "ebc06b10f40a401aa8d06e57e1dbf8f7a901520f825272ad9bae8b7818f59c8a"
+    },
+    {
+      "component": "cJSON",
+      "file": "third-party/notices/cJSON/LICENSE",
+      "source": "https://raw.githubusercontent.com/DaveGamble/cJSON/8f2beb57ddad1f94bed899790b00f46df893ccac/LICENSE",
+      "sha256": "a36dda207c36db5818729c54e7ad4e8b0c6fba847491ba64f372c1a2037b6d5c"
+    },
+    {
+      "component": "caddy",
+      "file": "third-party/notices/caddy/LICENSE",
+      "source": "https://raw.githubusercontent.com/caddyserver/caddy/v2.11.4/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "component": "esp-idf",
+      "file": "third-party/notices/esp-idf/LICENSE",
+      "source": "https://raw.githubusercontent.com/espressif/esp-idf/b66b5448e0dfac6be135e6f0ac21010aba231180/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "component": "esp-idf",
+      "file": "third-party/notices/esp-idf/components/bt/common/tinycrypt/LICENSE",
+      "source": "https://raw.githubusercontent.com/espressif/esp-idf/b66b5448e0dfac6be135e6f0ac21010aba231180/components/bt/common/tinycrypt/LICENSE",
+      "sha256": "270e0b63ce74421f1ccaaf03f9c7daa430cdb16c9856259ca4c2e3c74880d589"
+    },
+    {
+      "component": "esp-idf",
+      "file": "third-party/notices/esp-idf/components/freertos/FreeRTOS-Kernel/LICENSE.md",
+      "source": "https://raw.githubusercontent.com/espressif/esp-idf/b66b5448e0dfac6be135e6f0ac21010aba231180/components/freertos/FreeRTOS-Kernel/LICENSE.md",
+      "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1"
+    },
+    {
+      "component": "esp-idf",
+      "file": "third-party/notices/esp-idf/components/http_parser/LICENSE.txt",
+      "source": "https://raw.githubusercontent.com/espressif/esp-idf/b66b5448e0dfac6be135e6f0ac21010aba231180/components/http_parser/LICENSE.txt",
+      "sha256": "3aced2d086d3f59cafb6589770c30c1e45a5bdf50c1d4375060b81a615db604c"
+    },
+    {
+      "component": "esp-idf",
+      "file": "third-party/notices/esp-idf/components/newlib/COPYING.NEWLIB",
+      "source": "https://raw.githubusercontent.com/espressif/esp-idf/b66b5448e0dfac6be135e6f0ac21010aba231180/components/newlib/COPYING.NEWLIB",
+      "sha256": "0681089a556e93791da82718d68011ba452de245f7f59c3846936304756ac0c0"
+    },
+    {
+      "component": "esp-idf",
+      "file": "third-party/notices/esp-idf/components/newlib/COPYING.picolibc",
+      "source": "https://raw.githubusercontent.com/espressif/esp-idf/b66b5448e0dfac6be135e6f0ac21010aba231180/components/newlib/COPYING.picolibc",
+      "sha256": "fa72ebf6e3c9b3d674f89da06648b0c17d3bcb1ce05ed5956cc102fba1e6964d"
+    },
+    {
+      "component": "esp-lwip",
+      "file": "third-party/notices/esp-lwip/COPYING",
+      "source": "https://raw.githubusercontent.com/espressif/esp-lwip/ebabd6d79c120c5d4415755aab1d908d8b5fa372/COPYING",
+      "sha256": "ef4aac92e05e87cd1cdc140870ed52206ba03d4a7fe46c1e11d7ffa6c87d252b"
+    },
+    {
+      "component": "esp-nimble",
+      "file": "third-party/notices/esp-nimble/LICENSE",
+      "source": "https://raw.githubusercontent.com/espressif/esp-nimble/cc3ac5416b46e6e9363dae357378c03b4975cfdb/LICENSE",
+      "sha256": "0deb15bc7df50b1d009c644b008f92e1062909e9521328d337c5fad3a5d4921c"
+    },
+    {
+      "component": "esp-nimble",
+      "file": "third-party/notices/esp-nimble/NOTICE",
+      "source": "https://raw.githubusercontent.com/espressif/esp-nimble/cc3ac5416b46e6e9363dae357378c03b4975cfdb/NOTICE",
+      "sha256": "b838c4733a5020cd8e2bafbe70842acd8c8dc7816012965b77d10c1f4c0727f6"
+    },
+    {
+      "component": "esp-phy-lib",
+      "file": "third-party/notices/esp-phy-lib/LICENSE",
+      "source": "https://raw.githubusercontent.com/espressif/esp-phy-lib/f6746ceea821b3800e8700d7e535f5df7304b8e5/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "component": "esp32-wifi-lib",
+      "file": "third-party/notices/esp32-wifi-lib/LICENSE",
+      "source": "https://raw.githubusercontent.com/espressif/esp32-wifi-lib/8a1b7bbc00e895d040c5c9a6fb9d1db2bbfc7958/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "component": "esp32c3-bt-lib",
+      "file": "third-party/notices/esp32c3-bt-lib/LICENSE",
+      "source": "https://raw.githubusercontent.com/espressif/esp32c3-bt-lib/3ff529142f6e2707d57b10eb87ac8d86e9098b88/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "component": "mbedtls",
+      "file": "third-party/notices/mbedtls/LICENSE",
+      "source": "https://raw.githubusercontent.com/espressif/mbedtls/98ae8db06b8acc1dc1c6b1f78c2719cb776f4147/LICENSE",
+      "sha256": "9b405ef4c89342f5eae1dd828882f931747f71001cfba7d114801039b52ad09b"
+    },
+    {
+      "component": "protobuf-c",
+      "file": "third-party/notices/protobuf-c/LICENSE",
+      "source": "https://raw.githubusercontent.com/protobuf-c/protobuf-c/abc67a11c6db271bedbb9f58be85d6f4e2ea8389/LICENSE",
+      "sha256": "b8999cb392cc5bbe8cd679de59584ad8d2f26033123e76f1d662fa14b9d4f287"
+    },
+    {
+      "component": "relay-annotated-doc",
+      "file": "third-party/notices/relay-annotated-doc/annotated_doc-0.0.5.dist-info/licenses/LICENSE",
+      "source": "annotated-doc==0.0.5:annotated_doc-0.0.5.dist-info/licenses/LICENSE",
+      "sha256": "fff170779a6acbf65abdb405c087f1cee1786691e4a96a4034517e4a504a0cdf"
+    },
+    {
+      "component": "relay-annotated-types",
+      "file": "third-party/notices/relay-annotated-types/annotated_types-0.8.0.dist-info/licenses/LICENSE",
+      "source": "annotated-types==0.8.0:annotated_types-0.8.0.dist-info/licenses/LICENSE",
+      "sha256": "fe1049884b1a0d9342901e88e07f32925d24b3121d9972b6a6805fb9824b095d"
+    },
+    {
+      "component": "relay-anyio",
+      "file": "third-party/notices/relay-anyio/anyio-4.15.1.dist-info/licenses/LICENSE",
+      "source": "anyio==4.15.1:anyio-4.15.1.dist-info/licenses/LICENSE",
+      "sha256": "5361ac9dc58f2ef5fd2e9b09c68297c17f04950909bbc8023bdb82eacf22c2b0"
+    },
+    {
+      "component": "relay-authlib",
+      "file": "third-party/notices/relay-authlib/authlib-1.8.0.dist-info/licenses/LICENSE",
+      "source": "authlib==1.8.0:authlib-1.8.0.dist-info/licenses/LICENSE",
+      "sha256": "8e1b48518de9c6cd00cb48c7fe5b8023fd90d5552ca12ebe7362a0df30ddbe45"
+    },
+    {
+      "component": "relay-certifi",
+      "file": "third-party/notices/relay-certifi/certifi-2026.7.22.dist-info/licenses/LICENSE",
+      "source": "certifi==2026.7.22:certifi-2026.7.22.dist-info/licenses/LICENSE",
+      "sha256": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7"
+    },
+    {
+      "component": "relay-cffi",
+      "file": "third-party/notices/relay-cffi/cffi-2.1.1.dist-info/licenses/LICENSE",
+      "source": "cffi==2.1.1:cffi-2.1.1.dist-info/licenses/LICENSE",
+      "sha256": "5ba24ddc57067f9249add644c3afc41a5d6dc37e23433ef759d95df370b0af63"
+    },
+    {
+      "component": "relay-click",
+      "file": "third-party/notices/relay-click/click-8.5.0.dist-info/licenses/LICENSE.txt",
+      "source": "click==8.5.0:click-8.5.0.dist-info/licenses/LICENSE.txt",
+      "sha256": "9a8ad106a394e853bfe21f42f4e72d592819a22805d991b5f3275029292b658d"
+    },
+    {
+      "component": "relay-cryptography",
+      "file": "third-party/notices/relay-cryptography/cryptography-50.0.1.dist-info/licenses/LICENSE",
+      "source": "cryptography==50.0.1:cryptography-50.0.1.dist-info/licenses/LICENSE",
+      "sha256": "3e0c7c091a948b82533ba98fd7cbb40432d6f1a9acbf85f5922d2f99a93ae6bb"
+    },
+    {
+      "component": "relay-cryptography",
+      "file": "third-party/notices/relay-cryptography/cryptography-50.0.1.dist-info/licenses/LICENSE.APACHE",
+      "source": "cryptography==50.0.1:cryptography-50.0.1.dist-info/licenses/LICENSE.APACHE",
+      "sha256": "aac73b3148f6d1d7111dbca32099f68d26c644c6813ae1e4f05f6579aa2663fe"
+    },
+    {
+      "component": "relay-cryptography",
+      "file": "third-party/notices/relay-cryptography/cryptography-50.0.1.dist-info/licenses/LICENSE.BSD",
+      "source": "cryptography==50.0.1:cryptography-50.0.1.dist-info/licenses/LICENSE.BSD",
+      "sha256": "602c4c7482de6479dd2e9793cda275e5e63d773dacd1eca689232ab7008fb4fb"
+    },
+    {
+      "component": "relay-fastapi",
+      "file": "third-party/notices/relay-fastapi/fastapi-0.141.1.dist-info/licenses/LICENSE",
+      "source": "fastapi==0.141.1:fastapi-0.141.1.dist-info/licenses/LICENSE",
+      "sha256": "4ec89ffc81485b97fec584b2d4a961032eeffe834453894fd9c1274906cc744e"
+    },
+    {
+      "component": "relay-h11",
+      "file": "third-party/notices/relay-h11/h11-0.16.0.dist-info/licenses/LICENSE.txt",
+      "source": "h11==0.16.0:h11-0.16.0.dist-info/licenses/LICENSE.txt",
+      "sha256": "37db5bb85926db28a427a25867f10b1232003aea1be69ccb851138adb8e6f361"
+    },
+    {
+      "component": "relay-httpcore",
+      "file": "third-party/notices/relay-httpcore/httpcore-1.0.9.dist-info/licenses/LICENSE.md",
+      "source": "httpcore==1.0.9:httpcore-1.0.9.dist-info/licenses/LICENSE.md",
+      "sha256": "fdcb59154c74cbaba16a11242f7740bea9f23d6feb5547917d8c5f94a80392a5"
+    },
+    {
+      "component": "relay-httptools",
+      "file": "third-party/notices/relay-httptools/httptools-0.8.0.dist-info/licenses/LICENSE",
+      "source": "httptools==0.8.0:httptools-0.8.0.dist-info/licenses/LICENSE",
+      "sha256": "f4573e7cb7676745fb5b8d36fa548aa93e391cfb6872ddacd65130c45ea6a92d"
+    },
+    {
+      "component": "relay-httptools",
+      "file": "third-party/notices/relay-httptools/httptools-0.8.0.dist-info/licenses/vendor/http-parser/LICENSE-MIT",
+      "source": "httptools==0.8.0:httptools-0.8.0.dist-info/licenses/vendor/http-parser/LICENSE-MIT",
+      "sha256": "79e6ba8b687cb54786207342b9b6fcee0ac10218453ed9009b84d949b2233cc0"
+    },
+    {
+      "component": "relay-httptools",
+      "file": "third-party/notices/relay-httptools/httptools-0.8.0.dist-info/licenses/vendor/llhttp/LICENSE",
+      "source": "httptools==0.8.0:httptools-0.8.0.dist-info/licenses/vendor/llhttp/LICENSE",
+      "sha256": "628168d68bb5a8a17e0bbefb3bd74e326e1edc20583d76f52f457c82c921867d"
+    },
+    {
+      "component": "relay-httpx",
+      "file": "third-party/notices/relay-httpx/httpx-0.28.1.dist-info/licenses/LICENSE.md",
+      "source": "httpx==0.28.1:httpx-0.28.1.dist-info/licenses/LICENSE.md",
+      "sha256": "4ec59d544f12b5f539a3a716fd321ac58ccd8030b465221f2c880200cdf28d8d"
+    },
+    {
+      "component": "relay-idna",
+      "file": "third-party/notices/relay-idna/idna-3.19.dist-info/licenses/LICENSE.md",
+      "source": "idna==3.19:idna-3.19.dist-info/licenses/LICENSE.md",
+      "sha256": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04"
+    },
+    {
+      "component": "relay-itsdangerous",
+      "file": "third-party/notices/relay-itsdangerous/itsdangerous-2.2.0.dist-info/LICENSE.txt",
+      "source": "itsdangerous==2.2.0:itsdangerous-2.2.0.dist-info/LICENSE.txt",
+      "sha256": "63af09891b6be8ad1a4252ed43af0f4efba7fc948e228367bed7f3c5ae0b09d7"
+    },
+    {
+      "component": "relay-joserfc",
+      "file": "third-party/notices/relay-joserfc/joserfc-1.7.5.dist-info/licenses/LICENSE",
+      "source": "joserfc==1.7.5:joserfc-1.7.5.dist-info/licenses/LICENSE",
+      "sha256": "19ee1fafcc9ec4217fc32b8a651d820538c789cf4041cb4e46b4b176a5f2a9c8"
+    },
+    {
+      "component": "relay-pycparser",
+      "file": "third-party/notices/relay-pycparser/pycparser-3.0.dist-info/licenses/LICENSE",
+      "source": "pycparser==3.0:pycparser-3.0.dist-info/licenses/LICENSE",
+      "sha256": "0c846399369ea76ddd7b5c44fe6d16497415fcf015f5cbb508c24bf98b81c5b1"
+    },
+    {
+      "component": "relay-pydantic-core",
+      "file": "third-party/notices/relay-pydantic-core/pydantic_core-2.46.5.dist-info/licenses/LICENSE",
+      "source": "pydantic-core==2.46.5:pydantic_core-2.46.5.dist-info/licenses/LICENSE",
+      "sha256": "2afdd30d54b4d62b6f488a6bcc1546e84ec5061f13f4209c03d012348783795a"
+    },
+    {
+      "component": "relay-pydantic-settings",
+      "file": "third-party/notices/relay-pydantic-settings/pydantic_settings-2.15.0.dist-info/licenses/LICENSE",
+      "source": "pydantic-settings==2.15.0:pydantic_settings-2.15.0.dist-info/licenses/LICENSE",
+      "sha256": "eb355a753e020346d33d83bf9769135b89fc610568ac531a01c295bcee7fd998"
+    },
+    {
+      "component": "relay-pydantic",
+      "file": "third-party/notices/relay-pydantic/pydantic-2.13.5.dist-info/licenses/LICENSE",
+      "source": "pydantic==2.13.5:pydantic-2.13.5.dist-info/licenses/LICENSE",
+      "sha256": "a9e186f3ca16b5eef84318e7a701721351a00cb7b8ae3a4394b67b49e3529ef3"
+    },
+    {
+      "component": "relay-python-dotenv",
+      "file": "third-party/notices/relay-python-dotenv/python_dotenv-1.2.3.dist-info/licenses/LICENSE",
+      "source": "python-dotenv==1.2.3:python_dotenv-1.2.3.dist-info/licenses/LICENSE",
+      "sha256": "80619b7049f08c81683ad0e01f08f257a840652dd71ee83146d36658c7d2c2b9"
+    },
+    {
+      "component": "relay-pyyaml",
+      "file": "third-party/notices/relay-pyyaml/pyyaml-6.0.3.dist-info/licenses/LICENSE",
+      "source": "pyyaml==6.0.3:pyyaml-6.0.3.dist-info/licenses/LICENSE",
+      "sha256": "8d3928f9dc4490fd635707cb88eb26bd764102a7282954307d3e5167a577e8a4"
+    },
+    {
+      "component": "relay-sse-starlette",
+      "file": "third-party/notices/relay-sse-starlette/sse_starlette-3.4.11.dist-info/licenses/AUTHORS",
+      "source": "sse-starlette==3.4.11:sse_starlette-3.4.11.dist-info/licenses/AUTHORS",
+      "sha256": "c2ff63d2ecf128bbda8ab1b2016830a5da124202fbb97168685bb9946aed3f1a"
+    },
+    {
+      "component": "relay-sse-starlette",
+      "file": "third-party/notices/relay-sse-starlette/sse_starlette-3.4.11.dist-info/licenses/LICENSE",
+      "source": "sse-starlette==3.4.11:sse_starlette-3.4.11.dist-info/licenses/LICENSE",
+      "sha256": "80af6bfccbebd2c14d4aab96695cab9950e177190cc80f5ef819e99996883e8e"
+    },
+    {
+      "component": "relay-starlette",
+      "file": "third-party/notices/relay-starlette/starlette-1.6.0.dist-info/licenses/LICENSE.md",
+      "source": "starlette==1.6.0:starlette-1.6.0.dist-info/licenses/LICENSE.md",
+      "sha256": "dcb95677a02240243187e964f941847d19b17821cf99e5afae684fab328c19bf"
+    },
+    {
+      "component": "relay-typing-extensions",
+      "file": "third-party/notices/relay-typing-extensions/typing_extensions-4.16.0.dist-info/licenses/LICENSE",
+      "source": "typing-extensions==4.16.0:typing_extensions-4.16.0.dist-info/licenses/LICENSE",
+      "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf"
+    },
+    {
+      "component": "relay-typing-inspection",
+      "file": "third-party/notices/relay-typing-inspection/typing_inspection-0.4.4.dist-info/licenses/LICENSE",
+      "source": "typing-inspection==0.4.4:typing_inspection-0.4.4.dist-info/licenses/LICENSE",
+      "sha256": "804b59b25f2c31bd278f9202a19ae49a3945aa2664387e2d0a128c7cacc61ec3"
+    },
+    {
+      "component": "relay-uvicorn",
+      "file": "third-party/notices/relay-uvicorn/uvicorn-0.53.0.dist-info/licenses/LICENSE.md",
+      "source": "uvicorn==0.53.0:uvicorn-0.53.0.dist-info/licenses/LICENSE.md",
+      "sha256": "efe1acf3e62fb99c288b0ec73e5a773b7268ef4320fe757ea994214e4b63c371"
+    },
+    {
+      "component": "relay-uvloop",
+      "file": "third-party/notices/relay-uvloop/uvloop-0.22.1.dist-info/licenses/LICENSE-APACHE",
+      "source": "uvloop==0.22.1:uvloop-0.22.1.dist-info/licenses/LICENSE-APACHE",
+      "sha256": "377025287798f9dcd819e1f826fa5fc5e2f382528691ab0528c5cf8c8c282c27"
+    },
+    {
+      "component": "relay-uvloop",
+      "file": "third-party/notices/relay-uvloop/uvloop-0.22.1.dist-info/licenses/LICENSE-MIT",
+      "source": "uvloop==0.22.1:uvloop-0.22.1.dist-info/licenses/LICENSE-MIT",
+      "sha256": "6dd4c399f26de043d77a2ad7e31db4cb5bf08ea8368b0a42d6e158635cc8ab62"
+    },
+    {
+      "component": "relay-watchfiles",
+      "file": "third-party/notices/relay-watchfiles/watchfiles-1.2.0.dist-info/licenses/LICENSE",
+      "source": "watchfiles==1.2.0:watchfiles-1.2.0.dist-info/licenses/LICENSE",
+      "sha256": "4fd78355b67ce2677ede9fb6f63a250f377bb7e22088136a5f4699adb4bc069f"
+    },
+    {
+      "component": "relay-websockets",
+      "file": "third-party/notices/relay-websockets/websockets-17.1.dist-info/licenses/LICENSE",
+      "source": "websockets==17.1:websockets-17.1.dist-info/licenses/LICENSE",
+      "sha256": "3d6a0c050d8bec52fabad502e45fb25bd02bcadbd70dea34d447b6a0ff4e6da8"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/COPYING",
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/COPYING.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/COPYING.LIB",
+      "sha256": "56bdea73b6145ef6ac5259b3da390b981d840c24cb03b8e1cbc678de7ecfa18d"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/COPYING.LIBGLOSS",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/COPYING.LIBGLOSS",
+      "sha256": "fd3190e942375b5a15d5a3f34759361921cac05afb33f90b79d0cb132971676e"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/COPYING.NEWLIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/COPYING.NEWLIB",
+      "sha256": "19a3d496c944575951ca048e1fc0c974f030618586059732fa9def2281873f88"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/COPYING3",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/COPYING3",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/COPYING3.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/COPYING3.LIB",
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/bfd/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/bfd/COPYING",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/gas/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/gas/COPYING",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/gdb/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/gdb/COPYING",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/include/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/include/COPYING",
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/include/COPYING3",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/include/COPYING3",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/libiberty/COPYING.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/libiberty/COPYING.LIB",
+      "sha256": "32434afcc8666ba060e111d715bfdb6c2d5dd8a35fa4d3ab8ad67d8f850d2f2b"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/readline/readline/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/readline/readline/COPYING",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/sim/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/sim/COPYING",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/binutils/zlib/contrib/dotzlib/LICENSE_1_0.txt",
+      "source": "riscv32-esp-elf 14.2.0+20241119:binutils/zlib/contrib/dotzlib/LICENSE_1_0.txt",
+      "sha256": "36266a8fd073568394cb81cdb2b124f7fdae2c64c1a7ed09db34b4d22efa2951"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/crosstool-ng/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:crosstool-ng/COPYING",
+      "sha256": "07bc0ccd386469c748c4cf6c8faca5667fbf8c4400386714287fa233acfd68ba"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/crosstool-ng/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:crosstool-ng/LICENSE",
+      "sha256": "07bc0ccd386469c748c4cf6c8faca5667fbf8c4400386714287fa233acfd68ba"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/crosstool-ng/licenses.d/gpl.txt",
+      "source": "riscv32-esp-elf 14.2.0+20241119:crosstool-ng/licenses.d/gpl.txt",
+      "sha256": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/crosstool-ng/licenses.d/lgpl.txt",
+      "source": "riscv32-esp-elf 14.2.0+20241119:crosstool-ng/licenses.d/lgpl.txt",
+      "sha256": "5df07007198989c622f5d41de8d703e7bef3d0e79d62e24332ee739a452af62a"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/COPYING",
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/COPYING.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/COPYING.LIB",
+      "sha256": "a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/COPYING.RUNTIME",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/COPYING.RUNTIME",
+      "sha256": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/COPYING3",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/COPYING3",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/COPYING3.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/COPYING3.LIB",
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/gcc/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/gcc/COPYING",
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/gcc/COPYING.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/gcc/COPYING.LIB",
+      "sha256": "32434afcc8666ba060e111d715bfdb6c2d5dd8a35fa4d3ab8ad67d8f850d2f2b"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/gcc/COPYING3",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/gcc/COPYING3",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/gcc/COPYING3.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/gcc/COPYING3.LIB",
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/gcc/go/gofrontend/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/gcc/go/gofrontend/LICENSE",
+      "sha256": "2d36597f7117c38b006835ae7f537487207d8ec407aa9d9980794b2030cbc067"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/gcc/m2/COPYING.FDL",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/gcc/m2/COPYING.FDL",
+      "sha256": "0b402b6bff3c3bb698bd8a7efe33827b4a07b3b9a5b8ace23ff62346d33eb534"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/gcc/m2/COPYING.RUNTIME",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/gcc/m2/COPYING.RUNTIME",
+      "sha256": "314527bfbe0acd79ab7845a0dca5cb961a04c443f0a573d45da9d8cb926a1b4e"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/gcc/m2/COPYING3",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/gcc/m2/COPYING3",
+      "sha256": "0ae0485a5bd37a63e63603596417e4eb0e653334fa6c7f932ca3a0e85d4af227"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/gcc/m2/COPYING3.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/gcc/m2/COPYING3.LIB",
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/gcc/m2/images/LICENSE.IMG",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/gcc/m2/images/LICENSE.IMG",
+      "sha256": "30d9238a74b57dae99cc7949fcb57d1f3faeb374b619c598f83c216c42d384ee"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/gcc/testsuite/gcc.dg/params/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/gcc/testsuite/gcc.dg/params/LICENSE",
+      "sha256": "4919cfb14a73cd64fcef67b107613970cf1659a09aa675dba31314f373bc7204"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/include/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/include/COPYING",
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/include/COPYING3",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/include/COPYING3",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libcody/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libcody/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libffi/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libffi/LICENSE",
+      "sha256": "a61d06e8f7be57928e71e800eb9273b05cb8868c484108afe41e4305bb320dde"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libffi/LICENSE-BUILDTOOLS",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libffi/LICENSE-BUILDTOOLS",
+      "sha256": "e67978cd18816c0cb7d29aaaacde7b7447402c2fb321a051698890a8eaedda94"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libgo/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libgo/LICENSE",
+      "sha256": "2d36597f7117c38b006835ae7f537487207d8ec407aa9d9980794b2030cbc067"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libgo/go/golang.org/x/mod/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libgo/go/golang.org/x/mod/LICENSE",
+      "sha256": "2d36597f7117c38b006835ae7f537487207d8ec407aa9d9980794b2030cbc067"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libgo/go/golang.org/x/sync/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libgo/go/golang.org/x/sync/LICENSE",
+      "sha256": "2d36597f7117c38b006835ae7f537487207d8ec407aa9d9980794b2030cbc067"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libgo/go/golang.org/x/tools/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libgo/go/golang.org/x/tools/LICENSE",
+      "sha256": "2d36597f7117c38b006835ae7f537487207d8ec407aa9d9980794b2030cbc067"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libgo/go/golang.org/x/xerrors/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libgo/go/golang.org/x/xerrors/LICENSE",
+      "sha256": "84d554e7a5d139b7c7b5d6ef0670ae556c4cdcfa354eaad72a1c07c08012c96f"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libiberty/COPYING.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libiberty/COPYING.LIB",
+      "sha256": "32434afcc8666ba060e111d715bfdb6c2d5dd8a35fa4d3ab8ad67d8f850d2f2b"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libphobos/libdruntime/LICENSE.txt",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libphobos/libdruntime/LICENSE.txt",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libphobos/src/LICENSE_1_0.txt",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libphobos/src/LICENSE_1_0.txt",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libquadmath/COPYING.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libquadmath/COPYING.LIB",
+      "sha256": "32434afcc8666ba060e111d715bfdb6c2d5dd8a35fa4d3ab8ad67d8f850d2f2b"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libsanitizer/LICENSE.TXT",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libsanitizer/LICENSE.TXT",
+      "sha256": "74c2b24539a53c34abddb559266d89cb653b0198cd2faf9c04763d3223db7f6d"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/libstdc++-v3/include/pstl/LICENSE.txt",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/libstdc++-v3/include/pstl/LICENSE.txt",
+      "sha256": "0ca8cbe9219a841f9bc8fbb1f8ecdf5e39b1b0e23ee10fb6b0c090d8987dd1eb"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gcc/zlib/contrib/dotzlib/LICENSE_1_0.txt",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gcc/zlib/contrib/dotzlib/LICENSE_1_0.txt",
+      "sha256": "36266a8fd073568394cb81cdb2b124f7fdae2c64c1a7ed09db34b4d22efa2951"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gmp/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gmp/COPYING",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gmp/COPYING.LESSERv3",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gmp/COPYING.LESSERv3",
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gmp/COPYINGv2",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gmp/COPYINGv2",
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/gmp/COPYINGv3",
+      "source": "riscv32-esp-elf 14.2.0+20241119:gmp/COPYINGv3",
+      "sha256": "e6037104443f9a7829b2aa7c5370d0789a7bda3ca65a0b904cdc0c2e285d9195"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/isl/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:isl/LICENSE",
+      "sha256": "3a2c398103f6bca0f50a9a9465deca9230b370b0212af5fdf31ed88a36215c30"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/mpc/COPYING.LESSER",
+      "source": "riscv32-esp-elf 14.2.0+20241119:mpc/COPYING.LESSER",
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/mpfr/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:mpfr/COPYING",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/mpfr/COPYING.LESSER",
+      "source": "riscv32-esp-elf 14.2.0+20241119:mpfr/COPYING.LESSER",
+      "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/newlib/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:newlib/COPYING",
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/newlib/COPYING.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:newlib/COPYING.LIB",
+      "sha256": "a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/newlib/COPYING.LIBGLOSS",
+      "source": "riscv32-esp-elf 14.2.0+20241119:newlib/COPYING.LIBGLOSS",
+      "sha256": "f3b7f3e4426b1fa6f60198dae7adfedd94b77b28db2d108adc0253575011e0ff"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/newlib/COPYING.NEWLIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:newlib/COPYING.NEWLIB",
+      "sha256": "422aa40293093fb54fc66e692a0d68fd0b24ed5602e5d1d33ad05ba3909057e9"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/newlib/COPYING3",
+      "source": "riscv32-esp-elf 14.2.0+20241119:newlib/COPYING3",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/newlib/COPYING3.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:newlib/COPYING3.LIB",
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/newlib/include/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:newlib/include/COPYING",
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/newlib/include/COPYING3",
+      "source": "riscv32-esp-elf 14.2.0+20241119:newlib/include/COPYING3",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/newlib/winsup/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:newlib/winsup/COPYING",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/newlib/winsup/COPYING.LIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:newlib/winsup/COPYING.LIB",
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/newlib/winsup/utils/COPYING.dumper",
+      "source": "riscv32-esp-elf 14.2.0+20241119:newlib/winsup/utils/COPYING.dumper",
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/picolibc/COPYING.GPL2",
+      "source": "riscv32-esp-elf 14.2.0+20241119:picolibc/COPYING.GPL2",
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/picolibc/COPYING.NEWLIB",
+      "source": "riscv32-esp-elf 14.2.0+20241119:picolibc/COPYING.NEWLIB",
+      "sha256": "923f55bb9ce77e9c7f7e8a3a9ec143c83a4a49e3b4fa5cae8a69e5f19ffb2c8d"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/picolibc/COPYING.picolibc",
+      "source": "riscv32-esp-elf 14.2.0+20241119:picolibc/COPYING.picolibc",
+      "sha256": "73879138376be7ab8ccdb4eb116f11d215ff70210ca2ab5183b2b6a7276e52a5"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/zlib/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:zlib/LICENSE",
+      "sha256": "845efc77857d485d91fb3e0b884aaa929368c717ae8186b66fe1ed2495753243"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/zlib/contrib/dotzlib/LICENSE_1_0.txt",
+      "source": "riscv32-esp-elf 14.2.0+20241119:zlib/contrib/dotzlib/LICENSE_1_0.txt",
+      "sha256": "36266a8fd073568394cb81cdb2b124f7fdae2c64c1a7ed09db34b4d22efa2951"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/zstd/COPYING",
+      "source": "riscv32-esp-elf 14.2.0+20241119:zstd/COPYING",
+      "sha256": "f9c375a1be4a41f7b70301dd83c91cb89e41567478859b77eef375a52d782505"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/zstd/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:zstd/LICENSE",
+      "sha256": "7055266497633c9025b777c78eb7235af13922117480ed5c674677adc381c9d8"
+    },
+    {
+      "component": "riscv-toolchain",
+      "file": "third-party/notices/riscv-toolchain/zstd/build/LICENSE",
+      "source": "riscv32-esp-elf 14.2.0+20241119:zstd/build/LICENSE",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "component": "xtensa-runtime",
+      "file": "third-party/notices/xtensa-runtime/gcc-10-COPYING.RUNTIME",
+      "source": "https://raw.githubusercontent.com/gcc-mirror/gcc/releases/gcc-10.3.0/COPYING.RUNTIME",
+      "sha256": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74"
+    },
+    {
+      "component": "xtensa-runtime",
+      "file": "third-party/notices/xtensa-runtime/gcc-10-COPYING3",
+      "source": "https://raw.githubusercontent.com/gcc-mirror/gcc/releases/gcc-10.3.0/COPYING3",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "component": "xtensa-runtime",
+      "file": "third-party/notices/xtensa-runtime/gcc-10-COPYING3.LIB",
+      "source": "https://raw.githubusercontent.com/gcc-mirror/gcc/releases/gcc-10.3.0/COPYING3.LIB",
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+    },
+    {
+      "component": "mdns",
+      "file": "third-party/notices/mdns/mdns/LICENSE",
+      "source": "https://components.espressif.com/api/downloads/?object_type=component&object_id=a42b047d-13a1-43e9-86c6-4723c03c35f9 member mdns/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "component": "network_provisioning",
+      "file": "third-party/notices/network_provisioning/network_provisioning/LICENSE",
+      "source": "https://components.espressif.com/api/downloads/?object_type=component&object_id=d79c4b4c-baae-46bb-aacb-09878beadcab member network_provisioning/LICENSE",
+      "sha256": "f0f612d1627194ddd07c8b5b238a514ae9794632e5470c00f16237def7dc2246"
+    },
+    {
+      "component": "esp_diagnostics",
+      "file": "third-party/notices/esp_diagnostics/esp_diagnostics/LICENSE",
+      "source": "https://components.espressif.com/api/downloads/?object_type=component&object_id=d97d18d4-2295-4d36-8d22-c7988b3f9f55 member esp_diagnostics/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    }
+  ]
+}

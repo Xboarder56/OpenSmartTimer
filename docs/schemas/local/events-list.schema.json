@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/events-list.schema.json",
+  "title": "GET /api/v1/events",
+  "description": "Ring of the latest 16 current-boot events. Resets at boot. Use latest_event_id from /api/v1/status as the 'after' cursor for incremental fetches; pair it with boot_id to detect a restart.",
+  "type": "object",
+  "required": ["boot_id", "latest_event_id", "next_after", "cursor_reset", "truncated", "events"],
+  "additionalProperties": false,
+  "properties": {
+    "boot_id":         { "$ref": "common.schema.json#/$defs/BootId" },
+    "oldest_event_id": { "type": "integer", "minimum": 0 },
+    "latest_event_id": { "type": "integer", "minimum": 0 },
+    "next_after":      {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Safe to persist even when events[] is empty; pass back as ?after=<value>."
+    },
+    "cursor_reset": {
+      "type": "boolean",
+      "description": "true when the supplied boot is stale or the cursor is ahead of the device. Response contains the retained current-boot history and the client must replace its cursor."
+    },
+    "truncated": {
+      "type": "boolean",
+      "description": "true when more than 16 events occurred and the requested cursor fell behind the oldest retained item."
+    },
+    "events": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/Event" }
+    }
+  }
+}

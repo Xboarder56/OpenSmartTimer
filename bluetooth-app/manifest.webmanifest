@@ -1,0 +1,22 @@
+{
+  "id": "./",
+  "name": "Smart Timer Bluetooth",
+  "short_name": "Smart Timer",
+  "description": "Local Bluetooth control for Smart Timer V2.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "categories": ["utilities"],
+  "background_color": "#09070d",
+  "theme_color": "#0b0710",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ]
+}
