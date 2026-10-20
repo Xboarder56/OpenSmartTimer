@@ -190,7 +190,16 @@ const pageServer=http.createServer((req,res)=>{
   // Reproduce a real operator click late in the ten-second heartbeat cycle.
   await page.waitForTimeout(6500);
   await page.locator('[data-op="start"]').click();
-  await page.waitForFunction(()=>state.awaitingCommand!==null);
+  // A fast relay can start and finish the command within one animation frame,
+  // so accept either the in-flight state or its result; an ignored click still fails.
+  await page.waitForFunction(()=>state.awaitingCommand!==null||state.status?.state==='running').catch(async error=>{
+   // Keep what the page saw, so a failure on a CI runner can be diagnosed.
+   const seen=await page.evaluate(()=>({fresh:state.fresh,closed:state.closed,expired:state.expired,
+     awaiting:state.awaitingCommand,status:state.status&&{state:state.status.state,session:state.status.session_id},
+     sinceVerifiedMs:Date.now()-state.lastVerifiedWallMs,result:document.getElementById('lastResult')?.textContent})).catch(e=>({evaluate:e.message}));
+   await page.screenshot({path:path.join(output,'start-click-failure.png'),fullPage:true}).catch(()=>{});
+   throw new Error(error.message+' — page state after Start: '+JSON.stringify({seen,commands:commands.length,errors}));
+  });
   assert.equal(await page.locator('#pendingCard').isVisible(),false,'normal requests must not flash an unknown-outcome card');
   await page.waitForFunction(()=>state.status?.state==='running'&&!state.awaitingCommand);
   assert.equal(commands.at(-1).params.duration_ms,900000);
