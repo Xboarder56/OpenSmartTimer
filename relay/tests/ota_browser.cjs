@@ -38,7 +38,7 @@ const server=http.createServer((req,res)=>{
    await page.route('**/web/updates.js',inject);await page.route('**/updates.js',inject);
    async function inject(route){
     const response=await route.fetch();const source=await response.text();
-    await route.fulfill({response,body:source+'\nconst realPanel=SmartTimerUpdates.panel;SmartTimerUpdates.panel=options=>realPanel({...options,device:async()=>window.otaTestDevice,install:async(file,meta)=>{window.otaInstalled={size:file.size,meta};}});'});
+    await route.fulfill({response,body:source+'\nconst realPanel=SmartTimerUpdates.panel;SmartTimerUpdates.panel=options=>realPanel({...options,device:async()=>window.otaTestDevice,install:async(file,meta,report)=>{window.otaInstalled={size:file.size,meta,reports:typeof report==="function"};if(report)report("Update installed. The device is restarting…","ok");}});'});
    }
    await page.addInitScript(d=>{window.otaTestDevice=d;},device);
    if(name==='bluetooth')await page.route('**/bluetooth-app/app.js',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text())+'\nrefreshSystemInfo=async()=>{};maintainLiveStatus=async()=>{};window.showTestBLESettings=()=>{app.server={connected:true,disconnect(){}};app.authenticated=true;app.live={state:"open",controls_locked:false};renderManagementAvailability();};'});});
@@ -77,6 +77,13 @@ const server=http.createServer((req,res)=>{
    await page.locator('[data-update-check]').click();await page.locator(accept).click();await page.waitForFunction(()=>window.otaInstalled);
    assert.equal(downloads,1);assert.equal(await page.evaluate(()=>window.otaInstalled.size),image.length);
    assert.equal(await page.evaluate(()=>window.otaInstalled.meta.release_signature),record.release_signature);
+   // An online update reports its whole progress on the Online update line.
+   assert.equal(await page.evaluate(()=>window.otaInstalled.reports),true,'the panel passes its own progress line to the install');
+   assert.equal(await page.locator('[data-update-message]').textContent(),'Update installed. The device is restarting…');
+   if(name==='wifi'){
+    assert.equal(await page.locator('#otaMessage').textContent(),'','file-install line stays empty during an online update');
+    assert.equal(await page.locator('#otaButton').isDisabled(),true,'Install update needs a chosen file');
+   }
    assert.deepEqual(errors,[]);checks.push(name+': no releases, plain notes, responsive modal, Cancel, physical arm, signed Install');await ctx.close();
   }
   fs.writeFileSync(path.join(out,'RESULT.json'),JSON.stringify({passed:true,checks,scope:'synthetic signed browser fixtures; no hardware flash'},null,2)+'\n');console.log('PASS: '+checks.join('; '));

@@ -242,7 +242,8 @@
         say('Downloading update…', 'busy');
         const file = await download(candidate);
         say('Download complete. The timer will verify the signed firmware.', 'busy');
-        await install(file, metadata(candidate.record));
+        // The install reports its own steps on this panel's line.
+        await install(file, metadata(candidate.record), say);
       } catch (error) { say(error.message, 'error'); }
       finally { busy = false; render(); }
     });
