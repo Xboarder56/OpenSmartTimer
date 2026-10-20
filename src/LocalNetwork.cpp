@@ -34,6 +34,11 @@ void LocalNetwork::begin() {
   // pinned C3 core this also records the policy before STA is started.
   // PMF/WPA3 and RF coexistence remain enabled; this is not a PMF downgrade.
   WiFi.setSleep(false);
+#else
+  // V1 too: modem sleep made the radio wake only at beacon intervals, so a
+  // page could wait a second or more for an answer. The lock coil draws far
+  // more than the radio during a session.
+  WiFi.setSleepMode(WIFI_NONE_SLEEP);
 #endif
   WiFi.setAutoReconnect(true);
   registerWifiDiagnostics();

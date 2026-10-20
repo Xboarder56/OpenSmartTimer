@@ -374,6 +374,7 @@ void loop() {
   ResetTrace::mark(ResetTrace::kNetwork);
   localNetwork.loop(nowMs);
 #if defined(SMART_TIMER_HARDWARE_V2)
+  ResetTrace::mark(ResetTrace::kBluetoothStart);
   serviceBluetoothAutoStart(nowMs);
 #endif
   bool statusLed = Hardware::statusLedOn(
@@ -422,6 +423,7 @@ void loop() {
                         bluetoothApplication.pairingActive(nowMs));
 #endif
 #if defined(SMART_TIMER_HARDWARE_V2)
+  ResetTrace::mark(ResetTrace::kBootValidation);
   serviceBootValidation(nowMs);
 #endif
   // A trace stuck here means the hang came after loop() returned: in the

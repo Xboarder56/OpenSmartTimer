@@ -803,10 +803,10 @@ continue during that wait.
 `status_json_failure_count` counts checked status-serialization failures across
 REST, timer mutation replies and SSE during the current boot; it does not count
 transport truncation or every other JSON endpoint. `wifi_power_save_mode` reports
-the actual SDK mode (`none`, `min_modem`, `max_modem`, `light`, or `unknown`). V2
-requests no modem sleep to favor response latency over power consumption; V1's
-policy is unchanged. Disabling modem sleep favors responsiveness at the cost
-of power consumption; battery runtime depends on the installation and workload.
+the actual SDK mode (`none`, `min_modem`, `max_modem`, `light`, or `unknown`). Both
+models request no modem sleep (`none`) to favor response latency over power
+consumption. Disabling modem sleep favors responsiveness at the cost of power
+consumption; battery runtime depends on the installation and workload.
 
 On V2, `wifi_sa_query_timeout_count` counts unexpected reason-209 disconnects
 (`sa_query_timeout`); `wifi_last_disconnect_rssi_dbm` captures the SDK's signal
@@ -837,7 +837,7 @@ diagnostics. Peer discovery is not exposed by the application.
 
 `last_reset_trace`, when present, says where the previous run was when the chip reset: `phase` (such as `web_request`, `network_scan`, `network_mdns` or `loop_end`), the last request path in `uri`, and that run's `uptime_ms`. It is kept in memory that survives a watchdog reset (RTC memory), so after an unexpected `reset_reason` it locates the hang; after a normal restart it simply shows the last step before it.
 
-`loop_stall` records the longest pause in the timer's main loop this boot: `longest_ms`, the loop `phase` it happened in (the same names as `last_reset_trace`; `loop_end` is time spent outside the loop), the request path in `uri` when that phase was a web request, the `uptime_ms` when the pause ended and how many pauses lasted a second or more (`over_1s_count`). Timer expiry is handled in the main loop, so a long pause can delay a timed release by that long; the emergency input cuts the lock output through an interrupt and does not wait for the loop. A firmware upload shows as a long `web_request` pause; it needs an open timer. Phases are marked at a few points in the loop, so time in a step without its own mark is counted to the phase before it (Bluetooth start-up, for example, is counted as `network`).
+`loop_stall` records the longest pause in the timer's main loop this boot: `longest_ms`, the loop `phase` it happened in (the same names as `last_reset_trace`; `loop_end` is time spent outside the loop), the request path in `uri` when that phase was a web request, the `uptime_ms` when the pause ended and how many pauses lasted a second or more (`over_1s_count`). Timer expiry is handled in the main loop, so a long pause can delay a timed release by that long; the emergency input cuts the lock output through an interrupt and does not wait for the loop. A firmware upload shows as a long `web_request` pause; it needs an open timer. Phases are marked at a few points in the loop, so time in a step without its own mark is counted to the phase before it. On V2, Bluetooth start-up (`bluetooth_start`) and the post-update boot check (`boot_validation`) have their own phases.
 
 `heap_low_water` records what held memory at the lowest free heap seen this boot: `free_bytes`, `uptime_ms`, the live streams open (`sse_clients`) and their unsent bytes (`sse_pending_bytes`), the last request path (`last_uri`) and, on V1, open TCP connections (`tcp_active`), connections still closing (`tcp_time_wait`) and bytes queued in the TCP stack (`tcp_queued_bytes`). It is for diagnosing memory pressure; the V2 reports the since-boot minimum, which includes brief Bluetooth start-up peaks.
 
