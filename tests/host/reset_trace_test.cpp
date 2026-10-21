@@ -25,6 +25,9 @@ int main() {
   assert(worst.phase == kWebRequest && std::strcmp(worst.uri, "/api/v1/status") == 0);
   assert(worst.overSecondCount == 2);
   assert(std::strcmp(phaseName(worst.phase), "web_request") == 0);
+  assert(std::strcmp(phaseName(kBluetoothStart), "bluetooth_start") == 0);
+  assert(std::strcmp(phaseName(kBootValidation), "boot_validation") == 0);
+  assert(kBluetoothStart > kNetworkMdns);  // appended: stored traces keep their numbers
 
   at(9000); mark(kTimer);     // a longer pause outside any request
   assert(worst.longestMs == 3700 && worst.phase == kInputs && worst.uri[0] == '\0');

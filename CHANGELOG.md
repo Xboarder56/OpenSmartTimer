@@ -2,6 +2,17 @@
 
 User-facing changes to OpenSmartTimer firmware, its browser apps and the relay. Versions follow `firmware_version` in `platformio.ini`. An **Unreleased** label identifies changes that have not been published.
 
+## [Unreleased]
+
+### Firmware updates
+
+- During an online update, every progress step now appears under **Online update**, and **Install update** for a file stays disabled until a file is chosen. This applies to the timer page and the Bluetooth app.
+
+### Timer and local interface
+
+- V1 keeps its Wi-Fi radio awake, as V2 already does, so the timer page answers promptly instead of occasionally waiting a second or more. The radio uses a little more power; the lock coil still draws far more during a session.
+- Diagnostics: the main-loop pause record (`loop_stall`) gives V2 Bluetooth start-up and the post-update boot check their own phases.
+
 ## [1.0.0-rc.2] - 2026-10-19
 
 The first public release candidate of OpenSmartTimer: open replacement firmware for the MagBound Smart Timer V1 and V2, with a built-in web page, a Bluetooth app for the V2 and an optional self-hosted relay for sharing.

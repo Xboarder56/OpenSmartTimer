@@ -17,6 +17,8 @@ enum Phase : uint8_t {
   kNone, kInputs, kTimer, kNetwork, kNetworkDns, kNetworkScan, kNetworkStation,
   kWeb, kWebRequest, kWebAfter, kWebStreams, kBluetooth, kRelay, kLoopEnd,
   kNetworkMdns,
+  // Appended so stored traces from earlier builds keep their meaning.
+  kBluetoothStart, kBootValidation,
 };
 
 struct Record {
@@ -137,6 +139,8 @@ inline const char* phaseName(uint8_t phase) {
     case kRelay: return "relay";
     case kLoopEnd: return "loop_end";
     case kNetworkMdns: return "network_mdns";
+    case kBluetoothStart: return "bluetooth_start";
+    case kBootValidation: return "boot_validation";
     default: return "none";
   }
 }
