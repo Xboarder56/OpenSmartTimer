@@ -10,6 +10,7 @@
 #include "nvs.h"
 
 #include "ITimerControl.h"
+#include "TlsArena.h"
 
 namespace opensmarttimer { namespace relay {
 
@@ -72,8 +73,15 @@ void RelayIdentity::setTimerId(const char* timer_id) {
     timer_id_[sizeof(timer_id_) - 1] = '\0';
 }
 
-size_t heapLargestFreeBlock() { return heap_caps_get_largest_free_block(MALLOC_CAP_8BIT); }
-size_t heapFree() { return heap_caps_get_free_size(MALLOC_CAP_8BIT); }
+// With a reserved TLS arena, a new connection allocates there, so the gate
+// measures the arena rather than the general heap.
+size_t heapLargestFreeBlock() {
+    return TlsArena::reserved() ? TlsArena::largestFreeBlock()
+                                : heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+}
+size_t heapFree() {
+    return TlsArena::reserved() ? TlsArena::freeBytes() : heap_caps_get_free_size(MALLOC_CAP_8BIT);
+}
 
 }}  // namespace opensmarttimer::relay
 #endif

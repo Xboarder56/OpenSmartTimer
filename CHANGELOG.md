@@ -11,6 +11,7 @@ User-facing changes to OpenSmartTimer firmware, its browser apps and the relay. 
 ### Timer and local interface
 
 - V2 opens on time even while its web server waits on a slow connection: a hardware timer turns the lock output off within 0.2 seconds of a timed release (expiry or a share link's limit) if the main loop has not done so yet. Previously such a wait, for example while a lost Wi-Fi packet was resent, could delay the release by several seconds. Pause, time changes and Unlock now work as before. V1 releases from its main loop as before; its web server does not wait this way. Diagnostics report how often the backstop acted (`deadline_backstop`).
+- V2 sharing no longer stays offline after long use with Bluetooth. The relay now reserves its encryption memory once when it starts, so memory fragmented by Bluetooth and the web page can no longer leave it waiting with `low_memory` while plenty is free. The relay status reports the block as `tls_arena`.
 - V1 keeps its Wi-Fi radio awake, as V2 already does, so the timer page answers promptly instead of occasionally waiting a second or more. The radio uses a little more power; the lock coil still draws far more during a session.
 - Diagnostics: the main-loop pause record (`loop_stall`) gives V2 Bluetooth start-up and the post-update boot check their own phases.
 

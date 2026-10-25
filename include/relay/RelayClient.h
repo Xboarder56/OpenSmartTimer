@@ -58,6 +58,13 @@ constexpr size_t kResultRingSize = 8;
 // fragmentation after Bluetooth use keep sharing offline with plenty free.
 constexpr size_t kTlsHeapFloorFreeBytes = 40 * 1024;
 constexpr size_t kTlsHeapFloorLargestBlockBytes = 20 * 1024;
+// On V2 the relay reserves this much once, at start, as a private heap for
+// its TLS allocations (TlsArena), and the floors above are then measured in
+// it. Idle, it must still clear both floors after the relay's long-lived
+// allocations.
+constexpr size_t kTlsArenaBytes = 48 * 1024;
+static_assert(kTlsArenaBytes >= kTlsHeapFloorFreeBytes + 4 * 1024,
+              "the idle TLS arena must clear the heap floor");
 
 enum class GrantState : uint8_t { Unknown, Pending, Ready, Revoking, Revoked, Expired, Error };
 struct GrantSync {

@@ -74,9 +74,10 @@ slot free (`scripts/release/verify_release.py`), and V2 currently has under
 flash. Check the size line from `verify_release.py` after firmware or web
 changes.
 
-**RAM is shared between Bluetooth and the relay on V2.** The relay's TLS
-connection needs 40 KB of free heap and a 20 KB block, and Bluetooth holds about
-51 KB while its radio is on. The Bluetooth settings in
+**RAM is shared between Bluetooth and the relay on V2.** The relay reserves a
+48 KB block at start for its TLS connection (which needs 40 KB free and a 20 KB
+contiguous block within it), and Bluetooth holds about 51 KB while its radio is
+on. The Bluetooth settings in
 `framework/esp32c3/defconfig.opensmarttimer` are sized for that; check free heap
 on a timer with both active before raising a pool, a connection count or an
 SSE/event limit.
