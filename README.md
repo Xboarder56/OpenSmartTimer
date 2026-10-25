@@ -5,7 +5,7 @@ Independently written replacement firmware for the **MagBound Smart Timer V1 (Le
 > [!WARNING]
 > This unofficial experimental firmware controls a physical lock and can be used with human restraints. Failure to release can cause serious injury or death. Never rely on software, Wi-Fi, a timer, battery removal, or one emergency path as the only means of release. Power it from a battery only, never from a wall outlet, whenever it controls a lock. Never use it for self-restraint while alone. Read the [safety, warranty, and liability notice](SAFETY.md) before downloading, installing, distributing, or using it. The firmware is provided as is, without warranty of any kind; you install and use it entirely at your own risk.
 
-**Status:** `1.0.0-rc.2`, a release candidate. Every published release, pre-releases included, is offered to every timer of that model when its owner checks for updates.
+**Status:** `1.0.0-rc.3`, a release candidate. Every published release, pre-releases included, is offered to every timer of that model when its owner checks for updates.
 
 **Website:** [xboarder56.github.io/OpenSmartTimer](https://xboarder56.github.io/OpenSmartTimer/) has the Smart Timer Bluetooth app for the V2 and links to everything else. Firmware images are on the [releases page](https://github.com/Xboarder56/OpenSmartTimer/releases).
 

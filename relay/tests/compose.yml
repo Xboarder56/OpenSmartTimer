@@ -4,7 +4,7 @@ services:
     build:
       context: ../..
       dockerfile: relay/Dockerfile
-    image: ostrelay-test:1.0.0-rc.2
+    image: ostrelay-test:1.0.0-rc.3
     init: true
     ports: ["127.0.0.1::8080"]
     environment:

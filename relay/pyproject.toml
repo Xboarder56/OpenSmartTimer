@@ -1,6 +1,6 @@
 [project]
 name = "ostrelay"
-version = "1.0.0-rc.2"
+version = "1.0.0-rc.3"
 description = "OpenSmartTimer ost-relay/1 reference relay"
 requires-python = ">=3.11"
 license = {text = "AGPL-3.0-only"}

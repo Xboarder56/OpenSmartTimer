@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "firmware_version": "1.0.0-rc.3",
+  "recorded_utc": "2026-10-25T22:07:25Z",
+  "qualification": "partial",
+  "source": null,
+  "note": "Provisional: lists the locally built images of this source with every check pending. It is replaced with the CI-built images and the maintainer's bench results before the release is tagged.",
+  "artifacts": [
+    {
+      "hardware_model": "MagBound Smart Timer V1",
+      "chip_family": "ESP8266",
+      "file": "OpenSmartTimer-1.0.0-rc.3-MagBoundV1-ESP8266.bin",
+      "build_id": "094042b985ba456b4fcec79f",
+      "size_bytes": 521744,
+      "crc32": "4d1dd0f5",
+      "sha256": "35392519936655697c11717273ccd2dc5365a515e06deb8eb0e5f97c4bdfd977",
+      "checks": {
+        "rest_sse": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "signed_http_ota": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "mixed_transport_soak": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "physical_safety": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "network_recovery": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "ota_recovery_vendor_rollback": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        }
+      }
+    },
+    {
+      "hardware_model": "MagBound Smart Timer V2",
+      "chip_family": "ESP32-C3",
+      "file": "OpenSmartTimer-1.0.0-rc.3-MagBoundV2-ESP32C3.bin",
+      "build_id": "0d2455bb0c0c9fcbb166eca3",
+      "size_bytes": 1266192,
+      "crc32": "7dcbaf28",
+      "sha256": "3191e158a62492968435e10cbf45206a5546ae44606941c59114dd8a2e4bb096",
+      "checks": {
+        "rest_sse": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "signed_http_ota": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "mixed_transport_soak": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "physical_safety": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "network_recovery": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "ota_recovery_vendor_rollback": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "bluetooth_approval_recovery": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "signed_bluetooth_ota": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "relay_qualification": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        }
+      }
+    }
+  ],
+  "checks": {
+    "companion_phone_pwa": {
+      "status": "pending",
+      "summary": "Not yet checked on this release."
+    }
+  }
+}

@@ -2,22 +2,27 @@
 
 User-facing changes to OpenSmartTimer firmware, its browser apps and the relay. Versions follow `firmware_version` in `platformio.ini`. An **Unreleased** label identifies changes that have not been published.
 
-## [Unreleased]
+## [1.0.0-rc.3] - 2026-10-25
 
 ### Firmware updates
 
-- During an online update, every progress step now appears under **Online update**, and **Install update** for a file stays disabled until a file is chosen. This applies to the timer page and the Bluetooth app.
-- V2: the Bluetooth app no longer sends a release over Bluetooth when the timer is on Wi-Fi. After you approve the update and press Reset, the timer downloads, verifies and installs it over its own Wi-Fi, which takes about a minute instead of several. Its signature and SHA-256 are checked exactly as before, and timer starts are refused until it finishes. Integrations can use `POST /api/v1/ota/download`. V1 and the timer page keep downloading in the browser.
+- V2: when the timer is on Wi-Fi, the Bluetooth app no longer sends an update over Bluetooth. After you approve the update and press Reset, the timer downloads and installs it itself in about a minute instead of several. The update is checked exactly as before, and the timer cannot be started until it has finished. Meanwhile the timer page shows **Firmware update in progress**.
+- If the Bluetooth app reconnects while the timer is installing an update this way, it shows the progress again.
+- During an online update, every step now appears under **Online update**, and **Install update** for a file stays unavailable until you choose a file. This applies to the timer page and the Bluetooth app.
 
-### Timer and local interface
+### Timer and lock
 
-- V2 opens on time even while its web server waits on a slow connection: a hardware timer turns the lock output off within 0.2 seconds of a timed release (expiry or a share link's limit) if the main loop has not done so yet. Previously such a wait, for example while a lost Wi-Fi packet was resent, could delay the release by several seconds. Pause, time changes and Unlock now work as before. V1 releases from its main loop as before; its web server does not wait this way. Diagnostics report how often the backstop acted (`deadline_backstop`).
-- V1 keeps its Wi-Fi radio awake, as V2 already does, so the timer page answers promptly instead of occasionally waiting a second or more. The radio uses a little more power; the lock coil still draws far more during a session.
-- Diagnostics: the main-loop pause record (`loop_stall`) gives V2 Bluetooth start-up and the post-update boot check their own phases.
+- V2 now opens on time even when its page is slow to answer. Before, a slow or interrupted Wi-Fi connection could delay a timed release by several seconds.
+- V1's page answers promptly instead of sometimes pausing for a second or more. Its Wi-Fi now stays fully awake, as on V2. This uses a little more battery; the lock still draws far more during a session.
+
+### Remote sharing (V2 Smart Timer only, experimental)
+
+- While the timer installs an update, sharing shows **Paused for a firmware update** and reconnects afterwards.
 
 ### Known limits
 
-- V2 remote sharing can stay offline after long use with Bluetooth on: memory becomes fragmented until no block is large enough for the relay's encrypted connection, and the relay status shows `low_memory` although plenty is free. The timer, its lock and Bluetooth are unaffected. Restarting the timer clears it.
+- V2: after long use with Bluetooth on, remote sharing can stay offline while the timer itself works normally, with sharing showing **Waiting for free memory before connecting.** Restart the timer to bring sharing back. The lock, its timing and Bluetooth are not affected.
+- Hardware checks for this release are partial: the maintainer's own bench report on one unit of each model ([docs/qualification](docs/qualification/README.md)).
 
 ## [1.0.0-rc.2] - 2026-10-19
 

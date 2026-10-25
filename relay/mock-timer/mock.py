@@ -99,7 +99,7 @@ class TimerState:
             "emergency_input_active": self.emergency_input_active,
             "max_duration_ms": self.max_duration_ms,
             "api_version": "v1",
-            "version": "1.0.0-rc.2",
+            "version": "1.0.0-rc.3",
             "device_id": "mockmocktimer",
             "hardware_model": "MagBound Smart Timer V2",
             "chip_family": "ESP32-C3",
