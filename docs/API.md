@@ -1316,8 +1316,8 @@ until a new setup is physically approved.
   "relay_host": "relay.example.com", "timer_id": "abc123", "last_error": "",
   "reconnects": 1, "live_links": 1, "link_limit": 1, "task_stack_min_free_bytes": 5120,
   "free_heap_bytes": 81234, "largest_free_block_bytes": 57344,
-  "tls_arena": {"size_bytes": 49152, "free_bytes": 47104,
-                "minimum_free_bytes": 14336, "fallback_count": 0}
+  "tls_arena": {"size_bytes": 32768, "free_bytes": 20672,
+                "minimum_free_bytes": 6588, "fallback_count": 0}
 }
 ```
 

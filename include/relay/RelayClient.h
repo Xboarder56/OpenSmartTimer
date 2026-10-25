@@ -59,12 +59,17 @@ constexpr size_t kResultRingSize = 8;
 constexpr size_t kTlsHeapFloorFreeBytes = 40 * 1024;
 constexpr size_t kTlsHeapFloorLargestBlockBytes = 20 * 1024;
 // On V2 the relay reserves this much once, at start, as a private heap for
-// its TLS allocations (TlsArena), and the floors above are then measured in
-// it. Idle, it must still clear both floors after the relay's long-lived
-// allocations.
-constexpr size_t kTlsArenaBytes = 48 * 1024;
-static_assert(kTlsArenaBytes >= kTlsHeapFloorFreeBytes + 4 * 1024,
-              "the idle TLS arena must clear the heap floor");
+// its TLS allocations (TlsArena). A handshake peaked at 26.2 KB in it on a
+// bench V2 (about 12 KB once connected); anything that does not fit falls
+// back to the general heap. Every byte reserved here is taken from the
+// general heap, which Bluetooth and the web server share, so keep it close
+// to the measured need. Only TLS uses the block, so a new connection needs
+// kTlsArenaFloorFreeBytes free in it rather than the general-heap floor.
+constexpr size_t kTlsArenaBytes = 32 * 1024;
+constexpr size_t kTlsArenaFloorFreeBytes = 28 * 1024;
+static_assert(kTlsArenaBytes >= kTlsArenaFloorFreeBytes &&
+              kTlsArenaFloorFreeBytes >= kTlsHeapFloorLargestBlockBytes,
+              "the idle TLS arena must clear its floor");
 
 enum class GrantState : uint8_t { Unknown, Pending, Ready, Revoking, Revoked, Expired, Error };
 struct GrantSync {
