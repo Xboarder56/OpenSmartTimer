@@ -8,6 +8,7 @@
 
 #include "ReleaseUpdateConfig.h"
 #include "UpdateFeedRecord.h"
+#include "esp_heap_caps.h"
 #include "esp_transport.h"
 #include "esp_transport_ssl.h"
 #include "freertos/FreeRTOS.h"
@@ -31,20 +32,26 @@ constexpr char kFileLabel[] = "MagBoundV2-ESP32C3";
 portMUX_TYPE lock = portMUX_INITIALIZER_UNLOCKED;
 // Guarded by lock.
 Progress shared;
-uint8_t mailbox[kChunkBytes];
 size_t mailboxLength = 0;
 bool mailboxFull = false;
 bool taskRunning = false;
-// Written by the task before it publishes Ready; read by loop() after.
-ReleaseUpdate::Descriptor verified;
-char imageFile[sizeof(UpdateFeed::Record::file)];
-// Written by start() before the task exists.
-char expectedVersion[ReleaseUpdate::kVersionBytes];
-char installedVersion[ReleaseUpdate::kVersionBytes];
+// Buffers a download needs, about 2.3 KB. Allocated by the first start() of
+// a boot rather than held from boot, so the web server, Bluetooth and the
+// relay keep that memory on the many boots that never download.
+struct Session {
+  uint8_t mailbox[kChunkBytes];  // guarded by lock
+  // Written by the task before it publishes Ready; read by loop() after.
+  ReleaseUpdate::Descriptor verified;
+  char imageFile[sizeof(UpdateFeed::Record::file)];
+  // Written by start() before the task exists.
+  char expectedVersion[ReleaseUpdate::kVersionBytes];
+  char installedVersion[ReleaseUpdate::kVersionBytes];
+  mbedtls_x509_crt emptyChain;
+};
+Session* session = nullptr;
 volatile bool imageGo = false;
 volatile bool stopRequested = false;
 const char* sinkError = nullptr;
-mbedtls_x509_crt emptyChain;
 
 void setPhase(Phase phase) {
   portENTER_CRITICAL(&lock);
@@ -70,9 +77,9 @@ int acceptServer(void*, mbedtls_x509_crt*, int, uint32_t* flags) {
 
 esp_err_t attachVerifier(void* conf) {
   mbedtls_ssl_config* ssl = static_cast<mbedtls_ssl_config*>(conf);
-  mbedtls_x509_crt_init(&emptyChain);
-  emptyChain.version = 3;  // non-empty marker, as esp_crt_bundle does
-  mbedtls_ssl_conf_ca_chain(ssl, &emptyChain, nullptr);
+  mbedtls_x509_crt_init(&session->emptyChain);
+  session->emptyChain.version = 3;  // non-empty marker, as esp_crt_bundle does
+  mbedtls_ssl_conf_ca_chain(ssl, &session->emptyChain, nullptr);
   mbedtls_ssl_conf_verify(ssl, acceptServer, nullptr);
   return ESP_OK;
 }
@@ -212,7 +219,7 @@ bool imageSink(void*, const uint8_t* data, size_t length) {
       portENTER_CRITICAL(&lock);
       const bool free = !mailboxFull;
       if (free) {
-        memcpy(mailbox, data, piece);
+        memcpy(session->mailbox, data, piece);
         mailboxLength = piece;
         mailboxFull = true;
         shared.receivedBytes += static_cast<uint32_t>(piece);
@@ -261,11 +268,12 @@ void run() {
     fail("record_invalid");
     return;
   }
-  if (expectedVersion[0] != '\0' && strcmp(expectedVersion, record.version) != 0) {
+  if (session->expectedVersion[0] != '\0' &&
+      strcmp(session->expectedVersion, record.version) != 0) {
     fail("version_changed");
     return;
   }
-  if (!ReleaseUpdate::newer(record.version, installedVersion)) {
+  if (!ReleaseUpdate::newer(record.version, session->installedVersion)) {
     fail("up_to_date");
     return;
   }
@@ -287,8 +295,8 @@ void run() {
     fail("signature_invalid");
     return;
   }
-  verified = descriptor;
-  strncpy(imageFile, record.file, sizeof(imageFile) - 1);
+  session->verified = descriptor;
+  strncpy(session->imageFile, record.file, sizeof(session->imageFile) - 1);
   portENTER_CRITICAL(&lock);
   shared.totalBytes = descriptor.size;
   strncpy(shared.version, descriptor.version, sizeof(shared.version) - 1);
@@ -300,7 +308,7 @@ void run() {
     return;
   }
   setPhase(Phase::Downloading);
-  snprintf(path, sizeof(path), "%supdates/images/%s", site.basePath, imageFile);
+  snprintf(path, sizeof(path), "%supdates/images/%s", site.basePath, session->imageFile);
   if (!get(site, path, descriptor.size, true, imageSink, nullptr, error)) {
     fail(error);
     return;
@@ -332,6 +340,11 @@ void taskEntry(void*) {
 }  // namespace
 
 bool start(const char* expected, const char* installed) {
+  if (session == nullptr) {
+    session = static_cast<Session*>(
+        heap_caps_calloc(1, sizeof(Session), MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT));
+    if (session == nullptr) return false;
+  }
   portENTER_CRITICAL(&lock);
   const bool busy = taskRunning || (shared.phase != Phase::Idle && shared.phase != Phase::Failed);
   if (!busy) {
@@ -343,10 +356,12 @@ bool start(const char* expected, const char* installed) {
   }
   portEXIT_CRITICAL(&lock);
   if (busy) return false;
-  strncpy(expectedVersion, expected ? expected : "", sizeof(expectedVersion) - 1);
-  expectedVersion[sizeof(expectedVersion) - 1] = '\0';
-  strncpy(installedVersion, installed, sizeof(installedVersion) - 1);
-  installedVersion[sizeof(installedVersion) - 1] = '\0';
+  memset(session->imageFile, 0, sizeof(session->imageFile));
+  strncpy(session->expectedVersion, expected ? expected : "",
+          sizeof(session->expectedVersion) - 1);
+  session->expectedVersion[sizeof(session->expectedVersion) - 1] = '\0';
+  strncpy(session->installedVersion, installed, sizeof(session->installedVersion) - 1);
+  session->installedVersion[sizeof(session->installedVersion) - 1] = '\0';
   imageGo = false;
   stopRequested = false;
   sinkError = nullptr;
@@ -376,7 +391,7 @@ bool active() {
 
 bool descriptor(ReleaseUpdate::Descriptor& out) {
   if (progress().phase != Phase::Ready) return false;
-  out = verified;
+  out = session->verified;
   return true;
 }
 
@@ -386,7 +401,7 @@ bool takeChunk(uint8_t* out, size_t& length) {
   portENTER_CRITICAL(&lock);
   const bool full = mailboxFull;
   if (full) {
-    memcpy(out, mailbox, mailboxLength);
+    memcpy(out, session->mailbox, mailboxLength);
     length = mailboxLength;
     mailboxFull = false;
   }
