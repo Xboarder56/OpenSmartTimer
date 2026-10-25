@@ -132,7 +132,9 @@ def package(root: Path, output: Path, cache: Path, offline: bool = False) -> Pat
     output.mkdir(parents=True, exist_ok=True)
     prefix = f'OpenSmartTimer-{version}-Source-Materials'
     target = output / (prefix + '.tar.gz')
-    with tempfile.TemporaryDirectory() as directory:
+    # Stage beside the output so the final rename stays on one filesystem;
+    # runners may mount the system temporary directory separately.
+    with tempfile.TemporaryDirectory(dir=output) as directory:
         project = Path(directory) / 'project.tar'
         revision = project_archive(root, project)
         manifest = {'schema': 1, 'firmware_version': version, 'source_revision': revision,
