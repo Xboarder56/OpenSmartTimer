@@ -586,6 +586,12 @@
     setText('recoveryModeMessage', `${recoveryNetwork}${localizedRetryExplanation}`);
     $('recoveryBanner').classList.toggle('hidden', !recoveryActive);
     $('recoveryModeCallout').classList.toggle('hidden', !recoveryActive);
+    // A V2 download started from the Bluetooth app (or the API).
+    const download = next.ota_download || {};
+    $('downloadBanner').classList.toggle('hidden', !updateDownloading(next));
+    setText('downloadTitle', download.state === 'downloading' && download.total_bytes > 0
+      ? t('Firmware update in progress… {percent}%', { percent: Math.round((download.received_bytes * 100) / download.total_bytes) })
+      : t('Firmware update in progress'));
     const unverifiedFirmwareAllowed = Boolean(next.ota_unverified_allowed);
     $('otaUnverifiedBanner').classList.toggle('hidden', !unverifiedFirmwareAllowed);
     $('otaUnverifiedScope').classList.toggle('hidden', !unverifiedFirmwareAllowed);
@@ -629,11 +635,15 @@
     return true;
   }
 
+  function updateDownloading(value = status) {
+    return ['checking', 'downloading', 'installing'].includes(value?.ota_download?.state);
+  }
+
   function updateControls() {
     renderRelayAvailability();
     const unavailable = busy || !online || !status;
     const timerOpen = Boolean(status && status.state === 'open');
-    $('startButton').disabled = unavailable || Boolean(status.emergency_input_active);
+    $('startButton').disabled = unavailable || Boolean(status.emergency_input_active) || updateDownloading();
     $('pauseButton').disabled = unavailable || status.sealed;
     $('stopButton').disabled = unavailable || status.sealed;
     $('sealButton').disabled = unavailable || status.sealed || status.state !== 'running';
@@ -1969,7 +1979,7 @@
     if (relay.setup_pending) return 'Waiting for physical approval';
     if (relay.enrolled && !relay.partner_origin) return 'Approve remote sharing setup';
     if (!relay.enrolled) return relay.enrolling ? 'Setting up…' : 'Not set up';
-    if (relay.paused_for_bluetooth) return 'Paused for Bluetooth';
+    if (relay.paused_for_bluetooth) return updateDownloading() ? 'Paused for a firmware update' : 'Paused for Bluetooth';
     if (relay.stopping) return 'Stopping…';
     if (!relay.enabled) return 'Off';
     if (relay.state === 'connected') return relay.sharing_available ? 'Connected' : 'Connected, busy';
@@ -1984,7 +1994,8 @@
   function relayAvailability(relay, fresh) {
     if (!relay || !(relay.enrolled || relay.enrolling)) return null;
     if (!fresh) return { label: 'RELAY UNAVAILABLE', kind: 'stale', detail: 'Relay status is unavailable.' };
-    if (relay.paused_for_bluetooth) return { label: 'RELAY PAUSED', kind: 'paused', detail: 'Paused for Bluetooth' };
+    if (relay.paused_for_bluetooth) return { label: 'RELAY PAUSED', kind: 'paused',
+      detail: /^(checking|downloading|installing)$/.test(status?.ota_download?.state) ? 'Paused for a firmware update' : 'Paused for Bluetooth' };
     if (relay.enrolling || relay.stopping || relay.maintenance) return { label: 'RELAY BUSY', kind: 'paused', detail: 'The relay is busy. Try again in a moment.' };
     if (!relay.enabled) return { label: 'RELAY OFF', kind: 'offline', detail: 'Remote sharing is off.' };
     if (relay.state === 'connected') return relay.sharing_available

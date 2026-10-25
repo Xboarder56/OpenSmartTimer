@@ -278,7 +278,7 @@ class PreviewState:
         return {
             "experimental": True, "enabled": self.relay["enabled"], "enrolled": self.relay["enrolled"],
             "running": self.relay["enabled"], "enrolling": False, "stopping": False, "maintenance": False,
-            "paused_for_bluetooth": False,
+            "paused_for_bluetooth": self.download_status()["state"] in ("checking", "downloading", "installing"),
             "partner_origin": self.relay["partner_origin"],
             "setup_pending": self.relay_setup is not None, "setup_state": self.relay_setup_state,
             "setup_request_id": self.relay_setup_id,

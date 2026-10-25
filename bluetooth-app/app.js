@@ -1474,8 +1474,31 @@ function renderApps(json) {
   renderManagementAvailability();
 }
 
+let followingOwnDownload = false;
+let downloadFollowTimer = 0;
+
 function renderUpdateStatus(json) {
   window.SmartTimerUpdates.allowance($('mgmtOtaState'), json, t);
+  // A download this app did not start, or one still running after a
+  // reconnect: show its progress in the Firmware section and keep reading it.
+  const download = json?.ota_download;
+  if (!download || followingOwnDownload) return;
+  const active = ['checking', 'downloading', 'installing'].includes(download.state);
+  if (!active) return;
+  const message = $('githubUpdates').querySelector('[data-update-message]');
+  message.textContent = download.state === 'installing'
+    ? t('Firmware installed. The timer restarts now; reconnect and check its version.')
+    : download.state === 'downloading' && download.total_bytes > 0
+      ? t('The timer is downloading the update… {percent}%', { percent: Math.round((download.received_bytes * 100) / download.total_bytes) })
+      : t('The timer is downloading the update…');
+  message.setAttribute('data-state', download.state === 'installing' ? 'ok' : 'busy');
+  if (download.state !== 'installing' && !downloadFollowTimer) {
+    downloadFollowTimer = setTimeout(async () => {
+      downloadFollowTimer = 0;
+      if (!app.server?.connected || !managementSupported()) return;
+      try { renderUpdateStatus(await readManagement(MGMT_OPCODES.status)); } catch { /* next read retries */ }
+    }, 2000);
+  }
 }
 
 async function readManagement(opcode) {
@@ -1647,6 +1670,11 @@ async function installFirmwareOverBluetooth(fileOverride = null, releaseMetadata
 // V2: the timer downloads, verifies and installs the approved release over its
 // own Wi-Fi; the app only starts it and follows ota_download in status.
 async function installFirmwareOnTimer(record, report) {
+  followingOwnDownload = true;
+  try { await followFirmwareDownload(record, report); } finally { followingOwnDownload = false; }
+}
+
+async function followFirmwareDownload(record, report) {
   const { status: code, json } = await manageJson(MGMT_OPCODES.otaDownload, { release_version: record.release_version });
   if (code !== 202) throw new Error(managementError(json, code));
   report('The timer is downloading the update…', 'busy');

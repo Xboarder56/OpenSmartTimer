@@ -216,6 +216,10 @@ void WebApplication::observeState(uint32_t nowMs,
   flags |= otaUnverifiedAllowed(nowMs) ? 0x100 : 0;
   flags |= timerStatus.pauseAllowed ? 0 : 0x200;
   flags |= timerStatus.sealAllowed ? 0 : 0x400;
+#if defined(SMART_TIMER_HARDWARE_V2)
+  // Pages learn at once that a download began, failed or is installing.
+  flags |= static_cast<uint16_t>(UpdateDownload::progress().phase) << 11;
+#endif
   const uint32_t timerRevision = timer_.eventRevision();
   const uint8_t accessPointClients = network_.accessPointClients();
 
