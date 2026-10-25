@@ -1315,9 +1315,7 @@ until a new setup is physically approved.
   "state": "connected", "sharing_available": true,
   "relay_host": "relay.example.com", "timer_id": "abc123", "last_error": "",
   "reconnects": 1, "live_links": 1, "link_limit": 1, "task_stack_min_free_bytes": 5120,
-  "free_heap_bytes": 81234, "largest_free_block_bytes": 57344,
-  "tls_arena": {"size_bytes": 32768, "free_bytes": 20672,
-                "minimum_free_bytes": 6588, "fallback_count": 0}
+  "free_heap_bytes": 81234, "largest_free_block_bytes": 57344
 }
 ```
 
@@ -1332,12 +1330,7 @@ mutations and OTA return `409 relay_maintenance` until it clears.
 `stopping` is true while a disable, forget or factory reset is cleaning up.
 `last_error` names the most recent enrollment or connection failure. The
 last three numbers are for hardware qualification: the relay task's lowest
-remaining stack and current heap. `tls_arena` describes the block the relay
-reserves when it starts, which holds its TLS state so fragmentation of the
-general heap cannot keep sharing offline: its size, what is free now, the
-lowest free amount this boot, and how many allocations did not fit and used
-the general heap instead. `size_bytes` is 0 if the block could not be
-reserved; the relay then uses the general heap.
+remaining stack and current heap.
 
 ### Share links
 

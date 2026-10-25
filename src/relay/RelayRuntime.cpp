@@ -12,7 +12,6 @@
 #include "RelaySetupApproval.h"
 #include "TimerAuthorityControl.h"
 #include "TimerController.h"
-#include "TlsArena.h"
 #include "esp_heap_caps.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
@@ -283,9 +282,6 @@ struct RelayRuntime::Impl {
         // Apply the loop's latest gates before the task's first pass.
         core->transport.setAllowed(network_up && mutations_allowed);
         core->control.setMutationsAllowed(mutations_allowed);
-        // At boot this runs before Bluetooth starts, while the heap is still
-        // whole. Without the block the relay uses the general heap as before.
-        TlsArena::reserve(kTlsArenaBytes);
         running = true;
         if (xTaskCreate(&Impl::taskEntry, "relay", kTaskStackBytes, this, kTaskPriority, &task) != pdPASS) {
             running = false;
@@ -1179,10 +1175,6 @@ void RelayRuntime::status(RelayStatusInfo* out) const {
     }
     info.free_heap_bytes = uint32_t(heap_caps_get_free_size(MALLOC_CAP_8BIT));
     info.largest_free_block_bytes = uint32_t(heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
-    info.tls_arena_bytes = uint32_t(TlsArena::sizeBytes());
-    info.tls_arena_free_bytes = uint32_t(TlsArena::freeBytes());
-    info.tls_arena_minimum_free_bytes = uint32_t(TlsArena::minimumFreeBytes());
-    info.tls_arena_fallback_count = TlsArena::fallbackCount();
     *out = info;
 }
 

@@ -7,7 +7,6 @@
 #include <string.h>
 
 #include "ReleaseUpdateConfig.h"
-#include "TlsArena.h"
 #include "UpdateFeedRecord.h"
 #include "esp_transport.h"
 #include "esp_transport_ssl.h"
@@ -19,16 +18,12 @@
 namespace UpdateDownload {
 namespace {
 
-// TlsArena serves this task as well as the relay's (the relay is paused
-// while a download runs).
 constexpr char kTaskName[] = "ota-download";
 constexpr uint32_t kStackBytes = 12288;
 constexpr UBaseType_t kTaskPriority = 1;
 constexpr int kConnectTimeoutMs = 10000;
 constexpr int kReadTimeoutMs = 15000;
 constexpr uint32_t kHandoffTimeoutMs = 15000;
-constexpr uint32_t kArenaWaitMs = 8000;
-constexpr size_t kArenaIdleBytes = 28 * 1024;  // as the relay's own floor
 constexpr uint32_t kRecordMaxBytes = 16384;
 constexpr size_t kHeaderMaxBytes = 3072;
 constexpr char kFileLabel[] = "MagBoundV2-ESP32C3";
@@ -251,16 +246,6 @@ void run() {
     fail("not_configured");
     return;
   }
-  // The relay pauses while a download runs; give it a moment to release
-  // its TLS memory so this connection can use the same reserved block.
-  if (TlsArena::reserved()) {
-    const TickType_t started = xTaskGetTickCount();
-    while (TlsArena::freeBytes() < kArenaIdleBytes && !stopRequested &&
-           xTaskGetTickCount() - started < pdMS_TO_TICKS(kArenaWaitMs)) {
-      vTaskDelay(pdMS_TO_TICKS(100));
-    }
-  }
-
   char path[160];
   snprintf(path, sizeof(path), "%supdates/%s.json", site.basePath, ReleaseUpdate::target());
   UpdateFeed::Parser parser;

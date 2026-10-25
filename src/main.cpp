@@ -420,7 +420,7 @@ void loop() {
   // Relay commands are applied here, on the timer's own loop, with the same
   // transition gate as REST and BLE. Local Bluetooth has priority: while an
   // app is connected or pairing is open, the relay pauses (memory). So does
-  // an on-device update download, which uses the relay's TLS block.
+  // an on-device update download, which needs that memory for its own TLS.
   relayRuntime.loop(localNetwork.stationConnected(),
                     !webApplication.mutationTransitionActive(nowMs, false),
                     bluetoothApplication.connected() ||

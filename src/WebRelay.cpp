@@ -239,11 +239,7 @@ void WebApplication::sendRelayStatus(int status) {
   body += ",\"link_limit\":" + String(RelayRuntime::kMaxLiveLinks);
   body += ",\"task_stack_min_free_bytes\":" + String(info.task_stack_min_free_bytes);
   body += ",\"free_heap_bytes\":" + String(info.free_heap_bytes);
-  body += ",\"largest_free_block_bytes\":" + String(info.largest_free_block_bytes);
-  body += ",\"tls_arena\":{\"size_bytes\":" + String(info.tls_arena_bytes) +
-          ",\"free_bytes\":" + String(info.tls_arena_free_bytes) +
-          ",\"minimum_free_bytes\":" + String(info.tls_arena_minimum_free_bytes) +
-          ",\"fallback_count\":" + String(info.tls_arena_fallback_count) + "}}";
+  body += ",\"largest_free_block_bytes\":" + String(info.largest_free_block_bytes) + "}";
   sendJson(status, body);
 }
 

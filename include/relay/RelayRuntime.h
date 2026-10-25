@@ -65,10 +65,6 @@ struct RelayStatusInfo {
     uint32_t task_stack_min_free_bytes;   // 0 until the task has run
     uint32_t free_heap_bytes;
     uint32_t largest_free_block_bytes;
-    uint32_t tls_arena_bytes;               // 0 when no arena is reserved
-    uint32_t tls_arena_free_bytes;
-    uint32_t tls_arena_minimum_free_bytes;
-    uint32_t tls_arena_fallback_count;
     bool stopping;
     bool maintenance;
     bool paused_for_bluetooth;
