@@ -8,6 +8,7 @@ Guides for installing, operating and integrating OpenSmartTimer on **MagBound Sm
 | --- | --- |
 | [Installation and recovery](INSTALLATION.md) | Select an image, install firmware, update, reset settings and restore vendor firmware |
 | [Hardware](HARDWARE.md) | GPIO assignments, indicators, buttons, accessory limitations and flash layout |
+| [Hardware bench notes](HARDWARE_BENCH_NOTES.md) | Dated UART, jack and continuity measurements behind the hardware reference |
 | [GitHub firmware updates](GITHUB_UPDATES.md) | Signed updates, release-notes dialogs and publisher configuration |
 | [Bluetooth app](../bluetooth-app/README.md) | V2 browser requirements, pairing, controls and offline use |
 | [Remote sharing](REMOTE_SHARING.md) | Connect a relay and create, extend, revoke or reactivate share links |

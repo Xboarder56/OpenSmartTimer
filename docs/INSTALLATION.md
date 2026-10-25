@@ -70,7 +70,7 @@ For the replacement upload:
 
 If no AP appears, wait several minutes before one controlled power cycle. If it still does not appear, web recovery is exhausted.
 
-[V1 UART service](HARDWARE.md#v1-uart-service-observations) documents the
+[V1 UART service](HARDWARE.md#v1-uart-service) documents the
 external 3.3 V adapter, verified programming-mode button sequence and flash
 read on one unloaded V1. ROM access and return to the installed application
 were verified; UART reflashing and broken-image recovery remain untested.

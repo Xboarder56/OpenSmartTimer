@@ -22,6 +22,7 @@ Everything here was worked out by inspecting one unit of each model; other produ
 | Blue status LED | 12 | Output | HIGH | Network and maintenance feedback only |
 | Emergency input | 10 | Input | HIGH | Continuously commands release and blocks start/resume while asserted; see [Accessory jacks](#accessory-jacks) for the model-specific connector location |
 | Reset button | 5 | Input | HIGH | Short release arms OTA; second short release permits one unverified upload; ten-second hold resets settings |
+| Auxiliary jack | 9 | — | HIGH | Not used. GPIO9 is also a flash-interface pin, and reading it while the firmware runs reset the timer; see [Accessory jacks](#accessory-jacks) |
 
 GPIO10 normally shares the ESP8266 flash interface. DOUT mode is therefore a compatibility requirement, not a performance preference.
 
@@ -37,7 +38,7 @@ above; `images/board-v1-front-annotated.svg` is its editable overlay.
 | 1 | *(module label `AI ESP-12F`)* | ESP8266 **ESP-12F** module (AI-Thinker variant). PCB antenna trace to the far left. 4 MB in-package flash. |
 | 2 | `TX RX GND` | 3.3 V UART service pads at the top-left. Inaccessible with the enclosure closed. Do not connect 5 V. |
 | 3 | `SW3` (topmost switch) | **The user-accessible Reset button** (V1 GPIO5). The same physical function as V2's `WIFI RST` switch — silkscreen differs across board revisions but the role is identical. Short/medium/ten-second gestures below. |
-| 4 | `SW1` | Internal programming control: holding it through an `SW2` reset selected ROM download mode on the inspected unit. Electrical routing remains untraced. See [V1 UART service](#v1-uart-service-observations). |
+| 4 | `SW1` | Internal programming control: holding it through an `SW2` reset selected ROM download mode on the inspected unit. Electrical routing remains untraced. See [V1 UART service](#v1-uart-service). |
 | 5 | `SW2` | Hardware reset for the ESP module (uptime and current-boot history restart). Not user-facing. |
 | 6 | *(TO-252, `L74…`)* | Lock-driver MOSFET, gate driven by mirrored GPIO4 + GPIO13. |
 | 7 | *(2-pin board connector, pigtail ending in a male barrel plug)* | **12 V lock output.** Carries the switched 12 V rail to the male barrel plug that feeds the magnets. It is an output: never connect a power supply to it. |
@@ -51,11 +52,12 @@ the socket is the power input and the male plug on the pigtail is the output to
 the magnets. Whenever the lock is connected, feed the socket from a 12 V battery
 pack, never from a mains adapter ([safety notice](../SAFETY.md#battery-power-only)).
 
-The plastic tray around the V1 PCB is a 3D-printed enclosure that opens
-at the top-right; the enclosure itself is not part of the electrical
-contract.
+The plastic tray around the V1 PCB is a 3D-printed enclosure that opens at
+the top-right; it is not part of the electrical contract. On the inspected
+unit the PCB is glued into the tray, so the module's bottom pad row cannot be
+reached without removing the board.
 
-#### V1 UART service observations
+#### V1 UART service
 
 Two-way ROM communication was verified on one unloaded V1 with an external
 FT232 adapter at **3.3 V logic, 115200 baud, 8N1, no flow control**. Use the
@@ -86,47 +88,17 @@ uploaded and no firmware, settings or flash contents were written. These
 queries left the unit in programming mode; they do not qualify reflashing
 or recovery from a broken image.
 
-The first 1 MiB of flash was subsequently read at 115200 baud with esptool's
-temporary **RAM stub** (ESP8266 ROM alone cannot perform this read):
+A read of the first 1 MiB of flash with esptool's RAM stub matched the
+release verifier's eboot baseline and V1 image headers; see the
+[bench notes](HARDWARE_BENCH_NOTES.md#v1-uart-flash-reads-and-rom-mode-indicators).
+Only 115200 baud is validated.
 
-```sh
-esptool.py --chip esp8266 --port "<PORT>" --baud 115200 \
-  --before no_reset --after no_reset --connect-attempts 3 \
-  read_flash --no-progress 0x0 0x100000 tmp/v1-program-region.bin
-```
-
-The eboot and application headers at `0x0` and `0x1000` specified DOUT,
-4 MB and 40 MHz. The Arduino whole-image CRC validated, and the application
-contained the V1 product marker. The first 4 KiB exactly matched the
-[release verifier's](../scripts/release/verify_release.py) eboot baseline,
-SHA-256 `2b84c131751a030115773d73137caa22bcd0f867e89e826a9567788ce022793a`.
-No flash was written; filesystem and settings regions were not read.
-A previous 460800-baud attempt failed with corrupt serial data, so only
-115200 is validated here. A subsequent `read_flash_status` query did not
-connect after stub exit. Re-entering ROM mode with the physical button
-sequence allowed `read_flash_status` to succeed with `--no-stub`, using
-the same options as the ID query above. It returned raw status `0x0000`;
-no status bits or flash contents were written. This records the observed
-value without assuming a device-specific status-register interpretation.
-
-After releasing `SW1` and tapping `SW2`, a receive-only 115200-baud capture
-showed `OpenSmartTimer firmware starting` and the owner confirmed the amber
-indicator was fully off. This verifies return to the installed application,
-not UART reflashing or broken-image recovery.
-
-In ROM programming mode, the owner reported **both the amber lock indicator
-and blue carrier-board indicator dimly lit**. A third LED near the ESP-12F module's antenna briefly
-flashed during the ID queries, then went off; during the longer flash read,
-the module's blue LED was mostly lit with blinking that appeared to track
-the UART adapter's activity LED. Its circuit has not been traced.
-Espressif documents [UART TX also appearing on GPIO2 in ESP8266 ROM download
-mode](https://docs.espressif.com/projects/esptool/en/latest/esp8266/advanced-topics/boot-mode-selection.html);
-if that LED is connected there, UART activity could explain the flash.
-This is a possible explanation, not a verified LED assignment. The firmware's
-carrier status LED remains GPIO12. Output voltage/current were not measured;
-ROM-mode LED appearance does not establish whether the lock output is
-energized or released, and application fail-open initialization is not
-running in that mode.
+After releasing `SW1` and tapping `SW2`, the timer returned to the installed
+application (`OpenSmartTimer firmware starting` on UART) with the amber
+indicator fully off. This verifies return to the application, not UART
+reflashing or recovery from a broken image. In ROM download mode the amber and
+blue indicators were dimly lit; that does not show whether the lock output is
+energized, and fail-open initialization is not running in that mode.
 
 ### V2 — ESP32-C3
 
@@ -135,9 +107,9 @@ running in that mode.
 | Lock driver | 3 | Output | HIGH | Preloaded LOW; commanded by the timer state machine |
 | Amber lock indicator | 6 | Output | HIGH | Mirrors GPIO3 while OpenSmartTimer runs; never used for application maintenance patterns |
 | Blue status LED | 5 | Output | HIGH | Network and maintenance status |
-| Emergency input | 0 | Input | HIGH | Continuously commands release while asserted; physical jack attribution is unresolved, see [Accessory jacks](#accessory-jacks) |
+| Emergency input | 0 | Input | HIGH | Continuously commands release while asserted; magnet-output-side jack stimulus observed on GPIO0, see [Accessory jacks](#accessory-jacks) |
 | Reset/config button | 4 | Input | HIGH | Marked `WIFI RST` on the PCB; the interface calls it the **Reset button**. OTA, 3–5 second BLE pairing, and ten-second factory-reset gestures |
-| Auxiliary input | 1 | Input | HIGH | Initialized but deliberately inactive; physical jack routing not verified |
+| Auxiliary input | 1 | Input | HIGH | Initialized but deliberately inactive. The USB-C-side jack's tip reaches GPIO1; see [Accessory jacks](#accessory-jacks) |
 
 These are product-specific assignments, not generic ESP32 development-board defaults. The V2 build uses ESP32-C3, Arduino-ESP32 3.3.0, ESP-IDF 5.5, 4 MB flash, 80 MHz, and DIO mode.
 
@@ -254,41 +226,13 @@ To check communication without changing firmware:
    application. Normal firmware startup was captured again on the tested
    unit, and the amber LED was then confirmed fully off.
 
-##### Read-only metadata queries
-
-While in ROM mode with the monitor closed, before step 5, the same esptool
-4.5.1 command prefix can read service metadata. Replace the final `chip_id`
-with one of the suffixes below. Create the ignored `tmp/` directory first
-and keep raw reads private; do not commit vendor images or captures.
-
-| Command suffix (esptool 4.x syntax) | Observation on the tested unit |
-| --- | --- |
-| `flash_id` | JEDEC manufacturer `0x5e`, device `0x4016`; detected flash size 4 MB |
-| `get_security_info` | Raw flags `0x00000000`, `Flash_Crypt_Cnt` `0x0`, ROM `Chip_ID` 5 and API version 3 |
-| `read_flash_status` | Raw status `0x0200` |
-| `read_flash --no-progress 0x8000 0x1000 tmp/v2-partition-table-sector.bin` | 4 KiB partition-table sector; validated MD5 footer and [matching layout](#v2) |
-| `read_flash --no-progress 0xe000 0x2000 tmp/v2-otadata.bin` | 8 KiB OTA metadata; both record CRCs valid, both states `VALID` |
-| `read_flash --no-progress 0x0 0x8000 tmp/v2-bootloader-region.bin` | 32 KiB before the partition table; bootloader checksum and embedded SHA-256 validated |
-| `read_flash --no-progress 0x10000 0x200 tmp/v2-app0-header.bin` | App 0 header and descriptor |
-| `read_flash --no-progress 0x150000 0x200 tmp/v2-app1-header.bin` | App 1 header and descriptor |
-
-ROM `Chip_ID` 5 identifies the ESP32-C3 chip type; it is not a unique device
-ID. The raw security/status values above are observations on this unit,
-not a security assessment or a statement about signed application OTA.
-No keys, NVS contents or filesystem contents were read.
-
-All three image headers reported DIO, 80 MHz, 4 MB, chip type 5 and
-`hash_appended=1`. Both app descriptors contained version `afa5cdd-dirty`,
-project `arduino-lib-builder` and IDF string `b66b5448`, with blank compile
-date/time. These descriptor strings do not identify the installed product
-firmware version; use the device UI/API for its version and build identity.
-Valid OTA records are a snapshot of selection metadata, not proof of the
-runtime slot or automatic rollback. Do not write OTA metadata to test recovery.
-
-These checks verify external UART ROM access and read-only inspection, not
-firmware restoration or recovery from a non-booting image. No stub was
-uploaded or flash, eFuses, settings or firmware written. Native USB-C data
-routing remains unverified; treat that connector as power-only.
+The same ROM session can read service metadata (flash ID, security flags, the
+partition table and OTA records) without writing anything; the commands and
+the tested unit's results are in the
+[bench notes](HARDWARE_BENCH_NOTES.md#v2-uart-read-only-metadata-queries).
+External UART ROM access is verified; reflashing and recovery from a
+non-booting image are not. Native USB-C data routing remains unverified;
+treat that connector as power-only.
 
 #### V2 PCB connectors
 
@@ -297,8 +241,8 @@ routing remains unverified; treat that connector as power-only.
 | Far right | USB-C receptacle | Board power in (5 V). Data-line routing to the ESP32-C3 is **not** electrically confirmed by this document. | Power ingress exercised on one unloaded unit; enumeration as a USB device not tested. |
 | Above ESP module | 3 UART service pads; header fitted on tested unit | 3.3 V UART0 service connection; see [V2 UART service](#v2-uart-service). | TX/RX communication verified with an external FT232 adapter on one unloaded unit. |
 | Top center | 2-pin JST-XH (polarized, `+` marked) | **12 V DC accessory output.** Carries the on-board switched 12 V rail to an external barrel-jack pigtail that drives the magnetic-lock coil (switched by the GPIO3-driven MOSFET). | Confirmed as the 12 V accessory output; polarity pinout not electrically re-verified in this document. |
-| Bottom center, jack nearest magnet/lock-output connector | 3.5 mm socket; contacts unverified | Owner-reported emergency input; see [Accessory jacks](#accessory-jacks). | Contact-to-GPIO routing untraced. |
-| Bottom center, other jack | 3.5 mm socket; contacts unverified | Spare under investigation. | No verified GPIO assignment or socket pole count. |
+| Bottom center, jack nearest magnet/lock-output connector | 3.5 mm socket; contacts unverified | Emergency input; see [Accessory jacks](#accessory-jacks). | Socket stimulus observed on GPIO0; carrier circuit untraced. |
+| Bottom center, other jack, nearest USB-C | 3.5 mm socket; contacts unverified | Auxiliary input, inactive in normal firmware. | Socket stimulus observed on GPIO1; plug pinout, socket pole count and output capability unverified. |
 
 Do not apply external voltage to the 2-pin JST or either 3.5 mm jack
 based on this document. Trace the carrier circuit on an unpowered
@@ -307,27 +251,53 @@ accessory or the intended magnetic-lock coil.
 
 ## Accessory jacks
 
-Use the **model-specific connector landmarks** below. On the inspected
-boards, the owner identifies V1 emergency release by proximity to the
-**12 V power input**, and V2 emergency release by proximity to the
-**magnet/lock output**. V1's power input is the fixed barrel socket, not the
-movable male lock-output pigtail. V2's magnet output is the on-board 2-pin
-connector feeding that output's pigtail.
-
-These owner clarifications supersede earlier inconsistent left/right
-descriptions. They are not a new contact-to-GPIO trace or socket pole-count
-verification. Identify the emergency jack on the actual unit with the
-controlled load disconnected, and test the connected accessory before every
-use. Do not infer jack function from viewing direction or `Accessories 1` /
-`Accessories 2` numbering.
+Both models have two 3.5 mm jacks. Identify them by the **model-specific
+landmarks** below, not by viewing direction or `Accessories 1` / `Accessories 2`
+numbering, and test the connected accessory with the lock disconnected before
+every use.
 
 | | V1 | V2 |
 | --- | --- | --- |
-| Emergency jack, owner-identified | **Nearest the 12 V power-input barrel socket** | **Nearest the magnet/lock-output connector** |
-| Firmware emergency input | GPIO10, active HIGH | GPIO0, active HIGH |
-| Other jack | Reserved; no verified GPIO assignment | Spare; no verified GPIO assignment. Firmware GPIO1 remains deliberately inactive |
+| Emergency jack | **Nearest the 12 V power-input barrel socket** | **Nearest the magnet/lock-output connector** |
+| Emergency input | GPIO10, active HIGH | GPIO0, active HIGH |
+| Other (auxiliary) jack | Nearest the Wi-Fi antenna | Nearest USB-C |
+| Auxiliary tip | GPIO9, about 1 kΩ (R9) to ground | GPIO1, about 1 kΩ to ground |
+| Sleeve (both jacks) | 3.3 V supply | 3.3 V supply |
+| Auxiliary status | **Not usable** while the firmware runs | Works as a second dry-contact input; not used by the firmware |
 
-Do not apply external voltage to either jack based on this document. Use only a compatible dry-contact accessory until the carrier circuit and plug contacts are electrically traced.
+The jacks are dry-contact inputs: a switch that joins tip and sleeve pulls the
+input HIGH, and the pull-down holds it LOW otherwise. Neither jack has a ground
+contact.
+
+> [!CAUTION]
+> The sleeve of each jack is the timer's 3.3 V supply. Shorting it to ground,
+> for example with a metal tool or a grounded cable, collapses the supply and
+> restarts the timer. Connect only a switch that joins tip and sleeve. Never
+> join two timers' jacks with a plain cable: it ties their supplies together,
+> and V1's auxiliary tip is a flash line. Do not apply external voltage to
+> either jack.
+
+**V2 auxiliary jack.** Socket stimulus and held presses showed clean HIGH
+intervals on GPIO1, and continuity readings put the tip on GPIO1 and the
+sleeve on 3V3. One power-on reset during an early test with a metal pin is
+unexplained; the likeliest cause is the pin touching the 3.3 V sleeve to
+ground. Still to verify: a sustained press with a real switch plug, and
+whether GPIO1 can safely drive the tip as an output.
+
+**V1 auxiliary jack.** In ROM download mode, GPIO9 read the accessory switch as
+active HIGH. With the application running, switching GPIO9 to an input reset
+the timer through the hardware watchdog on both attempts. The
+[ESP8266EX datasheet](https://documentation.espressif.com/0a-esp8266ex_datasheet_en.html)
+lists GPIO9 as pin 18, `SDIO_DATA_2`, whose functions include `SPIHD`, the
+flash HOLD line. If the module routes it to the flash chip's HOLD pin,
+releasing it from the flash controller lets R9 pull HOLD low, which stalls
+flash reads and matches both resets. Confirm that module routing before
+relying on it. Until then, treat the V1 auxiliary jack as
+unusable and never drive anything into it. The manufacturer `0.3.0` firmware
+reads only GPIO5 and GPIO10.
+
+The measurements, dated tests and the manufacturer-image review are in the
+[bench notes](HARDWARE_BENCH_NOTES.md).
 
 ## Fail-open initialization
 
@@ -394,7 +364,7 @@ On the inspected V1 PCB:
 | UART pads labeled `TX`, `RX`, `GND` | Visible 3.3 V service pads; follow the PCB labels. Inaccessible in the assembled enclosure |
 
 Leave V1 `SW1` released during routine resets and updates. Hold it through
-reset only for intentional unloaded [UART service](#v1-uart-service-observations).
+reset only for intentional unloaded [UART service](#v1-uart-service).
 Continuity mapping must be performed only on an unpowered, disconnected board.
 
 ### V2 PCB switches
@@ -414,7 +384,7 @@ The [project flash contract](../include/flash/MagBoundV1Esp8266.h) caps the
 complete uploaded image at 1,044,464 bytes (`0xFEFF0`), including eboot at
 offset zero and the application header at `0x1000`.
 
-The [UART read](#v1-uart-service-observations) confirmed the inspected V1's
+The [UART read](#v1-uart-service) confirmed the inspected V1's
 eboot baseline and application header at `0x1000`. The remaining region
 boundaries below come from the project/Arduino source layout; the read did
 not extend into the filesystem or settings. All ranges are physical offsets
