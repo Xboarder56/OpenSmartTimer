@@ -589,6 +589,7 @@ class PreviewHandler(SimpleHTTPRequestHandler):
                     "bluetooth_connection_mtu_sufficient": False,
                     "bluetooth_bond_cleanup_pending": False,
                     "bluetooth_bond_cleanup_last_error": 0,
+                    "deadline_backstop": {"fired_count": 0, "arm_failed_count": 0},
                 })
             self.send_json(diagnostics)
             return

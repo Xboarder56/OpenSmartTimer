@@ -51,8 +51,9 @@ inline bool load(Record& record) { record = storage(); return true; }
 #endif
 
 // The longest gap between two marks since boot, and which phase it was in.
-// A long gap means loop() did not come round to service timer expiry; the
-// emergency input does not wait for it (an interrupt cuts the lock output).
+// A long gap means loop() did not come round to service timer expiry. The
+// emergency input does not wait for it (an interrupt cuts the lock output),
+// and neither does a V2 timed release (the deadline backstop does).
 struct Stall {
   uint32_t longestMs;
   uint32_t atMs;  // uptime when that gap ended

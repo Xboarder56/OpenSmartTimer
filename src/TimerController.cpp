@@ -1,5 +1,6 @@
 #include "TimerController.h"
 
+#include "DeadlineBackstop.h"
 #include "Hardware.h"
 
 void TimerController::begin() {
@@ -14,6 +15,7 @@ void TimerController::begin() {
   eventRevision_ = 0;
   sessionSequence_ = 0;
   Hardware::beginFailOpen();
+  DeadlineBackstop::cancel();
   emergencyInputActive_ = Hardware::emergencyInputActive();
   recordEvent(TimerEventType::Boot, 0, 0);
   if (emergencyInputActive_) {
@@ -33,7 +35,34 @@ void TimerController::tick(uint32_t nowMs) {
   if (state_ != TimerState::Open && holdLimited_ &&
       static_cast<int32_t>(holdLimitMs_ - nowMs) <= 0) {
     release(ReleaseReason::ShareLinkExpired, nowMs);
+    return;
   }
+  // The backstop has already driven the output inactive because this loop
+  // pass came late. Record the release it stood in for.
+  if (state_ != TimerState::Open && DeadlineBackstop::fired()) {
+    release(holdLimitFirst() ? ReleaseReason::ShareLinkExpired
+                             : ReleaseReason::Expired,
+            nowMs);
+  }
+}
+
+bool TimerController::holdLimitFirst() const {
+  return holdLimited_ &&
+         (state_ == TimerState::Paused ||
+          static_cast<int32_t>(holdLimitMs_ - deadlineMs_) < 0);
+}
+
+void TimerController::settleBackstop(uint32_t nowMs) {
+  if (DeadlineBackstop::fired()) tick(nowMs);
+}
+
+void TimerController::armBackstop() {
+  if (state_ == TimerState::Open ||
+      (state_ == TimerState::Paused && !holdLimited_)) {
+    DeadlineBackstop::cancel();
+    return;
+  }
+  DeadlineBackstop::armAt(holdLimitFirst() ? holdLimitMs_ : deadlineMs_);
 }
 
 void TimerController::limitHoldUntil(uint32_t untilMs) {
@@ -42,6 +71,7 @@ void TimerController::limitHoldUntil(uint32_t untilMs) {
     holdLimitMs_ = untilMs;
   }
   holdLimited_ = true;
+  armBackstop();
 }
 
 void TimerController::setEmergencyInputActive(bool active, uint32_t nowMs) {
@@ -92,10 +122,12 @@ bool TimerController::start(uint32_t durationMs, uint32_t nowMs) {
     release(ReleaseReason::Emergency, nowMs);
     return false;
   }
+  armBackstop();
   return true;
 }
 
 bool TimerController::setRemaining(uint32_t durationMs, uint32_t nowMs) {
+  settleBackstop(nowMs);
   if (durationMs == 0 || durationMs > Hardware::kMaximumDurationMs || sealed_ ||
       emergencyInputActive()) {
     return false;
@@ -111,10 +143,12 @@ bool TimerController::setRemaining(uint32_t durationMs, uint32_t nowMs) {
   sessionDurationMs_ = durationMs;
   recordEvent(TimerEventType::RemainingSet, nowMs,
               static_cast<int32_t>(durationMs));
+  armBackstop();
   return true;
 }
 
 bool TimerController::stop(bool physicalEmergency, uint32_t nowMs) {
+  settleBackstop(nowMs);
   if (state_ == TimerState::Open) {
     return true;
   }
@@ -129,6 +163,7 @@ bool TimerController::stop(bool physicalEmergency, uint32_t nowMs) {
 bool TimerController::pause(uint32_t nowMs) {
   // The owner's switches are enforced here too, so legacy routes that call
   // the controller directly cannot bypass them.
+  settleBackstop(nowMs);
   if (state_ != TimerState::Running || sealed_ || !pauseAllowed_) {
     return false;
   }
@@ -140,10 +175,12 @@ bool TimerController::pause(uint32_t nowMs) {
   state_ = TimerState::Paused;
   recordEvent(TimerEventType::Paused, nowMs,
               static_cast<int32_t>(pausedRemainingMs_));
+  armBackstop();
   return true;
 }
 
 bool TimerController::resume(uint32_t nowMs) {
+  settleBackstop(nowMs);
   if (state_ != TimerState::Paused || sealed_ || pausedRemainingMs_ == 0 ||
       emergencyInputActive()) {
     return false;
@@ -153,10 +190,12 @@ bool TimerController::resume(uint32_t nowMs) {
   state_ = TimerState::Running;
   recordEvent(TimerEventType::Resumed, nowMs,
               static_cast<int32_t>(remainingAt(nowMs)));
+  armBackstop();
   return true;
 }
 
 bool TimerController::adjust(int32_t deltaMs, uint32_t nowMs) {
+  settleBackstop(nowMs);
   if (state_ == TimerState::Open || sealed_) {
     return false;
   }
@@ -189,12 +228,14 @@ bool TimerController::adjust(int32_t deltaMs, uint32_t nowMs) {
     sessionDurationMs_ = static_cast<uint32_t>(adjusted);
   }
   recordEvent(TimerEventType::Adjusted, nowMs, deltaMs);
+  armBackstop();
   return true;
 }
 
 bool TimerController::setSealed(bool sealed, uint32_t nowMs) {
   // Sealing is intentionally one-way for the current session. Expiry or the
   // physical emergency release clears it as part of release().
+  settleBackstop(nowMs);
   if (!sealed || state_ != TimerState::Running || sealed_ || !sealAllowed_) {
     return false;
   }
@@ -323,6 +364,7 @@ uint32_t TimerController::remainingAt(uint32_t nowMs) const {
 
 void TimerController::release(ReleaseReason reason, uint32_t nowMs) {
   Hardware::writeLock(false);
+  DeadlineBackstop::cancel();
   state_ = TimerState::Open;
   deadlineMs_ = 0;
   pausedRemainingMs_ = 0;

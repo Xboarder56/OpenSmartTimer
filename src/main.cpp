@@ -112,8 +112,10 @@ uint32_t configRelayApprovalId = 0;
 constexpr uint32_t kBootHealthStableMs = 5000;
 constexpr uint32_t kBootValidationRetryMs = 1000;
 constexpr uint32_t kBluetoothAutoStartDelayMs = 15000;
-// Expiry and the emergency input are serviced only by loop(). If it hangs,
-// the watchdog panics and the reboot drives the lock output low. The window
+// loop() records expiry and the emergency input. Their outputs do not wait
+// for it: the emergency interrupt and the deadline backstop (an esp_timer
+// 200 ms after each timed release) drive the lock output low themselves. If
+// loop() hangs, the watchdog panics and the reboot drives the output low. The window
 // exceeds the WebServer's 5 s header + 5 s body waits for one slow client;
 // the OTA upload handler feeds it per chunk.
 constexpr uint32_t kLoopWatchdogTimeoutMs = 20000;

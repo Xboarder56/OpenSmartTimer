@@ -8,6 +8,7 @@
 #include "ReleaseUpdateConfig.h"
 #if defined(SMART_TIMER_HARDWARE_V2)
 #include "BluetoothApplication.h"
+#include "DeadlineBackstop.h"
 #endif
 #ifndef SMART_TIMER_VERSION
 #define SMART_TIMER_VERSION "development"
@@ -352,6 +353,10 @@ void WebApplication::sendDiagnostics() {
   body += ",\"bluetooth_bond_cleanup_last_error\":" +
           String(bluetooth == nullptr ? 0
                                       : bluetooth->bondCleanupLastError());
+  body += ",\"deadline_backstop\":{\"fired_count\":" +
+          String(DeadlineBackstop::firedCount()) +
+          ",\"arm_failed_count\":" +
+          String(DeadlineBackstop::armFailedCount()) + "}";
 #endif
   body += ",\"wifi_scan_state\":\"" +
           jsonEscape(network_.scanStateName()) + "\"}";
