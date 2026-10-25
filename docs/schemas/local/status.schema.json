@@ -143,6 +143,41 @@
     "ota_unverified_allowed": {
       "type": "boolean"
     },
+    "ota_download": {
+      "type": "object",
+      "description": "V2 only. Progress of an on-device update download (POST /api/v1/ota/download).",
+      "required": [
+        "state"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "idle",
+            "checking",
+            "downloading",
+            "installing",
+            "failed"
+          ]
+        },
+        "received_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "version": {
+          "type": "string",
+          "maxLength": 47
+        },
+        "error": {
+          "type": "string",
+          "maxLength": 31
+        }
+      }
+    },
     "identifying": {
       "type": "boolean"
     },

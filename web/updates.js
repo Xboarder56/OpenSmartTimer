@@ -219,7 +219,9 @@
     write('[data-update-arm-title]', translate(title));
     write('[data-update-arm-detail]', translate(detail, { minutes }));
   }
-  function panel({ root, device, install, confirm, translate = s => s }) {
+  // remoteInstall, when given, is used if device() reports `remote`: the timer
+  // downloads and installs the approved release itself (V2 over its Wi-Fi).
+  function panel({ root, device, install, remoteInstall, confirm, translate = s => s }) {
     const checkButton = root.querySelector('[data-update-check]');
     const message = root.querySelector('[data-update-message]');
     let busy = false;
@@ -239,6 +241,7 @@
           say('No updates available.', 'ok'); return;
         }
         if (!latest.armed || latest.state !== 'open') throw new Error('Open the timer and briefly press Reset to allow updates, then try again.');
+        if (remoteInstall && latest.remote) { await remoteInstall(candidate.record, say); return; }
         say('Downloading update…', 'busy');
         const file = await download(candidate);
         say('Download complete. The timer will verify the signed firmware.', 'busy');

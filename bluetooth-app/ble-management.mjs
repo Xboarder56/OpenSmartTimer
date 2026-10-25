@@ -28,6 +28,7 @@ export const MGMT_OPCODES = Object.freeze({
   wifiSuspend: 0x5b, wifiResume: 0x5c,
   wifiScanStart: 0x60, wifiScanResults: 0x61,
   otaBegin: 0x70, otaChunk: 0x71, otaFinish: 0x72, otaAbort: 0x73,
+  otaDownload: 0x74,
 });
 
 const SECRET_OPCODES = new Set([MGMT_OPCODES.wifiConfigure, MGMT_OPCODES.accessPointSet]);

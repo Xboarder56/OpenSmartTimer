@@ -105,7 +105,9 @@ int main() {
   assert(mutatingOpcode(0x5b) && mutatingOpcode(0x5c));
   assert(!secretOpcode(0x5b) && !secretOpcode(0x5c));
   assert(knownOpcode(0x3f) && knownOpcode(0x47) && knownOpcode(0x5a) && knownOpcode(0x73));
-  assert(!knownOpcode(0x48) && !knownOpcode(0x5d) && !knownOpcode(0x62) && !knownOpcode(0x74));
+  assert(!knownOpcode(0x48) && !knownOpcode(0x5d) && !knownOpcode(0x62) && !knownOpcode(0x75));
+  // 0x74 starts an on-device download: a mutation that carries no secret.
+  assert(knownOpcode(0x74) && mutatingOpcode(0x74) && !secretOpcode(0x74));
   assert(!mutatingOpcode(0x3f) && !mutatingOpcode(0x40) && !mutatingOpcode(0x47) && !mutatingOpcode(0x61));
   assert(mutatingOpcode(0x50) && mutatingOpcode(0x60) && mutatingOpcode(0x71));
   assert(secretOpcode(0x50) && secretOpcode(0x52) && !secretOpcode(0x53));

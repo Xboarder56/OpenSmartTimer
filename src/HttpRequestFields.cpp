@@ -316,6 +316,8 @@ bool HttpRequestFields::validateForRoute(const char* route) {
     } else if (at("/api/v1/bluetooth/apps/label") || at("/api/v1/bluetooth/apps/revoke")) {
       if (is("app_id")) { allowed = true; expected = Type::Integer; }
       if (at("/api/v1/bluetooth/apps/label") && is("label")) allowed = true;
+    } else if (at("/api/v1/ota/download")) {
+      if (is("release_version")) allowed = true;
     } else if (at("/api/v1/ota/prepare") || at("/api/v1/ota")) {
       if (is("image_crc32") || is("release_version") || is("image_sha256") ||
           is("release_signature")) allowed = true;

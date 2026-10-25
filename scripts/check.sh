@@ -50,6 +50,7 @@ host_checks() {
         sources+=("$repo_root/src/TimerController.cpp" "$repo_root/src/TimerCommandAuthority.cpp" "$repo_root/src/BleControlProtocol.cpp")
         flags+=(-DSMART_TIMER_HARDWARE_V2=1) ;;
       http_request_fields_test) sources+=("$repo_root/src/HttpRequestFields.cpp") ;;
+      update_feed_record_test) sources+=("$repo_root/src/UpdateFeedRecord.cpp") ;;
       reset_trace_test) flags+=(-I"$repo_root/tests/host/reset_trace_stubs") ;;
       device_config_apps_test)
         sources+=("$repo_root/src/DeviceConfig.cpp")

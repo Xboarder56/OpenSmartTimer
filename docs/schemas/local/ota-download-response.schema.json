@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/ota-download-response.schema.json",
+  "title": "POST /api/v1/ota/download (response body)",
+  "description": "202 Accepted: the download runs in the background; follow ota_download in /api/v1/status.",
+  "type": "object",
+  "required": [
+    "started"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "started": {
+      "const": true
+    }
+  }
+}

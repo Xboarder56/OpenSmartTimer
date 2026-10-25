@@ -59,12 +59,13 @@ enum class Opcode : uint8_t {
   OtaChunk = 0x71,
   OtaFinish = 0x72,
   OtaAbort = 0x73,
+  OtaDownload = 0x74,
 };
 
 inline bool knownOpcode(uint8_t value) {
   return value == 0x3f || (value >= 0x40 && value <= 0x47) ||
          (value >= 0x50 && value <= 0x5c) || value == 0x60 || value == 0x61 ||
-         (value >= 0x70 && value <= 0x73);
+         (value >= 0x70 && value <= 0x74);
 }
 
 // Reads and Continue are repeatable; everything else is remembered so an

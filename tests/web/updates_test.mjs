@@ -113,8 +113,8 @@ test('manual panel initialization makes no update request; checking needs a user
   assert.equal(requests.length, 0);
 });
 
-async function panelFixture({status=200, installed='1.0.0', accept=false, armed=true, state='open', failImage=false}={}) {
-  let record, imageDownloads=0, confirmations=0, deviceReads=0, installs=0;
+async function panelFixture({status=200, installed='1.0.0', accept=false, armed=true, state='open', failImage=false, remote=undefined}={}) {
+  let record, imageDownloads=0, confirmations=0, deviceReads=0, installs=0, remoteInstalls=0;
   const {api,requests}=fixture(url => {
     if (url.startsWith('https://api.github.com/')) return new Response('[]');
     if (url.endsWith('.json')) return new Response(JSON.stringify(record),{status});
@@ -128,11 +128,12 @@ async function panelFixture({status=200, installed='1.0.0', accept=false, armed=
   const config={configured:true,target:record.target,base_url:'https://example-owner.github.io/OpenSmartTimer/',public_key:publicKey};
   const nodes=new Map(['check','message'].map(name=>[name,{addEventListener(type,callback){this[type]=callback;}}]));
   const root={querySelector: selector=>nodes.get(selector.match(/data-update-([a-z]+)/)[1])};
-  api.panel({root,device:async()=>{deviceReads++;return {updates:config,version:installed,armed,state};},
+  api.panel({root,device:async()=>{deviceReads++;return {updates:config,version:installed,armed,state,remote:Boolean(remote)};},
     confirm:async shown=>{confirmations++;assert.equal(shown.release_notes,record.release_notes);return accept;},
     install:async(file,metadata)=>{installs++;assert.deepEqual(new Uint8Array(await file.arrayBuffer()),image);assert.equal(metadata.release_signature,record.release_signature);},
+    ...(remote===undefined ? {} : {remoteInstall:async(shown,say)=>{remoteInstalls++;assert.equal(shown.release_signature,record.release_signature);say('Firmware installed. The timer restarts now; reconnect and check its version.','ok');}}),
   });
-  return {nodes,requests,counts:()=>({imageDownloads,confirmations,deviceReads,installs})};
+  return {nodes,requests,counts:()=>({imageDownloads,confirmations,deviceReads,installs,...(remote===undefined?{}:{remoteInstalls})})};
 }
 
 test('no published or newer release reports no updates without a dialog or image', async()=>{
@@ -272,4 +273,15 @@ test('Bluetooth notice waits for the page to supply the update config instead of
   await f.notice.status({version: '1.0.0', state: 'open', updates: f.feed});
   assert.equal(f.requests.length, 1);
   assert.equal(f.root.hidden, false);
+});
+
+test('a timer that downloads itself gets the approved record and no browser download', async () => {
+  const remote = await panelFixture({accept: true, remote: true});
+  await remote.nodes.get('check').click();
+  assert.deepEqual(remote.counts(), {imageDownloads: 0, confirmations: 1, deviceReads: 2, installs: 0, remoteInstalls: 1});
+  assert.equal(remote.nodes.get('message').textContent, 'Firmware installed. The timer restarts now; reconnect and check its version.');
+  // Without the capability the browser path is unchanged.
+  const local = await panelFixture({accept: true, remote: false});
+  await local.nodes.get('check').click();
+  assert.deepEqual(local.counts(), {imageDownloads: 1, confirmations: 1, deviceReads: 2, installs: 1, remoteInstalls: 0});
 });

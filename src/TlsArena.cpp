@@ -12,8 +12,10 @@
 
 namespace {
 
-// The relay creates its task under this name (RelayRuntime.cpp).
-constexpr char kOwnerTaskName[] = "relay";
+// Tasks whose TLS connections use the block: the relay (RelayRuntime.cpp)
+// and the on-device update download (UpdateDownload.cpp), which runs only
+// while the relay is paused.
+constexpr const char* kOwnerTaskNames[] = {"relay", "ota-download"};
 
 uint8_t* region = nullptr;
 size_t regionSize = 0;
@@ -23,7 +25,11 @@ volatile uint32_t fallbacks = 0;
 
 bool ownerTask() {
   const char* name = pcTaskGetName(nullptr);
-  return name != nullptr && strcmp(name, kOwnerTaskName) == 0;
+  if (name == nullptr) return false;
+  for (const char* owner : kOwnerTaskNames) {
+    if (strcmp(name, owner) == 0) return true;
+  }
+  return false;
 }
 
 bool inRegion(const void* pointer) {

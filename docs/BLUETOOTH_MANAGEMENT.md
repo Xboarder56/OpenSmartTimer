@@ -283,6 +283,7 @@ HTTP callbacks with host spies, including a competing aborted request.
 | `0x71` | Chunk | Binary: `LE32 offset` ‖ image bytes (1–472) |
 | `0x72` | Finish | JSON `{}` |
 | `0x73` | Abort | JSON `{}` |
+| `0x74` | Download on the timer | JSON `{}` or `{"release_version":"…"}`; the same as `POST /api/v1/ota/download` |
 
 Firmware updates keep every HTTP rule: the timer must be open, the Reset button
 must have armed updates with a short press (a second press still allows one
@@ -314,6 +315,15 @@ A chunk costs about three fragment writes and one notification. At typical
 connection intervals that is roughly 4–8 KB/s, so a 1.3 MB image takes about
 three to six minutes. Keep the phone close and the app open
 while an update is in progress.
+
+**Download on the timer** (`0x74`) avoids that transfer when the timer is on a
+Wi-Fi network with Internet access: the app only starts it, and the timer
+downloads, verifies and installs the image itself (see
+[Download on the timer](API.md#download-on-the-timer-v2)). It needs the same
+open timer and Reset-button arm, which it uses up, and returns `202` with
+`{"started":true}`. Follow `ota_download` in status (`0x47`); the connection may
+stay open or close. Every rejection uses the HTTP route's status and code.
+Older firmware rejects the unknown opcode, so an app falls back to `0x70`–`0x73`.
 
 ## Limits
 

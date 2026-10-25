@@ -161,6 +161,7 @@ checking captured hardware responses.
 | `GET /api/v1/capabilities` | Discover limits and supported features |
 | `POST /api/v1/ota/prepare` | Validate metadata and reserve a quiet OTA window |
 | `POST /api/v1/ota` | Physically armed, validated firmware upload |
+| `POST /api/v1/ota/download` | V2-only, physically armed download and install of the newest signed release over the timer's own Wi-Fi |
 
 ## Status
 
@@ -250,6 +251,7 @@ Response fields:
 | `uptime_ms` / `server_time_ms` | Wraparound-safe device monotonic time |
 | `ota_armed_remaining_ms` | Physical update window remaining; zero when disarmed |
 | `ota_unverified_allowed` | `true` only after a second physical short press during the current arm window; permits one otherwise-unrecognized application image and is never persistent |
+| `ota_download` | V2 only. On-device download progress: `state` is `idle`, `checking`, `downloading`, `installing` or `failed`; except when idle it also has `received_bytes`, `total_bytes`, `version` and `error` (see [Download on the timer](#download-on-the-timer-v2)) |
 | `ap_security` | `open` or `wpa2`; this protects the setup AP only, not REST access through the router LAN |
 | `ap_password_set` | Whether an AP password exists; the password itself is never returned |
 | `ap_uses_device_name` | Whether AP SSID is generated from the device name and chip ID |
@@ -996,7 +998,7 @@ The example above is a V1 response. On V2,
 `bluetooth_bonding`, `bluetooth_command_integrity`,
 `bluetooth_physical_pairing`, `bluetooth_event_notifications`,
 `bluetooth_event_replay`, `bluetooth_pairing_commit`, and
-`bluetooth_identify`, and `bluetooth_system_information` are `true`; `bluetooth_read_only`,
+`bluetooth_identify`, `bluetooth_system_information` and `ota_download` are `true`; `bluetooth_read_only`,
 `bluetooth_peer_discovery`, and `bluetooth_peer_control` remain `false`. V2
 also adds:
 
@@ -1486,6 +1488,61 @@ The prepare step responds with `{"ready":true,"quiet_window_ms":10000,"unverifie
 ```
 
 There is deliberately no remote OTA-arm endpoint.
+
+### Download on the timer (V2)
+
+`POST /api/v1/ota/download` lets a V2 download the newest signed release for its
+model from the configured update site over its own station Wi-Fi, instead of
+receiving the image from a browser or the Bluetooth app. It needs the same
+physical authorization as an upload: an open timer and the Reset-button arm,
+which the download uses up. The optional `release_version` names the version
+the person approved; if the site now offers a different one, the download stops.
+
+```sh
+curl -X POST -H 'Content-Type: application/json' \
+  -d '{"release_version":"1.0.0-rc.3"}' http://smarttimer.local/api/v1/ota/download
+```
+
+`202 {"started":true}` means the download is running; follow `ota_download` in
+`/api/v1/status`. The timer fetches `updates/magbound_v2_esp32c3.json`, checks
+the record's fields and P-256 release signature, refuses anything not newer than
+the installed version, then streams the image into the same installer as an
+upload: image header, product marker, CRC32 and the signed SHA-256 must all
+match before the last chunk is committed. HTTPS carries the bytes, but the
+server certificate is not validated: trust comes from the signature, so a
+substituted record or image is rejected exactly as one downloaded by a browser
+would be. On success the timer records `ota_succeeded` and restarts into the
+new version; on any failure the running firmware is unchanged.
+
+While a download runs, every other state change is refused with
+`409 update_in_progress`: timer starts (local, Bluetooth and relay), settings,
+Wi-Fi changes and a new Reset-button arm. Status requests keep working. The relay
+pauses for the download and reconnects afterwards.
+
+| `409` / `403` / `503` code | Meaning |
+| --- | --- |
+| `timer_active` | The timer is not open |
+| `ota_not_armed` | Press and release the Reset button within two seconds first |
+| `no_station` | The timer is not connected to a Wi-Fi network |
+| `update_in_progress` | Another upload or download is running |
+| `updates_not_configured` | The build has no update site |
+| `update_busy` | The download task could not start; retry |
+
+`ota_download.error` after a failed download:
+
+| Error | Meaning |
+| --- | --- |
+| `unreachable` | No connection to the update site |
+| `not_published` | No release for this model is published |
+| `bad_response`, `record_invalid` | The site's reply or the release record was malformed |
+| `signature_invalid` | The record's signature did not verify |
+| `up_to_date` | No newer version is published |
+| `version_changed` | The published version differs from `release_version` |
+| `download_failed` | The image download stopped |
+| `image_invalid` | The image failed the installer's checks |
+| `memory`, `install_not_started`, `install_stalled`, `install_failed`, `cancelled` | The timer could not complete the install; retry |
+
+Schemas: [`schemas/local/ota-download-request.schema.json`](schemas/local/ota-download-request.schema.json) (request), [`schemas/local/ota-download-response.schema.json`](schemas/local/ota-download-response.schema.json) (response).
 
 ## Legacy compatibility API
 

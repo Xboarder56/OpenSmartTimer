@@ -47,6 +47,7 @@ RouteInfo routeInfo(WebApplication::ManagementRoute route) {
     case Route::OtaBegin: return {"/api/v1/ota/prepare", false};
     case Route::OtaFinish:
     case Route::OtaAbort: return {"/api/v1/ota", false};
+    case Route::OtaDownload: return {"/api/v1/ota/download", false};
   }
   return {"", false};
 }
@@ -99,6 +100,7 @@ WebApplication::ManagementReply WebApplication::manage(
       case ManagementRoute::OtaBegin: routeBluetoothOtaBegin(); break;
       case ManagementRoute::OtaFinish: routeBluetoothOtaFinish(); break;
       case ManagementRoute::OtaAbort: routeBluetoothOtaAbort(); break;
+      case ManagementRoute::OtaDownload: routeOtaDownload(); break;
     }
   }
   if (reply.body.length() == 0) {

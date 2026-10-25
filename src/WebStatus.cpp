@@ -9,6 +9,7 @@
 #if defined(SMART_TIMER_HARDWARE_V2)
 #include "BluetoothApplication.h"
 #include "DeadlineBackstop.h"
+#include "UpdateDownload.h"
 #endif
 #ifndef SMART_TIMER_VERSION
 #define SMART_TIMER_VERSION "development"
@@ -79,6 +80,20 @@ String WebApplication::statusJson(uint32_t nowMs, const String* action,
   json.boolean("ota_armed", otaArmed(nowMs));
   json.number("ota_armed_remaining_ms", otaArmedRemainingMs(nowMs));
   json.boolean("ota_unverified_allowed", otaUnverifiedAllowed(nowMs));
+#if defined(SMART_TIMER_HARDWARE_V2)
+  {
+    const UpdateDownload::Progress download = UpdateDownload::progress();
+    json.object("ota_download");
+    json.text("state", UpdateDownload::phaseName(download.phase));
+    if (download.phase != UpdateDownload::Phase::Idle) {
+      json.number("received_bytes", download.receivedBytes);
+      json.number("total_bytes", download.totalBytes);
+      json.text("version", download.version);
+      json.text("error", download.error);
+    }
+    json.endObject();
+  }
+#endif
   json.boolean("identifying", identifying(nowMs));
   json.boolean("station_connected", network_.stationConnected());
   json.text("station_ip", network_.stationAddress().c_str());
@@ -688,6 +703,7 @@ void WebApplication::sendCapabilities() {
   body += ",\"bluetooth_notifications\":true,\"bluetooth_peer_discovery\":false";
   body += ",\"bluetooth_bonding\":true,\"bluetooth_command_integrity\":true";
   body += ",\"bluetooth_physical_pairing\":true";
+  body += ",\"ota_download\":true";
   body += ",\"bluetooth_event_notifications\":true,\"bluetooth_event_replay\":true";
   body += ",\"bluetooth_pairing_commit\":true,\"bluetooth_identify\":true";
   body += ",\"bluetooth_system_information\":true";

@@ -7,6 +7,7 @@ User-facing changes to OpenSmartTimer firmware, its browser apps and the relay. 
 ### Firmware updates
 
 - During an online update, every progress step now appears under **Online update**, and **Install update** for a file stays disabled until a file is chosen. This applies to the timer page and the Bluetooth app.
+- V2: the Bluetooth app no longer sends a release over Bluetooth when the timer is on Wi-Fi. After you approve the update and press Reset, the timer downloads, verifies and installs it over its own Wi-Fi, which takes about a minute instead of several. Its signature and SHA-256 are checked exactly as before, and timer starts are refused until it finishes. Integrations can use `POST /api/v1/ota/download`. V1 and the timer page keep downloading in the browser.
 
 ### Timer and local interface
 

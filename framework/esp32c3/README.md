@@ -40,11 +40,15 @@ any new GATT service or peer-timer control.
 ## Future capabilities versus exposed features
 
 The HTTPS client, redirect handling, certificate bundle, certificate-date
-checks, SHA-256/SHA-512 and RSA/ECDSA verification primitives are retained for
-a future release downloader. That downloader must set the system clock before
-CA-validated HTTPS; the existing relay retains its separate pinned-key policy.
+checks, SHA-256/SHA-512 and RSA/ECDSA verification primitives remain available.
+A client that validates certificates must set the system clock first; the V2
+update downloader does not validate them and relies on the release signature,
+and the relay keeps its separate pinned-key policy.
 This package alone enables no GitHub polling, automatic download or extra OTA
-route. The application implements manual browser-assisted GitHub updates,
+route. The application implements manual GitHub updates, normally
+browser-assisted; on request a V2 downloads the approved release itself over
+the relay's TLS stack without certificate validation, relying on the signature
+(see [GitHub updates](../../docs/GITHUB_UPDATES.md#download-on-the-timer-v2)),
 verifying separately signed update descriptors and streaming SHA-256 through
 the existing physically armed, open-timer OTA routes. `release.json` and raw
 checksum files are not signed manifests; `updates.json` carries the signed

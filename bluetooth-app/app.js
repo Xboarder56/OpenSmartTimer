@@ -1644,6 +1644,40 @@ async function installFirmwareOverBluetooth(fileOverride = null, releaseMetadata
   }, report);
 }
 
+// V2: the timer downloads, verifies and installs the approved release over its
+// own Wi-Fi; the app only starts it and follows ota_download in status.
+async function installFirmwareOnTimer(record, report) {
+  const { status: code, json } = await manageJson(MGMT_OPCODES.otaDownload, { release_version: record.release_version });
+  if (code !== 202) throw new Error(managementError(json, code));
+  report('The timer is downloading the update…', 'busy');
+  const started = Date.now();
+  let installed = false;
+  while (!installed && Date.now() - started < 10 * 60 * 1000) {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    if (!app.server?.connected) {
+      // The timer carries on without the app.
+      report('Bluetooth disconnected. The timer finishes the update on its own; reconnect and check its version.', 'busy');
+      return;
+    }
+    let status;
+    try { status = await readManagement(MGMT_OPCODES.status); } catch { continue; }
+    renderUpdateStatus(status);
+    const download = status.ota_download || {};
+    if (download.state === 'failed') {
+      throw new Error(download.error === 'unreachable' || download.error === 'not_published'
+        ? 'The timer could not reach the update site. Check its Internet access and try again.'
+        : 'The timer could not install the update. Its firmware is unchanged; briefly press Reset and try again.');
+    }
+    if (download.state === 'installing') installed = true;
+    if (download.state === 'downloading' && download.total_bytes > 0) {
+      report(t('The timer is downloading the update… {percent}%',
+        { percent: Math.round((download.received_bytes * 100) / download.total_bytes) }), 'busy');
+    }
+  }
+  if (!installed) throw new Error('The update is taking too long. Reconnect and check the timer\'s version.');
+  report('Firmware installed. The timer restarts now; reconnect and check its version.', 'ok');
+}
+
 function wireTimerSettings() {
   updateNotice = window.SmartTimerUpdates.notice({
     root: $('updateNotice'), toggle: $('updateNoticeToggle'), translate: t,
@@ -1668,9 +1702,12 @@ function wireTimerSettings() {
       const current = await readManagement(MGMT_OPCODES.status);
       const capabilities = await readManagement(MGMT_OPCODES.capabilities);
       renderUpdateStatus(current);
-      return { updates: capabilities.updates, version: current.version, armed: current.ota_armed, state: current.state };
+      return { updates: capabilities.updates, version: current.version, armed: current.ota_armed, state: current.state,
+        // The timer can fetch the image over its own Wi-Fi instead.
+        remote: capabilities.features?.ota_download === true && current.station_connected === true };
     },
     install: installFirmwareOverBluetooth,
+    remoteInstall: installFirmwareOnTimer,
   });
   $('mgmtWifiMode').addEventListener('click', () => {
     if (!app.managementWifiStatus || app.managementWifiStatus?.wifi_suspend_supported !== true) return;

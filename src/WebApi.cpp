@@ -198,6 +198,9 @@ void WebApplication::registerModernRoutes() {
              [this]() { handleOtaPrepare(); });
 
   registerOtaRoute("/api/v1/ota");
+#if defined(SMART_TIMER_HARDWARE_V2)
+  server_.on("/api/v1/ota/download", HTTP_POST, [this]() { routeOtaDownload(); });
+#endif
 }
 
 void WebApplication::registerLegacyRoutes() {

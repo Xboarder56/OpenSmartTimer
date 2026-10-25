@@ -20,7 +20,7 @@ function fixture() {
   const app = {server: {connected: true}, authenticated: true, live: {state: 'open', controls_locked: false}};
   const context = vm.createContext({app, $: get, document: {querySelectorAll: () => []},
     window: {SmartTimerUpdates: {panel: () => {}, notice: () => ({status: async () => {}, refresh: () => {}})}},
-    installFirmwareOverBluetooth: async () => {},
+    installFirmwareOverBluetooth: async () => {}, installFirmwareOnTimer: async () => {},
     t: text => text, setText: (id, text) => { get(id).textContent = text; },
     managementSupported: () => true, MGMT_OPCODES,
     applyChange: (...args) => requests.push(args), refreshSystemInfo: async () => {},
