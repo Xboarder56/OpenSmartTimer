@@ -586,6 +586,12 @@
     setText('recoveryModeMessage', `${recoveryNetwork}${localizedRetryExplanation}`);
     $('recoveryBanner').classList.toggle('hidden', !recoveryActive);
     $('recoveryModeCallout').classList.toggle('hidden', !recoveryActive);
+    // A V2 download started from the Bluetooth app (or the API).
+    const download = next.ota_download || {};
+    $('downloadBanner').classList.toggle('hidden', !updateDownloading(next));
+    setText('downloadTitle', download.state === 'downloading' && download.total_bytes > 0
+      ? t('Firmware update in progress… {percent}%', { percent: Math.round((download.received_bytes * 100) / download.total_bytes) })
+      : t('Firmware update in progress'));
     const unverifiedFirmwareAllowed = Boolean(next.ota_unverified_allowed);
     $('otaUnverifiedBanner').classList.toggle('hidden', !unverifiedFirmwareAllowed);
     $('otaUnverifiedScope').classList.toggle('hidden', !unverifiedFirmwareAllowed);
@@ -629,11 +635,15 @@
     return true;
   }
 
+  function updateDownloading(value = status) {
+    return ['checking', 'downloading', 'installing'].includes(value?.ota_download?.state);
+  }
+
   function updateControls() {
     renderRelayAvailability();
     const unavailable = busy || !online || !status;
     const timerOpen = Boolean(status && status.state === 'open');
-    $('startButton').disabled = unavailable || Boolean(status.emergency_input_active);
+    $('startButton').disabled = unavailable || Boolean(status.emergency_input_active) || updateDownloading();
     $('pauseButton').disabled = unavailable || status.sealed;
     $('stopButton').disabled = unavailable || status.sealed;
     $('sealButton').disabled = unavailable || status.sealed || status.state !== 'running';
@@ -658,7 +668,7 @@
     $('diagnosticsRefresh').disabled = unavailable;
     $('eventsRefresh').disabled = unavailable;
     $('diagnosticsCopy').disabled = unavailable || !diagnosticsCache;
-    $('otaButton').disabled = unavailable || !timerOpen || !status.ota_armed;
+    $('otaButton').disabled = unavailable || !timerOpen || !status.ota_armed || !$('firmwareFile').files.length;
     $('confirmAccept').disabled = busy;
     document.querySelectorAll('[data-adjust]').forEach((button) => {
       button.disabled = unavailable || status.sealed;
@@ -1969,7 +1979,7 @@
     if (relay.setup_pending) return 'Waiting for physical approval';
     if (relay.enrolled && !relay.partner_origin) return 'Approve remote sharing setup';
     if (!relay.enrolled) return relay.enrolling ? 'Setting up…' : 'Not set up';
-    if (relay.paused_for_bluetooth) return 'Paused for Bluetooth';
+    if (relay.paused_for_bluetooth) return updateDownloading() ? 'Paused for a firmware update' : 'Paused for Bluetooth';
     if (relay.stopping) return 'Stopping…';
     if (!relay.enabled) return 'Off';
     if (relay.state === 'connected') return relay.sharing_available ? 'Connected' : 'Connected, busy';
@@ -1984,7 +1994,8 @@
   function relayAvailability(relay, fresh) {
     if (!relay || !(relay.enrolled || relay.enrolling)) return null;
     if (!fresh) return { label: 'RELAY UNAVAILABLE', kind: 'stale', detail: 'Relay status is unavailable.' };
-    if (relay.paused_for_bluetooth) return { label: 'RELAY PAUSED', kind: 'paused', detail: 'Paused for Bluetooth' };
+    if (relay.paused_for_bluetooth) return { label: 'RELAY PAUSED', kind: 'paused',
+      detail: /^(checking|downloading|installing)$/.test(status?.ota_download?.state) ? 'Paused for a firmware update' : 'Paused for Bluetooth' };
     if (relay.enrolling || relay.stopping || relay.maintenance) return { label: 'RELAY BUSY', kind: 'paused', detail: 'The relay is busy. Try again in a moment.' };
     if (!relay.enabled) return { label: 'RELAY OFF', kind: 'offline', detail: 'Remote sharing is off.' };
     if (relay.state === 'connected') return relay.sharing_available
@@ -2678,25 +2689,32 @@
     const file = $('firmwareFile').files[0];
     const label = document.querySelector('.file-field span');
     if (label.textContent !== (file ? file.name : t('Choose firmware .bin'))) label.textContent = file ? file.name : t('Choose firmware .bin');
+    updateControls();
   });
-  async function installFirmware(file, releaseMetadata = {}) {
+  // `report` shows progress on another panel's line (the online update);
+  // without it, progress goes to the file section's line.
+  async function installFirmware(file, releaseMetadata = {}, report = null) {
     if (releaseMetadata.release_signature && busy) throw new Error('Wait for the current device operation to finish.');
     if (busy || !status || !status.ota_armed || !file) return;
+    const show = (text, state = 'busy') => {
+      if (report) { report(text, state); return; }
+      $('otaMessage').dataset.state = state;
+      setText('otaMessage', t(text));
+    };
     suspendLiveUpdates('Paused during firmware update.');
     setBusy(true);
-    $('otaMessage').dataset.state = 'busy';
-    setText('otaMessage', t('Checking image…'));
+    show('Checking image…');
     let otaQuietReserved = false;
     try {
       const checksum = await fileCrc32(file);
-      setText('otaMessage', t('Reserving the connection…'));
+      show('Reserving the connection…');
       await mutate('/api/v1/ota/prepare', {
         image_size: String(file.size),
         image_crc32: checksum,
         ...releaseMetadata,
       });
       otaQuietReserved = true;
-      setText('otaMessage', t('Pausing other control pages…'));
+      show('Pausing other control pages…');
       await wait(1500);
       const body = new FormData();
       body.append('image_size', String(file.size));
@@ -2705,16 +2723,18 @@
         if (key !== 'image_size' && key !== 'image_crc32') body.append(key, String(value));
       }
       body.append('firmware', file, file.name);
-      setText('otaMessage', t('Uploading and validating…'));
+      show('Uploading and validating…');
       await request('/api/v1/ota', { method: 'POST', body });
-      $('otaMessage').dataset.state = 'ok';
-      setText('otaMessage', t('Update installed. The device is restarting…'));
+      show('Update installed. The device is restarting…', 'ok');
+      // The chosen file is installed; clearing it keeps Install update
+      // disabled while the timer restarts.
+      $('firmwareFile').value = '';
+      $('firmwareFile').dispatchEvent(new Event('change'));
     } catch (error) {
       const connectionLost = /load failed|failed to fetch|networkerror/i.test(error.message);
-      $('otaMessage').dataset.state = 'error';
-      setText('otaMessage', connectionLost
-        ? t('The connection was interrupted. Do not remove power; wait 15 seconds, reconnect, and check the firmware version.')
-        : t(error.message));
+      show(connectionLost
+        ? 'The connection was interrupted. Do not remove power; wait 15 seconds, reconnect, and check the firmware version.'
+        : error.message, 'error');
     } finally {
       setBusy(false);
       setTimeout(resumeLiveUpdates, otaQuietReserved ? 15000 : 0);

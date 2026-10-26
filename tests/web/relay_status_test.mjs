@@ -28,6 +28,10 @@ test('configured relay distinguishes online, offline, Bluetooth pause, busy and 
     [{ enabled: false }, 'RELAY OFF'],
   ]) assert.equal(h.relayAvailability({ ...h.relayCache, ...values }, true).label, label);
   assert.equal(h.relayAvailability({ enrolled: false }, true), null);
+  // The relay also pauses for an on-device firmware download (V2).
+  assert.equal(h.relayAvailability({ ...h.relayCache, paused_for_bluetooth: true }, true).detail, 'Paused for Bluetooth');
+  h.status = { state: 'open', ota_download: { state: 'downloading' } };
+  assert.equal(h.relayAvailability({ ...h.relayCache, paused_for_bluetooth: true }, true).detail, 'Paused for a firmware update');
 });
 
 test('a failed request or stale cached connection cannot authorize link creation', () => {

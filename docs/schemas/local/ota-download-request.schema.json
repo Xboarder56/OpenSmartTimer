@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xboarder56.github.io/OpenSmartTimer/schemas/local/ota-download-request.schema.json",
+  "title": "POST /api/v1/ota/download (request body)",
+  "description": "V2 only. Starts an on-device download of the newest signed release for this model. Requires an open timer, the physical Reset-button arm (which it uses up) and station Wi-Fi with Internet access. Sent as form or JSON; the body may be empty.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "release_version": {
+      "type": "string",
+      "maxLength": 47,
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?$",
+      "description": "The version the person approved. If the update site now offers a different version, the download stops with error version_changed."
+    }
+  }
+}

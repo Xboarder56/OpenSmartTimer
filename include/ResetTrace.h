@@ -17,6 +17,8 @@ enum Phase : uint8_t {
   kNone, kInputs, kTimer, kNetwork, kNetworkDns, kNetworkScan, kNetworkStation,
   kWeb, kWebRequest, kWebAfter, kWebStreams, kBluetooth, kRelay, kLoopEnd,
   kNetworkMdns,
+  // Appended so stored traces from earlier builds keep their meaning.
+  kBluetoothStart, kBootValidation,
 };
 
 struct Record {
@@ -49,8 +51,9 @@ inline bool load(Record& record) { record = storage(); return true; }
 #endif
 
 // The longest gap between two marks since boot, and which phase it was in.
-// A long gap means loop() did not come round to service timer expiry; the
-// emergency input does not wait for it (an interrupt cuts the lock output).
+// A long gap means loop() did not come round to service timer expiry. The
+// emergency input does not wait for it (an interrupt cuts the lock output),
+// and neither does a V2 timed release (the deadline backstop does).
 struct Stall {
   uint32_t longestMs;
   uint32_t atMs;  // uptime when that gap ended
@@ -137,6 +140,8 @@ inline const char* phaseName(uint8_t phase) {
     case kRelay: return "relay";
     case kLoopEnd: return "loop_end";
     case kNetworkMdns: return "network_mdns";
+    case kBluetoothStart: return "bluetooth_start";
+    case kBootValidation: return "boot_validation";
     default: return "none";
   }
 }

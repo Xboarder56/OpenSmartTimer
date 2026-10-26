@@ -42,6 +42,8 @@ and are referenced with `$ref`.
 | [`capabilities.schema.json`](capabilities.schema.json) | `GET /api/v1/capabilities` |
 | [`ota-prepare-request.schema.json`](ota-prepare-request.schema.json) | `POST /api/v1/ota/prepare` (request) |
 | [`ota-prepare-response.schema.json`](ota-prepare-response.schema.json) | `POST /api/v1/ota/prepare` (response) |
+| [`ota-download-request.schema.json`](ota-download-request.schema.json) | `POST /api/v1/ota/download` (request, V2) |
+| [`ota-download-response.schema.json`](ota-download-response.schema.json) | `POST /api/v1/ota/download` (response, V2) |
 
 ## Consuming these
 

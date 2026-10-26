@@ -42,7 +42,7 @@ struct WebApplication {
       for (unsigned b = 0; b < 8; ++b) otaCrc32_ = (otaCrc32_ >> 1) ^ (0xedb88320 & -(otaCrc32_ & 1));
     }
   }
-  void otaAcceptBytes(const uint8_t*, size_t); void otaCompleteImage(); void otaAbortImage();
+  void otaAcceptBytes(const uint8_t*, size_t, bool = true); void otaCompleteImage(); void otaAbortImage();
 };
 '''
 checks = r'''

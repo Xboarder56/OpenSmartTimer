@@ -2,6 +2,28 @@
 
 User-facing changes to OpenSmartTimer firmware, its browser apps and the relay. Versions follow `firmware_version` in `platformio.ini`. An **Unreleased** label identifies changes that have not been published.
 
+## [1.0.0-rc.3] - 2026-10-25
+
+### Firmware updates
+
+- V2: when the timer is on Wi-Fi, the Bluetooth app no longer sends an update over Bluetooth. After you approve the update and press Reset, the timer downloads and installs it itself in about a minute instead of several. The update is checked exactly as before, and the timer cannot be started until it has finished. Meanwhile the timer page shows **Firmware update in progress**.
+- If the Bluetooth app reconnects while the timer is installing an update this way, it shows the progress again.
+- During an online update, every step now appears under **Online update**, and **Install update** for a file stays unavailable until you choose a file. This applies to the timer page and the Bluetooth app.
+
+### Timer and lock
+
+- V2 now opens on time even when its page is slow to answer. Before, a slow or interrupted Wi-Fi connection could delay a timed release by several seconds.
+- V1's page answers promptly instead of sometimes pausing for a second or more. Its Wi-Fi now stays fully awake, as on V2. This uses a little more battery; the lock still draws far more during a session.
+
+### Remote sharing (V2 Smart Timer only, experimental)
+
+- While the timer installs an update, sharing shows **Paused for a firmware update** and reconnects afterwards.
+
+### Known limits
+
+- V2: after long use with Bluetooth on, remote sharing can stay offline while the timer itself works normally, with sharing showing **Waiting for free memory before connecting.** Restart the timer to bring sharing back. The lock, its timing and Bluetooth are not affected.
+- Hardware checks for this release are partial: the maintainer's own bench report on one unit of each model ([docs/qualification](docs/qualification/README.md)).
+
 ## [1.0.0-rc.2] - 2026-10-19
 
 The first public release candidate of OpenSmartTimer: open replacement firmware for the MagBound Smart Timer V1 and V2, with a built-in web page, a Bluetooth app for the V2 and an optional self-hosted relay for sharing.

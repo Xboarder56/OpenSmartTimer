@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "firmware_version": "1.0.0-rc.3",
+  "recorded_utc": "2026-10-26T00:55:58Z",
+  "qualification": "partial",
+  "source": null,
+  "note": "The maintainer's bench report on one unit of each model with no person or load attached; not a certification. The two-hour soak ran on a build of the preceding source, which differs from these images only in the version number; every other check ran on these images.",
+  "artifacts": [
+    {
+      "hardware_model": "MagBound Smart Timer V1",
+      "chip_family": "ESP8266",
+      "file": "OpenSmartTimer-1.0.0-rc.3-MagBoundV1-ESP8266.bin",
+      "build_id": "0d2455bb0c0c9fcbb166eca3",
+      "size_bytes": 521744,
+      "crc32": "4d1dd0f5",
+      "sha256": "35392519936655697c11717273ccd2dc5365a515e06deb8eb0e5f97c4bdfd977",
+      "checks": {
+        "rest_sse": {
+          "status": "passed",
+          "summary": "29 REST/SSE checks and the live-update stream limit passed. Legacy pause and lock routes are refused when switched off; requests under a public hostname are refused."
+        },
+        "signed_http_ota": {
+          "status": "passed",
+          "summary": "Installed over local HTTP as a signed release after a physical arm; a tampered signature and a changed version were refused."
+        },
+        "mixed_transport_soak": {
+          "status": "passed",
+          "duration_seconds": 7203,
+          "summary": "Two hours of mixed load (two live-update streams, continuous requests, Wi-Fi scans): 21,784 requests and 318 timer cycles with no failures or timeouts. The longest main-loop pause was 0.9 s, at start-up."
+        },
+        "physical_safety": {
+          "status": "passed",
+          "summary": "The emergency input released a running session and a session with locked controls, and refused a new start while held. Restarted with the input held, the timer booted released and refused to start until it was let go."
+        },
+        "network_recovery": {
+          "status": "pending",
+          "summary": "Access-point onboarding, bad credentials, lost-router recovery and the ten-second settings reset not yet checked on this image."
+        },
+        "ota_recovery_vendor_rollback": {
+          "status": "pending",
+          "summary": "Interrupted transfers and vendor rollback not yet checked on this image."
+        }
+      }
+    },
+    {
+      "hardware_model": "MagBound Smart Timer V2",
+      "chip_family": "ESP32-C3",
+      "file": "OpenSmartTimer-1.0.0-rc.3-MagBoundV2-ESP32C3.bin",
+      "build_id": "094042b985ba456b4fcec79f",
+      "size_bytes": 1266192,
+      "crc32": "9859b980",
+      "sha256": "1c2c7c25e78cff4c867902fa7d66571241271b5df3bd9ddb0a167c817aa49b0c",
+      "checks": {
+        "rest_sse": {
+          "status": "passed",
+          "summary": "29 REST/SSE checks and the live-update stream limit passed. Legacy pause and lock routes are refused when switched off; requests under a public hostname are refused."
+        },
+        "signed_http_ota": {
+          "status": "passed",
+          "summary": "Installed over local HTTP as a signed release after a physical arm; a tampered signature and a changed version were refused."
+        },
+        "mixed_transport_soak": {
+          "status": "passed",
+          "duration_seconds": 7203,
+          "summary": "Two hours of mixed load (three live-update streams, continuous requests, Wi-Fi scans, six Bluetooth phases, four relay restarts): 20,394 requests and 293 timer cycles with no failures or timeouts. No main-loop pause reached 1 s, and the timed-release backstop never had to act."
+        },
+        "physical_safety": {
+          "status": "passed",
+          "summary": "The emergency input released a running session and a session with locked controls, and refused a new start while held. Restarted with the input held, the timer booted released and refused to start until it was let go."
+        },
+        "network_recovery": {
+          "status": "pending",
+          "summary": "Access-point onboarding, bad credentials, lost-router recovery and the ten-second settings reset not yet checked on this image."
+        },
+        "ota_recovery_vendor_rollback": {
+          "status": "pending",
+          "summary": "Interrupted transfers and vendor rollback not yet checked on this image."
+        },
+        "bluetooth_approval_recovery": {
+          "status": "pending",
+          "summary": "The 23-check Bluetooth bench with an approved app passed, as did six Bluetooth phases during the soak; physical approval, revocation and recovery not yet checked on this image."
+        },
+        "signed_bluetooth_ota": {
+          "status": "pending",
+          "summary": "Not yet checked on this image."
+        },
+        "relay_qualification": {
+          "status": "passed",
+          "summary": "Owner page, link extension and expiry, lost-response retry and 19 link scenarios passed, and the relay recovered from four restarts during the soak."
+        }
+      }
+    }
+  ],
+  "checks": {
+    "companion_phone_pwa": {
+      "status": "pending",
+      "summary": "Real-phone install, offline launch, pairing and update need the published site."
+    }
+  }
+}

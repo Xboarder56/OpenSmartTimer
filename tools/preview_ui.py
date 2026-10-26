@@ -27,6 +27,8 @@ PREVIEW_BUILD_ID = "000000000000000000000000"
 
 class PreviewState:
     def __init__(self, hardware_v2=False):
+        self.download_demo = False
+        self.download = None
         self.hardware_v2 = bool(hardware_v2)
         self.sse_client_limit = 3 if self.hardware_v2 else 2  # matches the firmware
         self.started_at = time.monotonic()
@@ -140,6 +142,24 @@ class PreviewState:
         }.get(reason, "opened_by_user")
         self.event(event_type)
 
+    def download_status(self):
+        """Simulated V2 on-device download (preview --demo-download only)."""
+        if self.download is None:
+            return {"state": "idle"}
+        elapsed = time.monotonic() - self.download["started"]
+        total = 1257504
+        base = {"total_bytes": total, "version": self.download["version"], "error": ""}
+        if self.download.get("fail") and elapsed >= 2:
+            return {"state": "failed", "received_bytes": 0, **base, "error": "unreachable"}
+        if elapsed < 2:
+            return {"state": "checking", "received_bytes": 0, **base, "total_bytes": 0, "version": ""}
+        if elapsed < 12:
+            return {"state": "downloading", "received_bytes": int(total * (elapsed - 2) / 10), **base}
+        if elapsed < 15:
+            return {"state": "installing", "received_bytes": total, **base}
+        self.download = None
+        return {"state": "idle"}
+
     def set_emergency_input(self, active):
         active = bool(active)
         if active == self.emergency_input_active:
@@ -234,6 +254,7 @@ class PreviewState:
             "ota_armed": False,
             "ota_armed_remaining_ms": 0,
             "ota_unverified_allowed": False,
+            **({"ota_download": self.download_status()} if self.hardware_v2 else {}),
             "identifying": False,
             "wifi_state": self.wifi_state,
             "connected_ssid": self.connected_ssid,
@@ -257,7 +278,7 @@ class PreviewState:
         return {
             "experimental": True, "enabled": self.relay["enabled"], "enrolled": self.relay["enrolled"],
             "running": self.relay["enabled"], "enrolling": False, "stopping": False, "maintenance": False,
-            "paused_for_bluetooth": False,
+            "paused_for_bluetooth": self.download_status()["state"] in ("checking", "downloading", "installing"),
             "partner_origin": self.relay["partner_origin"],
             "setup_pending": self.relay_setup is not None, "setup_state": self.relay_setup_state,
             "setup_request_id": self.relay_setup_id,
@@ -589,6 +610,7 @@ class PreviewHandler(SimpleHTTPRequestHandler):
                     "bluetooth_connection_mtu_sufficient": False,
                     "bluetooth_bond_cleanup_pending": False,
                     "bluetooth_bond_cleanup_last_error": 0,
+                    "deadline_backstop": {"fired_count": 0, "arm_failed_count": 0},
                 })
             self.send_json(diagnostics)
             return
@@ -814,6 +836,19 @@ class PreviewHandler(SimpleHTTPRequestHandler):
             return
         if path == "/api/v1/ota/prepare":
             self.send_error_json("OTA is disabled in the desktop preview", 403, "ota_not_armed")
+            return
+        if path == "/api/v1/ota/download":
+            if not STATE.hardware_v2:
+                self.send_error_json("Not found", 404, "not_found")
+            elif not STATE.download_demo:
+                self.send_error_json("OTA is disabled in the desktop preview", 403, "ota_not_armed")
+            elif STATE.state != "open":
+                self.send_error_json("firmware updates require an open timer", 409, "timer_active")
+            else:
+                values = self.read_form()
+                STATE.download = {"started": time.monotonic(), "version": values.get("release_version") or "1.0.0-rc.3",
+                                  "fail": values.get("release_version") == "9.9.9"}
+                self.send_json({"started": True}, 202)
             return
         try:
             values = self.read_form()
@@ -1130,8 +1165,11 @@ def main():
     parser = ArgumentParser(description="Preview the Smart Timer web UI with mock device state")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--v2", action="store_true", help="Preview V2 Bluetooth pairing, control, and diagnostics")
+    parser.add_argument("--demo-download", action="store_true",
+                        help="V2: simulate an on-device update download (release_version 9.9.9 fails)")
     args = parser.parse_args()
     STATE = PreviewState(hardware_v2=args.v2)
+    STATE.download_demo = args.v2 and args.demo_download
     server = ThreadingHTTPServer(("127.0.0.1", args.port), PreviewHandler)
     print(f"Smart Timer {'V2' if args.v2 else 'V1'} UI preview: http://127.0.0.1:{args.port}")
     print("Press Ctrl-C to stop. This mock does not validate firmware or hardware safety.")

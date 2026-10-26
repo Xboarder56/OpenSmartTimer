@@ -56,6 +56,7 @@ class WebApplication {
     Capabilities, WifiConfigure, WifiForget, AccessPointSet, DeviceNameSet,
     Restart, AppLabel, AppRevoke, PairingStart, PairingCancel, PairingRevoke,
     WifiSuspend, WifiResume, WifiScanStart, WifiScanResults, OtaBegin, OtaFinish, OtaAbort,
+    OtaDownload,
   };
   ManagementReply manage(ManagementRoute route, const char* body,
                          size_t bodyLength, const char* secret,
@@ -94,11 +95,15 @@ class WebApplication {
   void routeBluetoothOtaBegin();
   void routeBluetoothOtaFinish();
   void routeBluetoothOtaAbort();
+  void routeOtaDownload();
+  void serviceUpdateDownload(uint32_t nowMs);
   void failBluetoothOta();
   // Firmware image pipeline shared by the multipart upload and Bluetooth.
   void otaResetUploadState();
-  bool otaBeginImage(uint32_t nowMs);
-  void otaAcceptBytes(const uint8_t* data, size_t length);
+  // quiet: hold other clients off for the upload (not for a V2 download,
+  // whose own loop must keep answering status requests).
+  bool otaBeginImage(uint32_t nowMs, bool quiet = true);
+  void otaAcceptBytes(const uint8_t* data, size_t length, bool quiet = true);
   void otaCompleteImage();
   void otaAbortImage();
 
@@ -209,6 +214,7 @@ class WebApplication {
   const char* captureSecret_ = nullptr;
   size_t captureSecretLength_ = 0;
   bool bluetoothOtaActive_ = false;
+  bool downloadInstallStarted_ = false;  // V2 on-device download is writing
   bool httpOtaRejectedDuringBluetooth_ = false;
 #if defined(SMART_TIMER_HARDWARE_V2)
   bool ready_ = false;

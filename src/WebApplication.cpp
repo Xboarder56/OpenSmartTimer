@@ -20,6 +20,7 @@
 #include "ReleaseUpdateConfig.h"
 #include "Platform.h"
 #include "TimerController.h"
+#include "UpdateDownload.h"
 #include "generated_build_identity.h"
 #include "generated_web_assets.h"
 
@@ -172,6 +173,9 @@ void WebApplication::loop(uint32_t nowMs) {
     pendingWifiPassword_ = "";
     pendingStandalone_ = false;
   }
+#if defined(SMART_TIMER_HARDWARE_V2)
+  serviceUpdateDownload(nowMs);
+#endif
   if (bluetoothOtaActive_ && !otaQuietActive(nowMs)) {
     // The Bluetooth sender stopped for the whole quiet window: cancel the
     // update and keep the running firmware.
@@ -212,6 +216,10 @@ void WebApplication::observeState(uint32_t nowMs,
   flags |= otaUnverifiedAllowed(nowMs) ? 0x100 : 0;
   flags |= timerStatus.pauseAllowed ? 0 : 0x200;
   flags |= timerStatus.sealAllowed ? 0 : 0x400;
+#if defined(SMART_TIMER_HARDWARE_V2)
+  // Pages learn at once that a download began, failed or is installing.
+  flags |= static_cast<uint16_t>(UpdateDownload::progress().phase) << 11;
+#endif
   const uint32_t timerRevision = timer_.eventRevision();
   const uint8_t accessPointClients = network_.accessPointClients();
 
@@ -369,8 +377,9 @@ bool WebApplication::otaQuietActive(uint32_t nowMs) const {
 
 bool WebApplication::mutationTransitionActive(uint32_t nowMs, bool includeInterlock) const {
   if (includeInterlock && mutationInterlockActive()) return true;
+  // A V2 download ends in a restart, so nothing may start a session first.
   return otaQuietActive(nowMs) || restartAtMs_ != 0 ||
-         pendingNetworkAtMs_ != 0;
+         pendingNetworkAtMs_ != 0 || UpdateDownload::active();
 }
 
 bool WebApplication::parseOtaMetadata(uint32_t& size,
@@ -422,13 +431,13 @@ void WebApplication::otaResetUploadState() {
   otaSignedRelease_ = false;
 }
 
-bool WebApplication::otaBeginImage(uint32_t nowMs) {
+bool WebApplication::otaBeginImage(uint32_t nowMs, bool quiet) {
   otaPreparedSize_ = 0;
   otaPreparedCrc32_ = 0;
   otaPrepareExpiresAtMs_ = 0;
   otaPreparedSignedRelease_ = false;
   network_.discardScanResults();
-  otaQuietUntilMs_ = nowMs + kOtaUploadQuietWindowMs;
+  if (quiet) otaQuietUntilMs_ = nowMs + kOtaUploadQuietWindowMs;
   if (!Update.begin(otaExpectedSize_)) {
     otaError_ = "unable to start update";
     return false;
@@ -441,8 +450,8 @@ bool WebApplication::otaBeginImage(uint32_t nowMs) {
   return true;
 }
 
-void WebApplication::otaAcceptBytes(const uint8_t* data, size_t length) {
-  otaQuietUntilMs_ = millis() + kOtaUploadQuietWindowMs;
+void WebApplication::otaAcceptBytes(const uint8_t* data, size_t length, bool quiet) {
+  if (quiet) otaQuietUntilMs_ = millis() + kOtaUploadQuietWindowMs;
   if (otaError_.length() != 0) {
     return;
   }
@@ -734,3 +743,110 @@ void WebApplication::scheduleWifiChange(const String& ssid,
   pendingStandalone_ = standalone;
   pendingNetworkAtMs_ = millis() + 500;
 }
+
+#if defined(SMART_TIMER_HARDWARE_V2)
+// Starts the V2 on-device download (docs/GITHUB_UPDATES.md). The same gates
+// as an upload apply: an open timer and the physical Reset-button arm, which
+// the download uses up.
+void WebApplication::routeOtaDownload() {
+  if (!allowRequest(true)) {
+    return;
+  }
+  const uint32_t nowMs = millis();
+  if (!timer_.isOpen()) {
+    sendError(409, "firmware updates require an open timer", "timer_active");
+    return;
+  }
+  if (!otaArmed(nowMs)) {
+    sendError(403,
+              "press and release the Reset button within two seconds to arm OTA while open",
+              "ota_not_armed");
+    return;
+  }
+  if (!ReleaseUpdate::configured()) {
+    sendError(409, "online updates are not configured in this build", "updates_not_configured");
+    return;
+  }
+  if (!network_.stationConnected()) {
+    sendError(409, "connect the timer to a Wi-Fi network with Internet access",
+              "no_station");
+    return;
+  }
+  if (network_.scanInProgress()) {
+    sendError(409, "wait for the Wi-Fi scan to finish before updating",
+              "wifi_scan_in_progress");
+    return;
+  }
+  if (bluetoothOtaActive_ || otaInstallActive_ || UpdateDownload::active()) {
+    sendError(409, "another firmware update is in progress", "update_in_progress");
+    return;
+  }
+  const String version = requestValue("release_version");
+  if (version.length() && !ReleaseUpdate::validVersion(version.c_str())) {
+    sendError(400, "invalid release version", "invalid_field");
+    return;
+  }
+  if (!UpdateDownload::start(version.c_str(), SMART_TIMER_VERSION)) {
+    sendError(503, "the download could not start; try again", "update_busy");
+    return;
+  }
+  otaArmedUntilMs_ = 0;
+  otaUnverifiedAllowed_ = false;
+  downloadInstallStarted_ = false;
+  network_.discardScanResults();
+  sendJson(202, "{\"started\":true}");
+}
+
+// Installs the downloaded image from loop() through the upload's validators.
+void WebApplication::serviceUpdateDownload(uint32_t nowMs) {
+  UpdateDownload::Progress progress = UpdateDownload::progress();
+  if (!downloadInstallStarted_) {
+    if (progress.phase != UpdateDownload::Phase::Ready) return;
+    ReleaseUpdate::Descriptor descriptor;
+    if (!UpdateDownload::descriptor(descriptor)) return;
+    otaResetUploadState();
+    otaAllowed_ = true;
+    otaExpectedSize_ = descriptor.size;
+    otaExpectedCrc32_ = descriptor.crc32;
+    otaSignedRelease_ = true;
+    otaRelease_ = descriptor;
+    if (!timer_.isOpen() || !otaBeginImage(nowMs, false)) {
+      otaAllowed_ = false;
+      UpdateDownload::finish(false, "install_failed");
+      return;
+    }
+    downloadInstallStarted_ = true;
+    UpdateDownload::beginImage();
+    return;
+  }
+  uint8_t chunk[UpdateDownload::kChunkBytes];
+  size_t length = 0;
+  for (int pieces = 0; pieces < 8 && otaError_.length() == 0 &&
+                       UpdateDownload::takeChunk(chunk, length); ++pieces) {
+    otaAcceptBytes(chunk, length, false);
+  }
+  progress = UpdateDownload::progress();
+  const bool rejected = otaError_.length() != 0;
+  if (rejected || progress.phase == UpdateDownload::Phase::Failed) {
+    UpdateDownload::finish(false, rejected ? "image_invalid" : nullptr);
+    otaAbortImage();
+    otaAllowed_ = false;
+    downloadInstallStarted_ = false;
+    timer_.recordEvent(TimerEventType::OtaFailed, nowMs);
+    return;
+  }
+  if (progress.phase != UpdateDownload::Phase::Downloaded) return;
+  otaCompleteImage();
+  downloadInstallStarted_ = false;
+  otaAllowed_ = false;
+  if (!otaSucceeded_) {
+    UpdateDownload::finish(false, "image_invalid");
+    timer_.recordEvent(TimerEventType::OtaFailed, nowMs);
+    return;
+  }
+  UpdateDownload::finish(true, nullptr);
+  timer_.recordEvent(TimerEventType::OtaSucceeded, nowMs,
+                     static_cast<int32_t>(otaReceivedSize_));
+  restartAtMs_ = nowMs + 1500;
+}
+#endif

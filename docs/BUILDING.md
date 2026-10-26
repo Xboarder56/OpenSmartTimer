@@ -230,8 +230,8 @@ roles, with capacity for two simultaneous links (one app plus one future timer
 peer). The application exposes only one inbound app connection and
 does not scan for, connect to or control another timer. HTTPS client, certificate
 bundle and OTA libraries are also retained. Manual GitHub updates use
-browser downloads and device-side signature/hash verification; no device-side
-GitHub downloader or automatic check is enabled. See the
+browser downloads and device-side signature/hash verification; a V2 can also
+download an approved release itself when asked (no automatic check). See the
 [framework capability boundary](../framework/esp32c3/README.md#future-capabilities-versus-exposed-features).
 The V1 build uses its independent ESP8266 framework and never links the V2 BLE
 stack or protocol implementation.
@@ -404,6 +404,6 @@ bind target, version, size, CRC32 and SHA-256 with P-256 signatures. Both
 models use manual browser-assisted HTTPS downloads. Firmware verifies the
 signature before the writer starts and the streaming SHA-256 before commit,
 while retaining the physical arm and product/header checks. Update checks run in the browser, from the Firmware section or once a day
-when a page opens; automatic installation and device-side downloads are not
-implemented. See
+when a page opens; automatic installation is not implemented. A V2 can download
+a release the person approved over its own Wi-Fi. See
 [GitHub update configuration](GITHUB_UPDATES.md).

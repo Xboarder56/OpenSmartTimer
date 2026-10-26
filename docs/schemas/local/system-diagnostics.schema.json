@@ -310,6 +310,16 @@
     "session_controls_recovered": {
       "type": "boolean"
     },
+    "deadline_backstop": {
+      "type": "object",
+      "description": "V2 only.",
+      "required": ["fired_count", "arm_failed_count"],
+      "additionalProperties": false,
+      "properties": {
+        "fired_count": {"type": "integer", "minimum": 0},
+        "arm_failed_count": {"type": "integer", "minimum": 0}
+      }
+    },
     "loop_stall": {
       "type": "object",
       "required": ["longest_ms", "phase", "uri", "uptime_ms", "over_1s_count"],

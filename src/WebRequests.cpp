@@ -1,5 +1,6 @@
 #include "ResetTrace.h"
 #include "WebApplication.h"
+#include "UpdateDownload.h"
 
 bool WebApplication::validateRequestFields() {
   requestFields_.clear();
@@ -82,6 +83,10 @@ bool WebApplication::allowRequest(bool mutation, bool interlockOwner) {
   }
   if (mutation && (restartAtMs_ != 0 || pendingNetworkAtMs_ != 0)) {
     sendError(409, "device transition already pending");
+    return false;
+  }
+  if (mutation && UpdateDownload::active()) {
+    sendError(409, "a firmware update is downloading", "update_in_progress");
     return false;
   }
   if (capture_ != nullptr) {

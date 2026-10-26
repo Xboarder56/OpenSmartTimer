@@ -126,6 +126,12 @@ class TimerController {
 
   uint32_t remainingAt(uint32_t nowMs) const;
   void release(ReleaseReason reason, uint32_t nowMs);
+  // The share link's hold limit comes before the session's own deadline.
+  bool holdLimitFirst() const;
+  // Arm the deadline backstop for the next timed release, or cancel it.
+  void armBackstop();
+  // Before a command: if the backstop opened the lock, record that release.
+  void settleBackstop(uint32_t nowMs);
 
   TimerState state_ = TimerState::Open;
   uint32_t deadlineMs_ = 0;

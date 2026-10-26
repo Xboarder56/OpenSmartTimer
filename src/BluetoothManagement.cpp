@@ -55,6 +55,7 @@ bool routeFor(uint8_t opcode, WebApplication::ManagementRoute& route) {
     case Opcode::OtaBegin: route = Route::OtaBegin; return true;
     case Opcode::OtaFinish: route = Route::OtaFinish; return true;
     case Opcode::OtaAbort: route = Route::OtaAbort; return true;
+    case Opcode::OtaDownload: route = Route::OtaDownload; return true;
     default: return false;
   }
 }

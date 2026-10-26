@@ -5,7 +5,7 @@
 Read the [safety, warranty, and liability notice](../SAFETY.md) first. This unofficial firmware can control a human restraint; installation or use means accepting risks that software testing cannot eliminate. Installing can leave the timer permanently unusable, with no verified way back, and will likely end any support from its manufacturer. The firmware is provided as is, without warranty; you install it at your own risk.
 
 > [!CAUTION]
-> Automatic rollback before Wi-Fi starts remains unverified and is not a supported recovery procedure. V2 delays application confirmation until its local recovery services are healthy, but the unchanged vendor bootloader has not been proven to honor pending-image rollback. Do not deliberately test this on the only recoverable unit. If new firmware cannot start Wi-Fi, another web update may be impossible and inaccessible 3.3 V UART recovery may be required; the USB-C connector is treated as power-only.
+> Automatic rollback before Wi-Fi starts remains unverified and is not a supported recovery procedure. V2 delays application confirmation until its local recovery services are healthy, but the unchanged vendor bootloader has not been proven to honor pending-image rollback. Do not deliberately test this on the only recoverable unit. If new firmware cannot start Wi-Fi, another web update may be impossible. External 3.3 V UART ROM communication has been verified on one V2, but UART reflashing and broken-image recovery have not; see [V2 UART service](HARDWARE.md#v2-uart-service). Native USB-C data remains unverified and the connector is treated as power-only.
 
 Perform initial validation with the controlled lock/load disconnected and stable power connected. A wall supply is acceptable only for this bench work: once the lock is connected, power the timer from a battery only, never from a wall outlet ([safety notice](../SAFETY.md#battery-power-only)). Preserve private copies of the original matching vendor application and filesystem images before replacing them.
 
@@ -70,6 +70,11 @@ For the replacement upload:
 
 If no AP appears, wait several minutes before one controlled power cycle. If it still does not appear, web recovery is exhausted.
 
+[V1 UART service](HARDWARE.md#v1-uart-service) documents the
+external 3.3 V adapter, verified programming-mode button sequence and flash
+read on one unloaded V1. ROM access and return to the installed application
+were verified; UART reflashing and broken-image recovery remain untested.
+
 ## First replacement of V2 vendor firmware
 
 The V2 image targets ESP32-C3 and preserves the vendor partition layout. Confirm
@@ -91,7 +96,16 @@ Before any V2 upload:
 5. If it boots, validate GPIO3/GPIO6 lock indication, GPIO5 blue indication, GPIO4 Reset behavior, and GPIO0 emergency behavior before reconnecting anything.
 6. Keep GPIO1 accessory behavior disabled until its jack mapping and electrical levels are independently confirmed.
 
-The V2 build preserves the original 4 MB partition boundaries, including app slots at `0x10000` and `0x150000` and SPIFFS at `0x290000`. Matching the partition map prevents an application OTA from overwriting the retained filesystem, but it does not guarantee recovery from a non-booting image. A new V2 image defers confirmation until fail-open GPIO, storage, network/AP, and web recovery have remained healthy for five seconds. This helps only when the unchanged vendor bootloader participates in ESP-IDF pending-image rollback; that behavior remains unverified. The USB-C connector appears power-only and cannot be treated as a recovery interface.
+The V2 build preserves the original 4 MB partition boundaries, including app slots at `0x10000` and `0x150000` and SPIFFS at `0x290000`. Matching the partition map prevents an application OTA from overwriting the retained filesystem, but it does not guarantee recovery from a non-booting image. A new V2 image defers confirmation until fail-open GPIO, storage, network/AP, and web recovery have remained healthy for five seconds. This helps only when the unchanged vendor bootloader participates in ESP-IDF pending-image rollback; that behavior remains unverified.
+
+[V2 UART service](HARDWARE.md#v2-uart-service) documents the external adapter
+pinout, observed internal button functions and read-only ROM queries. A
+partition-table read confirmed the documented layout on one V2; valid OTA
+metadata does not prove automatic rollback. UART reflashing and broken-image
+recovery remain untested. Keep the load disconnected during service: the
+amber LED was dim and solid in ROM mode, with output voltage/current
+unmeasured, and fully off after returning to normal firmware. External UART
+success does not verify native USB-C data; treat USB-C as power-only.
 
 ## Post-install checks
 

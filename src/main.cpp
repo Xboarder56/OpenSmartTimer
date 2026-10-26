@@ -6,6 +6,7 @@
 #include "Hardware.h"
 #include "LocalNetwork.h"
 #include "TimerController.h"
+#include "UpdateDownload.h"
 #include "WebApplication.h"
 #if defined(SMART_TIMER_RELAY)
 #include "RelayRuntime.h"
@@ -112,8 +113,10 @@ uint32_t configRelayApprovalId = 0;
 constexpr uint32_t kBootHealthStableMs = 5000;
 constexpr uint32_t kBootValidationRetryMs = 1000;
 constexpr uint32_t kBluetoothAutoStartDelayMs = 15000;
-// Expiry and the emergency input are serviced only by loop(). If it hangs,
-// the watchdog panics and the reboot drives the lock output low. The window
+// loop() records expiry and the emergency input. Their outputs do not wait
+// for it: the emergency interrupt and the deadline backstop (an esp_timer
+// 200 ms after each timed release) drive the lock output low themselves. If
+// loop() hangs, the watchdog panics and the reboot drives the output low. The window
 // exceeds the WebServer's 5 s header + 5 s body waits for one slow client;
 // the OTA upload handler feeds it per chunk.
 constexpr uint32_t kLoopWatchdogTimeoutMs = 20000;
@@ -374,6 +377,7 @@ void loop() {
   ResetTrace::mark(ResetTrace::kNetwork);
   localNetwork.loop(nowMs);
 #if defined(SMART_TIMER_HARDWARE_V2)
+  ResetTrace::mark(ResetTrace::kBluetoothStart);
   serviceBluetoothAutoStart(nowMs);
 #endif
   bool statusLed = Hardware::statusLedOn(
@@ -415,13 +419,16 @@ void loop() {
   ResetTrace::mark(ResetTrace::kRelay);
   // Relay commands are applied here, on the timer's own loop, with the same
   // transition gate as REST and BLE. Local Bluetooth has priority: while an
-  // app is connected or pairing is open, the relay pauses (memory).
+  // app is connected or pairing is open, the relay pauses (memory). So does
+  // an on-device update download, which needs that memory for its own TLS.
   relayRuntime.loop(localNetwork.stationConnected(),
                     !webApplication.mutationTransitionActive(nowMs, false),
                     bluetoothApplication.connected() ||
-                        bluetoothApplication.pairingActive(nowMs));
+                        bluetoothApplication.pairingActive(nowMs) ||
+                        UpdateDownload::active());
 #endif
 #if defined(SMART_TIMER_HARDWARE_V2)
+  ResetTrace::mark(ResetTrace::kBootValidation);
   serviceBootValidation(nowMs);
 #endif
   // A trace stuck here means the hang came after loop() returned: in the

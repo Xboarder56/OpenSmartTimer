@@ -1309,7 +1309,8 @@ function renderManagementAvailability() {
   for (const id of ['mgmtRefresh']) $(id).disabled = blocked;
   for (const id of ['mgmtWifiScan', 'mgmtWifiJoin', 'mgmtWifiForget', 'mgmtApSave', 'mgmtRename', 'mgmtRestart',
     'mgmtPairStart', 'mgmtPairCancel', 'mgmtRevokeAll', 'mgmtBluetoothOff', 'mgmtFirmwareInstall']) {
-    $(id).disabled = blocked || !open || (wifiOff && ['mgmtWifiScan', 'mgmtWifiJoin', 'mgmtWifiForget', 'mgmtApSave', 'mgmtBluetoothOff'].includes(id)) || (id === 'mgmtPairStart' && app.approvedDeviceCount >= 3);
+    $(id).disabled = blocked || !open || (wifiOff && ['mgmtWifiScan', 'mgmtWifiJoin', 'mgmtWifiForget', 'mgmtApSave', 'mgmtBluetoothOff'].includes(id)) || (id === 'mgmtPairStart' && app.approvedDeviceCount >= 3) ||
+      (id === 'mgmtFirmwareInstall' && !$('mgmtFirmwareFile').files?.length);
   }
   document.querySelectorAll('.mgmt-app-action').forEach((button) => { button.disabled = blocked || !open; });
   for (const id of ['mgmtWifiNetworks', 'mgmtWifiSsid', 'mgmtWifiPassword', 'mgmtApPassword', 'mgmtApUseName', 'mgmtApSecured', 'mgmtApStandalone']) {
@@ -1393,17 +1394,18 @@ function confirmManagement(title, message, accept = 'Apply', editName = null, re
 }
 
 // Holds the shared counter: timer commands and settings never interleave.
-async function runManagement(label, work) {
+async function runManagement(label, work, report = null) {
   if (app.commandBusy || app.pairing) return;
   app.commandBusy = true;
   updateControlAvailability();
   renderManagementAvailability();
-  managementMessage(t('{action}…', { action: t(label) }));
+  const say = (text, state) => (report ? report(text, state) : managementMessage(text));
+  say(t('{action}…', { action: t(label) }), 'busy');
   try {
     const message = await work();
-    managementMessage(message || t('Settings updated.'));
+    say(message || t('Settings updated.'), 'ok');
   } catch (error) {
-    managementMessage(error.message);
+    say(error.message, 'error');
     log('err', `${label}: ${error.message}`);
   } finally {
     app.commandBusy = false;
@@ -1472,8 +1474,31 @@ function renderApps(json) {
   renderManagementAvailability();
 }
 
+let followingOwnDownload = false;
+let downloadFollowTimer = 0;
+
 function renderUpdateStatus(json) {
   window.SmartTimerUpdates.allowance($('mgmtOtaState'), json, t);
+  // A download this app did not start, or one still running after a
+  // reconnect: show its progress in the Firmware section and keep reading it.
+  const download = json?.ota_download;
+  if (!download || followingOwnDownload) return;
+  const active = ['checking', 'downloading', 'installing'].includes(download.state);
+  if (!active) return;
+  const message = $('githubUpdates').querySelector('[data-update-message]');
+  message.textContent = download.state === 'installing'
+    ? t('Firmware installed. The timer restarts now; reconnect and check its version.')
+    : download.state === 'downloading' && download.total_bytes > 0
+      ? t('The timer is downloading the update… {percent}%', { percent: Math.round((download.received_bytes * 100) / download.total_bytes) })
+      : t('The timer is downloading the update…');
+  message.setAttribute('data-state', download.state === 'installing' ? 'ok' : 'busy');
+  if (download.state !== 'installing' && !downloadFollowTimer) {
+    downloadFollowTimer = setTimeout(async () => {
+      downloadFollowTimer = 0;
+      if (!app.server?.connected || !managementSupported()) return;
+      try { renderUpdateStatus(await readManagement(MGMT_OPCODES.status)); } catch { /* next read retries */ }
+    }, 2000);
+  }
 }
 
 async function readManagement(opcode) {
@@ -1581,12 +1606,15 @@ function crc32Hex(bytes) {
   return ((crc ^ 0xffffffff) >>> 0).toString(16).padStart(8, '0');
 }
 
-async function installFirmwareOverBluetooth(fileOverride = null, releaseMetadata = {}) {
+// `report` shows progress on another panel's line (the online update);
+// without it, progress goes to the management message.
+async function installFirmwareOverBluetooth(fileOverride = null, releaseMetadata = {}, report = null) {
+  const note = (text, state = 'busy') => (report ? report(text, state) : managementMessage(text));
   const file = fileOverride || $('mgmtFirmwareFile').files?.[0];
-  if (!file) { managementMessage('Choose a firmware .bin file first.'); return; }
+  if (!file) { note('Choose a firmware .bin file first.', 'error'); return; }
   const image = new Uint8Array(await file.arrayBuffer());
   if (image.length < 24 || image.length > 4194304 || image[0] !== 0xe9) {
-    managementMessage('Choose a firmware application .bin file. Combined flash images are not supported.');
+    note('Choose a firmware application .bin file. Combined flash images are not supported.', 'error');
     return;
   }
   const allowUnverified = $('mgmtFirmwareUnverified').checked;
@@ -1616,14 +1644,17 @@ async function installFirmwareOverBluetooth(fileOverride = null, releaseMetadata
           throw new Error(managementError(detail, reply.status));
         }
         progress.value = Math.round((end * 100) / image.length);
-        managementMessage(t('Updating firmware… {percent}%', { percent: progress.value }));
+        note(t('Updating firmware… {percent}%', { percent: progress.value }));
       }
-      managementMessage('Validating firmware…');
+      note('Validating firmware…');
       ({ status: code, json } = await (async () => {
         const reply = await managementExchange(MGMT_OPCODES.otaFinish, new TextEncoder().encode('{}'), { timeoutMs: 30000 });
         return { status: reply.status, json: JSON.parse(new TextDecoder().decode(reply.body) || '{}') };
       })());
       if (code !== 200 || !json.updated) throw new Error(managementError(json, code));
+      // The chosen file is installed; clearing it keeps the file button
+      // disabled while the timer restarts.
+      $('mgmtFirmwareFile').value = '';
       return 'Firmware installed. The timer restarts now; reconnect and check its version.';
     } catch (error) {
       if (app.server?.connected) {
@@ -1633,7 +1664,46 @@ async function installFirmwareOverBluetooth(fileOverride = null, releaseMetadata
     } finally {
       progress.classList.add('hidden');
     }
-  });
+  }, report);
+}
+
+// V2: the timer downloads, verifies and installs the approved release over its
+// own Wi-Fi; the app only starts it and follows ota_download in status.
+async function installFirmwareOnTimer(record, report) {
+  followingOwnDownload = true;
+  try { await followFirmwareDownload(record, report); } finally { followingOwnDownload = false; }
+}
+
+async function followFirmwareDownload(record, report) {
+  const { status: code, json } = await manageJson(MGMT_OPCODES.otaDownload, { release_version: record.release_version });
+  if (code !== 202) throw new Error(managementError(json, code));
+  report('The timer is downloading the update…', 'busy');
+  const started = Date.now();
+  let installed = false;
+  while (!installed && Date.now() - started < 10 * 60 * 1000) {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    if (!app.server?.connected) {
+      // The timer carries on without the app.
+      report('Bluetooth disconnected. The timer finishes the update on its own; reconnect and check its version.', 'busy');
+      return;
+    }
+    let status;
+    try { status = await readManagement(MGMT_OPCODES.status); } catch { continue; }
+    renderUpdateStatus(status);
+    const download = status.ota_download || {};
+    if (download.state === 'failed') {
+      throw new Error(download.error === 'unreachable' || download.error === 'not_published'
+        ? 'The timer could not reach the update site. Check its Internet access and try again.'
+        : 'The timer could not install the update. Its firmware is unchanged; briefly press Reset and try again.');
+    }
+    if (download.state === 'installing') installed = true;
+    if (download.state === 'downloading' && download.total_bytes > 0) {
+      report(t('The timer is downloading the update… {percent}%',
+        { percent: Math.round((download.received_bytes * 100) / download.total_bytes) }), 'busy');
+    }
+  }
+  if (!installed) throw new Error('The update is taking too long. Reconnect and check the timer\'s version.');
+  report('Firmware installed. The timer restarts now; reconnect and check its version.', 'ok');
 }
 
 function wireTimerSettings() {
@@ -1660,9 +1730,12 @@ function wireTimerSettings() {
       const current = await readManagement(MGMT_OPCODES.status);
       const capabilities = await readManagement(MGMT_OPCODES.capabilities);
       renderUpdateStatus(current);
-      return { updates: capabilities.updates, version: current.version, armed: current.ota_armed, state: current.state };
+      return { updates: capabilities.updates, version: current.version, armed: current.ota_armed, state: current.state,
+        // The timer can fetch the image over its own Wi-Fi instead.
+        remote: capabilities.features?.ota_download === true && current.station_connected === true };
     },
     install: installFirmwareOverBluetooth,
+    remoteInstall: installFirmwareOnTimer,
   });
   $('mgmtWifiMode').addEventListener('click', () => {
     if (!app.managementWifiStatus || app.managementWifiStatus?.wifi_suspend_supported !== true) return;
@@ -1752,6 +1825,7 @@ function wireTimerSettings() {
       MGMT_OPCODES.bluetoothOff);
   });
   $('mgmtFirmwareInstall').addEventListener('click', () => { void installFirmwareOverBluetooth(); });
+  $('mgmtFirmwareFile').addEventListener('change', renderManagementAvailability);
 }
 
 async function readChallenge() {

@@ -4,7 +4,7 @@ services:
     build:
       context: ..
       dockerfile: relay/Dockerfile
-    image: ostrelay:1.0.0-rc.2
+    image: ostrelay:1.0.0-rc.3
     restart: unless-stopped
     init: true
     # Admin page and API. Localhost only unless OSTRELAY_ADMIN_BIND names a

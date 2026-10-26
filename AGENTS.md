@@ -146,7 +146,8 @@ fixtures with example data only. Run `./scripts/check.sh web` and
 
 ## Releases
 
-1. Bump the version in the files listed above and write the changelog section.
+1. Bump the version in the files listed above and write the changelog section
+   for timer owners (see below).
 2. Push the release source (a branch is enough) and let CI build it. A person
    installs that run's `opensmarttimer-application-images` on the bench units,
    qualifies them and commits the record
@@ -159,6 +160,22 @@ fixtures with example data only. Run `./scripts/check.sh web` and
 4. A person reviews the draft and publishes it in the GitHub UI.
 5. Publishing triggers `pages.yml`, which verifies the published files and
    deploys the Bluetooth app and the signed update feed.
+
+**The changelog is written for timer owners.** A version's `CHANGELOG.md`
+section is shown as-is in the update dialog on the timer page and in the
+Bluetooth app (up to 8 KB), and on the GitHub release page, at the moment
+someone decides whether to install. Write each entry as what changes for the
+person using the timer, in plain language:
+
+- Say what they will notice and why it matters ("V2 now opens on time even if
+  its page is slow to answer"), not how it was built.
+- Leave out API paths, JSON field names, diagnostics keys, function names and
+  internal mechanisms; those belong in `docs/API.md` and the other guides.
+  Name a setting or button exactly as the interface shows it.
+- Mention integrations or diagnostics only when an owner would act on them,
+  in one plain sentence.
+- Keep a **Known limits** entry for anything an owner might run into, with
+  what to do about it.
 
 Every published release with a valid version tag, prereleases included, is
 offered to every timer of that model. There are no update channels.

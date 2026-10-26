@@ -49,6 +49,7 @@ RESPONSES = {
     ("POST", "/system/identify"): "system-identify-response",
     ("POST", "/system/restart"): "system-restart-response",
     ("POST", "/ota/prepare"): "ota-prepare-response",
+    ("POST", "/ota/download"): "ota-download-response",
 }
 for action in ("start", "stop", "release", "pause", "resume", "adjust", "seal", "lock-controls"):
     RESPONSES[("POST", "/timer/" + action)] = "timer-mutation-response"
@@ -68,6 +69,7 @@ REQUESTS = {
     ("POST", "/wifi/configure"): "wifi-configure-request",
     ("PUT", "/device/name"): "device-name-update-request",
     ("POST", "/ota/prepare"): "ota-prepare-request",
+    ("POST", "/ota/download"): "ota-download-request",
 }
 
 

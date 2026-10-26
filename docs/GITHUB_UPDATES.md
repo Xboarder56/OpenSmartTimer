@@ -1,10 +1,13 @@
 # GitHub firmware updates
 
 Firmware updates use **browser-assisted checks on both V1 and V2**. The timer
-never checks for updates itself, never installs automatically and writes no
-flash for a check. The browser downloads the feed and application image over
-HTTPS, then sends the image through the existing local HTTP or authenticated
-Bluetooth OTA transport. The relay companion has no firmware update authority.
+never checks for updates on its own and never installs automatically. A check
+writes no flash. Usually the browser downloads the feed and application image
+over HTTPS, then sends the image through the existing local HTTP or
+authenticated Bluetooth OTA transport. On V2 the Bluetooth app instead asks the
+timer to download the release itself over its own Wi-Fi when the timer has
+station Wi-Fi (see [Download on the timer](#download-on-the-timer-v2)). The relay
+companion has no firmware update authority.
 
 By default, the timer page and the Bluetooth app also check the feed when they
 open: at most once a day per browser, only while the timer is open, and
@@ -26,6 +29,26 @@ verification. Installation needs
 an open timer and its five-minute physical Reset-button arm. Keep the browser
 open and the timer powered during upload. The browser needs Internet access,
 including in AP or Bluetooth-only mode. The local `.bin` uploader remains.
+
+## Download on the timer (V2)
+
+The Bluetooth app sends the release over Bluetooth only when it must. If the
+timer reports the `ota_download` capability and is connected to Wi-Fi, **Install**
+asks the timer to fetch the approved release itself (`POST /api/v1/ota/download`,
+Bluetooth management opcode `0x74`). The timer page keeps downloading in the
+browser, which is already fast over Wi-Fi.
+
+The rules are the same as for any update: an open timer, the five-minute Reset
+arm (used up by the download) and a person who chose the version. The timer
+fetches `updates/magbound_v2_esp32c3.json`, verifies the P-256 signature,
+refuses anything not newer than the installed version or different from the
+approved one, then streams the image through the upload's own checks. HTTPS
+carries the bytes without certificate validation; the release signature and
+SHA-256 are what make an image trusted, exactly as for a browser download. While
+it runs, timer starts and every other change are refused, the relay pauses, and
+status shows `ota_download` progress. Any failure leaves the running firmware in
+place. V1 keeps browser-assisted updates: it lacks the memory for its own TLS
+connection.
 
 ## Public configuration and migration
 

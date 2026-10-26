@@ -41,7 +41,9 @@ physical-device checks.
   reading its own public certificate with ordinary certificate validation.
 - **Updates:** GitHub installation requires a physical one-use OTA arm and
   signed release metadata plus image SHA-256 verification. Protect the release
-  signing key and verify the exact model and published artifact.
+  signing key and verify the exact model and published artifact. When a V2
+  downloads a release itself, HTTPS does not validate the server certificate:
+  the signature and SHA-256 are the only trust, as for a browser download.
 
 ## Relay deployment
 

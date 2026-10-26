@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "DeadlineBackstop.h"
 #include "Hardware.h"
 #include "OtaImageValidation.h"
 #include "TimerController.h"
@@ -370,6 +371,65 @@ int main() {
     linked.tick(40000);
     assert(!linked.isOpen());
   }
+
+#if defined(SMART_TIMER_HARDWARE_V2)
+  {
+    // The deadline backstop is armed for the next timed release, follows
+    // every change to it, and is cancelled when nothing timed is pending.
+    auto& backstop = DeadlineBackstop::host;
+    TimerController guarded;
+    guarded.begin();
+    assert(!backstop.armed);
+    assert(guarded.start(60000, 1000));
+    assert(backstop.armed && backstop.releaseAtMs == 61000);
+    assert(guarded.adjust(30000, 2000));
+    assert(backstop.armed && backstop.releaseAtMs == 91000);
+    assert(guarded.setRemaining(10000, 3000));
+    assert(backstop.armed && backstop.releaseAtMs == 13000);
+    assert(guarded.pause(4000));
+    assert(!backstop.armed);  // a paused session has no deadline
+    guarded.limitHoldUntil(50000);
+    assert(backstop.armed && backstop.releaseAtMs == 50000);  // but a hold limit
+    assert(guarded.resume(5000));
+    assert(backstop.armed && backstop.releaseAtMs == 14000);  // own deadline first
+    assert(guarded.stop(false, 6000));
+    assert(!backstop.armed);
+
+    // A loop pass that comes after the backstop fired records the release
+    // even though millis() has not yet reached the deadline, and no command
+    // can act on the session first: it is already open.
+    assert(guarded.start(60000, 10000));
+    backstop.fired = true;
+    assert(!guarded.adjust(60000, 70100));
+    assert(guarded.isOpen() && !backstop.armed && !backstop.fired);
+    assert(guarded.snapshot(70100).lastReleaseReason == ReleaseReason::Expired);
+    assert(guarded.eventAt(guarded.eventCount() - 1).type == TimerEventType::Expired);
+
+    assert(guarded.start(60000, 80000));
+    backstop.fired = true;
+    guarded.tick(80001);
+    assert(guarded.isOpen());
+    assert(guarded.snapshot(80001).lastReleaseReason == ReleaseReason::Expired);
+
+    // When the share link's limit came first, that is the recorded reason.
+    assert(guarded.start(60000, 90000));
+    guarded.limitHoldUntil(95000);
+    assert(backstop.releaseAtMs == 95000);
+    backstop.fired = true;
+    assert(!guarded.pause(95100));
+    assert(guarded.isOpen());
+    assert(guarded.snapshot(95100).lastReleaseReason == ReleaseReason::ShareLinkExpired);
+
+    // A sealed session still opens by the backstop; Unlock now stays refused.
+    assert(guarded.start(60000, 100000));
+    assert(guarded.setSealed(true, 100500));
+    assert(backstop.armed && backstop.releaseAtMs == 160000);
+    assert(!guarded.stop(false, 101000));
+    backstop.fired = true;
+    guarded.tick(160100);
+    assert(guarded.isOpen() && pinValues[Hardware::kLockPinA] == LOW);
+  }
+#endif
 
   std::cout << "timer safety tests passed\n";
   return 0;
